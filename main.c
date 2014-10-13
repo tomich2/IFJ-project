@@ -3,7 +3,7 @@
 ///////        Filip Badan
 ///////        Michal Chomo
 ///////        Tomas Chomo
-///////        Findo
+///////        Filip Listiak
 
 #include <stdio.h>
 #include <stdlib.h>
