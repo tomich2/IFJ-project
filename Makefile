@@ -1,12 +1,15 @@
 ######  Makefile ######
 
 CC=gcc
-CFLAGS=-std=c99 -g -Wall -Wextra -lm
+CFLAGS=-std=c99 -g -Wall -Wextra -lm -O2
 
-all: projifj
+all: lexical
 
-main.o: main.c
-	$(CC) $(CFLAGS) -c main.h $<
+lexstring.o: lexstring.c lexstring.h
+	$(CC) $(CFLAGS) -c $<
 
-projifj: main.o
-	$(CC) $(CFLAGS) -o $@ main.o
+lexical.o: lexical.c lexical.h
+	$(CC) $(CFLAGS) -c $<
+
+lexical: lexical.o lexstring.o
+	$(CC) $(CFLAGS) -o $@ lexical.o lexstring.o
