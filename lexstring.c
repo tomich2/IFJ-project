@@ -10,6 +10,7 @@
 #include <ctype.h>
 #include "lexical.h"
 #include "lexstring.h"
+#include "error.h"
 
 int kluc=1;
 
@@ -29,9 +30,8 @@ char *allocate_string (int i,char *mem)
         mem_realloc=(char*)realloc(((char*)mem),(sizeof(char)*NATIVE_CHAR*kluc));               // uvolni pomocou realloc tolko miesta kolko potrebujes
         if (mem_realloc==NULL)
         {
-            fprintf(stderr,"Allocation failed");
             close_file();
-            exit (99);
+            Error(99);
         }
         kluc++;                                                                                 // inkrementuj konstantu velkosti alokovanej pamate
         mem=mem_realloc;
@@ -45,9 +45,8 @@ char *first_allocation ()
     kluc=2;
     if (token->mem==NULL)
     {
-        fprintf(stderr,"Allocation failed");
         close_file();
-        exit (99);
+        Error(99);
     }
     return token->mem;
 }

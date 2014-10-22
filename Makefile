@@ -11,5 +11,11 @@ lexstring.o: lexstring.c lexstring.h
 lexical.o: lexical.c lexical.h
 	$(CC) $(CFLAGS) -c $<
 
-lexical: lexical.o lexstring.o
-	$(CC) $(CFLAGS) -o $@ lexical.o lexstring.o
+main.o: main.c
+	$(CC) $(CFLAGS) -c $<
+
+error.o: error.c error.h
+	$(CC) $(CFLAGS) -c $<
+
+lexical: lexical.o lexstring.o main.o error.o
+	$(CC) $(CFLAGS) -o $@ lexical.o lexstring.o main.o error.o

@@ -10,6 +10,7 @@
 #include <ctype.h>
 #include "lexical.h"
 #include "lexstring.h"
+#include "error.h"
 
 //retazec klucovych slov
 const char key_words [] = {",begin,boolean,do,else,end,false,find,forward,function,if,integer,readln,real,sort,string,then,true,var,while,write,"};
@@ -313,14 +314,12 @@ int open_file (char *filename,int argc)
 {
     if (argc!=2)
     {
-        fprintf (stderr,"Argument error\n");
-        return 99;
+        Error(99);
     }
     fp = fopen (filename,"r");
     if (fp==NULL)
     {
-        fprintf (stderr,"File not found\n");
-        exit (99);
+        Error(99);
     }
     return 0;
 }
@@ -328,30 +327,4 @@ int open_file (char *filename,int argc)
 void close_file ()
 {
     fclose(fp);
-}
-
-int main (int argc, char **argv)
-{
-    open_file(argv[1],argc);
-    c=fgetc(fp);
-
-    token=malloc(sizeof(TOKEN));
-    if (token==NULL)
-    {
-        fprintf(stderr,"Allocation failed");
-        close_file();
-        exit (99);
-    }
-
-    TOKEN *lexem;
-    while ((lexem=get_token())!=NULL)
-    {
-        if (lexem!=NULL) token=lexem;
-        else break;
-        printf ("%s - %d\n",token->mem,token->identity);
-        free (token->mem);
-    }
-    free (token);
-    close_file (argv[1]);
-    return 0;
 }

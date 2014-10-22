@@ -15,11 +15,6 @@
 
 #define NATIVE_CHAR 10                                              //velkost retazca pre ukladanie
 
-
-
-FILE *fp;                                                           //subor
-int c;                                                              //nacitavany znak
-
 // identita oznacuje typ tokenu
 // 1 - identifikator
 // 2 - integer
@@ -41,6 +36,8 @@ typedef struct token
 
 
 TOKEN *token;                                                       // struktura tokenu
+FILE *fp;                                                           //subor
+int c;                                                              //nacitavany znak
 
 TOKEN *get_token ();                                                // v ukazovateli vrat jeden token
 int open_file (char *filename,int argc);                            // otvor subor
