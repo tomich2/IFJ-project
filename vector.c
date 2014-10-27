@@ -88,9 +88,9 @@ void* vectorLast(Vector *vec)
 	}
 	return vec->end - vec->itemSize;
 }
-	
+	/**
 int main(void)
 {
 return 0;
 }
-
+**/
