@@ -5,6 +5,9 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
+
+//zasobnik pracuje so stringami akejkolvek velkosti
+//polozka zasobnika
 typedef struct stack_item S_item;
 struct stack_item
 {
@@ -12,6 +15,7 @@ struct stack_item
  S_item * previous;
 }; 
 
+//struktura zasobnik
 typedef struct stack_s 
 {
  S_item *Top;	 
