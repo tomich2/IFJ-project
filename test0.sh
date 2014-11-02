@@ -6,10 +6,9 @@ green='\e[0;31m';
 
 if [ -d "$DIRECTORY" ]; 
     then
-    	echo "";
-    else
-  	mkdir test0.outputs;
+        mkdir test0.outputs;
 fi
+
 ./lexical > ./test0.outputs/nofile.output 2>&1;
 value=$?;
 if [ $value = 0 ];
