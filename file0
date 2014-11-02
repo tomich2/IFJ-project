@@ -1,0 +1,7 @@
+
+var x:integer;
+
+begin
+ Write('Hello World. Prepare to learn PASCAL!!');
+ Readln;   
+end.
