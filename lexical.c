@@ -49,9 +49,10 @@ TOKEN *get_token ()
                             token->mem=string_implementation(c,i,token->mem);
                             c=fgetc(fp);
                         }
+                        int Iden;
                         token->mem=string_implementation('\0',i+1,token->mem);
-                        if (is_key_word(token->mem)==0) token->identity=1;
-                        else token->identity=6;
+                        if ((Iden=is_key_word(token->mem))==0) token->identity=1;
+                        else token->identity=Iden;
                         return token;
                     }
 
@@ -131,11 +132,11 @@ TOKEN *get_token ()
                 else if ((strstr(token->mem,"."))==NULL)
                 {
                     token->mem=string_implementation('\0',i+1,token->mem);
-                    token->identity = 2;
+                    token->identity = 37;
                     return token;
                 }
                 token->mem=string_implementation('\0',i+1,token->mem);
-                token->identity = 3;
+                token->identity = 39;
                 return token;
             }
 
@@ -150,8 +151,11 @@ TOKEN *get_token ()
                                 token->mem=string_implementation(c,i,token->mem);
                             }
                             token->mem=string_implementation('\0',i+1,token->mem);
+                            if (c=='+') token->identity=22;
+                            if (c=='-') token->identity=23;
+                            if (c=='*') token->identity=24;
+                            if (c=='/') token->identity=25;
                             c=fgetc(fp);
-                            token->identity = 7;
                             return token;
                         }
 
@@ -162,15 +166,16 @@ TOKEN *get_token ()
                     token->mem=first_allocation ();
                     token->mem=string_implementation(c,i,token->mem);
                 }
+                token->identity=26;
                 c=fgetc(fp);
                 if (c=='=')                                                                             // jedna sa o priradenie
                 {
                     i++;
                     token->mem=string_implementation(c,i,token->mem);
                     c=fgetc(fp);
+                    token->identity=27;
                 }
                 token->mem=string_implementation('\0',i+1,token->mem);
-                token->identity = 7;
                 return token;
             }
 
@@ -183,7 +188,20 @@ TOKEN *get_token ()
                 }
                 token->mem=string_implementation('\0',i+1,token->mem);
                 c=fgetc(fp);
-                token->identity = 7;
+                token->identity = 28;
+                return token;
+            }
+
+            case '=':
+            {
+                if (i==0)
+                {
+                    token->mem=first_allocation ();
+                    token->mem=string_implementation(c,i,token->mem);
+                }
+                token->mem=string_implementation('\0',i+1,token->mem);
+                c=fgetc(fp);
+                token->identity = 33;
                 return token;
             }
 
@@ -194,14 +212,16 @@ TOKEN *get_token ()
                     token->mem=first_allocation ();
                     token->mem=string_implementation(c,i,token->mem);
                 }
+                token->identity=29;
                 c=fgetc(fp);
                 if (c=='=')
                 {
                     i++;
                     token->mem=string_implementation(c,i,token->mem);
+                    token->identity = 31;
                 }
                 token->mem=string_implementation('\0',i+1,token->mem);
-                token->identity = 7;
+                c=fgetc(fp);
                 return token;
             }
 
@@ -209,6 +229,7 @@ TOKEN *get_token ()
             {
                 if (i==0)
                 {
+                    token->identity=30;
                     token->mem=first_allocation ();
                     token->mem=string_implementation(c,i,token->mem);
                 }
@@ -216,15 +237,17 @@ TOKEN *get_token ()
                 if (c=='>')
                 {
                     i++;
+                    token->identity=42;
                     token->mem=string_implementation(c,i,token->mem);
                 }
                 if (c=='=')
                 {
                     i++;
+                    token->identity=32;
                     token->mem=string_implementation(c,i,token->mem);
                 }
                 token->mem=string_implementation('\0',i+1,token->mem);
-                token->identity = 7;
+                c=fgetc(fp);
                 return token;
             }
 
@@ -237,8 +260,9 @@ TOKEN *get_token ()
                     token->mem=string_implementation(c,i,token->mem);
                 }
                 token->mem=string_implementation('\0',i+1,token->mem);
+                if (c=='(') token->identity=34;
+                else token->identity=35;
                 c=fgetc(fp);
-                token->identity = 7;
                 return token;
             }
 
@@ -264,7 +288,7 @@ TOKEN *get_token ()
                 else return NULL;
                 c=fgetc(fp);
                 token->mem=string_implementation('\0',i+1,token->mem);
-                token->identity = 5;
+                token->identity = 41;
                 return token;
             }
 
@@ -276,7 +300,7 @@ TOKEN *get_token ()
                     token->mem=string_implementation(c,i,token->mem);
                     c=fgetc(fp);
                     token->mem=string_implementation('\0',i+1,token->mem);
-                    token->identity = 7;
+                    token->identity = 36;
                     return token;
                 }
             }
@@ -285,26 +309,85 @@ TOKEN *get_token ()
     return NULL;
 }
 
+int CaseInsensitiveCharCmp (char c1, char c2)
+{
+    c1=toupper(c1);
+    c2=toupper(c2);
+    if (c1==c2) return 0;
+    else return -1;
+}
+
 int is_key_word (char *key)
 {
     unsigned int p=0;
     for (unsigned int i=1;i<=strlen(key_words);i++)
     {
-        if (key[0]==key_words[i] && key_words[i-1]==',')
+        if (CaseInsensitiveCharCmp(key[0],key_words[i])==0 && key_words[i-1]==',')
         {
             p=0;
             int j=1;
             while (key_words[i]!=',')
             {
                 i++;
-                if (key_words[i]==key[j])
+                if (CaseInsensitiveCharCmp(key_words[i],key[j])==0)
                 {
                     p++;
                     j++;
                 }
                 else break;
             }
-            if (p+1==(strlen(key)) && (j-p)==1) return 1;                                               // vrat 1 ak si nasiel identifikator v klucovych slovach
+            if (p+1==(strlen(key)) && (j-p)==1)
+            {
+                switch (i)
+                {
+                    case 6:
+                        return 2;
+                    case 14:
+                        return 3;
+                    case 17:
+                        return 4;
+                    case 22:
+                        return 5;
+                    case 26:
+                        return 6;
+                    case 32:
+                        return 7;
+                    case 37:
+                        return 8;
+                    case 45:
+                        return 9;
+                    case 54:
+                        return 10;
+                    case 57:
+                        return 11;
+                    case 65:
+                        return 12;
+                    case 72:
+                        return 13;
+                    case 77:
+                        return 14;
+                    case 82:
+                        return 15;
+                    case 89:
+                        return 16;
+                    case 94:
+                        return 17;
+                    case 99:
+                        return 18;
+                    case 103:
+                        return 19;
+                    case 109:
+                        return 20;
+                    case 115:
+                        return 21;
+                    default:
+                    {
+                        printf ("Kokotina\n");
+                        return -1;
+                    }
+                }
+
+            }
         }
     }
     return 0;                                                                                           // nenasiel si nic :(
