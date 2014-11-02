@@ -205,6 +205,19 @@ TOKEN *get_token ()
                 return token;
             }
 
+            case ',':
+            {
+                if (i==0)
+                {
+                    token->mem=first_allocation ();
+                    token->mem=string_implementation(c,i,token->mem);
+                }
+                token->mem=string_implementation('\0',i+1,token->mem);
+                c=fgetc(fp);
+                token->identity = 43;
+                return token;
+            }
+
             case '>':
             {
                 if (i==0)
