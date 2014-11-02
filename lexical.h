@@ -25,7 +25,7 @@
 // keywords: var, while, write
 // operatory: +,-,*,/,:,:=,;,>,<,>=,<=,=,(,),.
 // udajovy typ: integer, char, real, boolean, string
-// operatory: <>
+// operatory: <>, ciarka - ,
 
 typedef enum TYP {ID = 1, KwBegin = 2, KwBoolean = 3, KwDo = 4, KwElse = 5, KwEnd = 6, BooleanFalse = 7, KwFind = 8,
                   KwForward = 9, KwFunction = 10, KwIf = 11, KwInteger = 12, KwReadln = 13, KwReal = 14,
@@ -33,7 +33,7 @@ typedef enum TYP {ID = 1, KwBegin = 2, KwBoolean = 3, KwDo = 4, KwElse = 5, KwEn
                   KwWrite = 21, OpPlus = 22, OpMinus = 23, OpKrat = 24, OpDiv = 25, OpDek = 26,
                   OpPrir = 27, OpKonec = 28, OpVacsi = 29, OpMensi = 30, OpVacsiR = 31, OpMensiR = 32,
                   OpRovny = 33, OpLZat = 34, OpPZat = 35, OpBodka = 36, DtInteger = 37, DtChar = 38,
-                  DtReal = 39, DtBoolean = 40, DtString = 41, OpNerovny = 42} identita;
+                  DtReal = 39, DtBoolean = 40, DtString = 41, OpNerovny = 42, OpCiarka = 43} identita;
 
 
 typedef struct token
