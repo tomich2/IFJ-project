@@ -5,17 +5,21 @@
 #include "stack.h"
 
 //inicializuje zasobnik
-void init(Stack *stack)
+void init(Stack *stack, size_t i_size)
 {
+ stack->it_size=i_size;
  stack->Top=NULL;
  return;
 }
 
 //push - prida prvok do zasobniku, vypise chybu ak sa nepodari alokovat pamat
-void push(Stack *stack, char *push_data)
+//param size_sp - velkost pushovanej polozky - ak sa zada nieco mensie ako 0 
+//pouzije sa vseobecna velkost ulozena v stack->it_size
+void push(Stack *stack, void *push_data, int size_sp)
 {
  S_item *tmp;
- size_t size=strlen(push_data)+1;
+ size_t size=stack->it_size;
+ if (size_sp>0) size=size_sp+1;
  tmp=(S_item *) malloc(sizeof(S_item));
  if (tmp==NULL) 
  	{
@@ -23,7 +27,7 @@ void push(Stack *stack, char *push_data)
 	return;
 	}
 
- tmp->data=(char *) malloc(size);
+ tmp->data=(void *) malloc(size);
  if (tmp->data==NULL) 
  	{
 	printf("Malloc error!\n");
@@ -53,31 +57,31 @@ bool S_empty(Stack *stack)
 }
 
 //vrati ukazovatel na string na poslednom mieste zasobnika
-char *top(Stack *stack)
+void *top(Stack *stack)
 {
  S_item *tmp=stack->Top;
  return tmp->data;
 }
 
 //testovaci main
-//najprv pushne s1 a vypise vrchol zasobnika a nasledne ho popne
-//potom pushne s1 a s2 vypise vrchol popne a zase vypise vrchol a popne 
 int main () 
 {
  char s1[]="Ahoj";
  char s2[]="Svet";
 
+ char *s;
+
  Stack stack;
- init(&stack);
- push(&stack,s1);
- printf("vrchol je %s\n", top(&stack));
+ init(&stack, 255);
+ push(&stack,s1,-1);
+ printf("vrchol je %s\n", s=top(&stack));
  pop(&stack);
  if (S_empty(&stack)) printf("zasobnik je prazdny\n");
- push(&stack,s1);
- push(&stack,s2);
- printf("vrchol je %s\n", top(&stack));
+ push(&stack,s1,strlen(s1));
+ push(&stack,s2,strlen(s2));
+ printf("vrchol je %s\n", s=top(&stack));
  pop(&stack);
- printf("vrchol je %s\n", top(&stack));
+ printf("vrchol je %s\n", s=top(&stack));
  pop(&stack);
  if (S_empty(&stack)) printf("zasobnik je prazdny\n");
  return 0;
