@@ -4,14 +4,13 @@ red='\e[0;32m';
 NC='\e[0m';
 green='\e[0;31m';
 
-touch test0.outputs;
-value=$?;
-if [ $value = 1 ];
+if [ -d "$DIRECTORY" ]; 
     then
-        mkdir test0.outputs;
+    	echo "";
+    else
+  	mkdir test0.outputs;
 fi
-
-./lexical > test0.outputs/nofile.output 2>&1;
+./lexical > ./test0.outputs/nofile.output 2>&1;
 value=$?;
 if [ $value = 0 ];
     then
@@ -20,7 +19,7 @@ if [ $value = 0 ];
         echo -e "Testing no file                    ${green}FAIL${NC}";
 fi
 
-./lexical file0 > test0.outputs/file0.output 2>&1;
+./lexical file0 > ./test0.outputs/file0.output 2>&1;
 value=$?;
 if [ $value = 0 ];
     then
