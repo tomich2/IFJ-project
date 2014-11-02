@@ -1,0 +1,47 @@
+/**
+********Zásobník********
+I_PUSH(val,NULL,NULL)-pushne hodnotu(val) na zásobník
+I_POP(NULL,NULL,NULL)-popne zásobník
+
+*******Adresy*******
+I_LABEL(name,NULL,NULL)-Pomenuje návestie na ktoré je možné skočíť
+I_GOTO(val,NULL,dest)-Podľa hodnoty(val(1/0)) vykona skok na ciel(dest)
+I_CALL(name,NULL,ret_adress)-Zavola funkciu s menom(name) a uloží návratovú adresu(ret_adress)
+I_RETURN(val,NULL,adress)-Navratovú hodnota(val) pre funkciu a  adresu (adress) na návrat
+
+*****Aritmetika******
+I_ADD(val,val,dest)- Spočíta dve hodnoty(val) a zapíše do výslednej premennej(dest)
+I_SUB(val_1,val_2,dest)- Odpočíta hodnotu 2 (val_2) od hodnoty 1 (val_1) a zapíše do výslednej premennej(dest)
+I_MUL(val,val,dest)- Vykráti dve hodnoty(val) a zapíše do výslednej premennej(dest)(val,val,dest)- Spočíta dve hodnoty(val) a zapíše do výslednej premennej(dest)
+I_DIV(val_1,val_2,dest)- Videlí hodnotu 1 (val_1) hodnotou 2 (val_2) a zapíše do výslednej premennej(dest)
+I_MOD(val_1,val_2,dest)- Vykoná modulo (val_1 % val_2) a zapíše do výslednej premennej(dest)
+I_SQR(val,expo,dest)-Vykoná umocnenie základu(val) na exponenta(expo) a zapíše do výslednej premennej(dest)
+I_SQRT(val,expo,dest)-Vykoná odmocnenie základu(val) na exponenta(expo) a zapíše do výslednej premennej(dest)
+
+*****Porovnávanie******
+I_LESS_CMP(val_1,val_2,NULL)- val_1 < val_2 a výsledok bude 1/0 formát v bool premennej true(1)/false(0)（bool)
+I_GR_CMP(val_1,val_2,NULL)- val_1 > val_2 a výsledok bude 1/0 formát v bool premennej true(1)/false(0)（bool)
+I_LESS_EQUAL_CMP(val_1,val_2,NULL)- val_1 <= val_2 a výsledok bude 1/0 formát v bool premennej true(1)/false(0)（bool)
+I_GR_EQUAL_CMP(val_1,val_2,NULL)- val_1 >= val_2 a výsledok bude 1/0 formát v bool premennej true(1)/false(0)（bool)
+I_EQUAL_CMP(val,val,NULL)- val=val a výsledok bude 1/0 formát v bool premennej true(1)/false(0)（bool)
+I_NOT_EQUAL_CMP(val,val,NULL)- val=/=val a výsledok bude 1/0 formát v bool premennej true(1)/false(0)（bool)
+
+*******Negácia*******
+I_NOT(bool,NULL,NULL)-Zmení hodnotu bool na opačnú false = 0 / true =/= 0 a vráti ju
+I_NEG(val,NULL,NULL）- Zmení znamienko hodnoty (val) a vráti ho
+
+*****String*******
+I_LENGTH(sour,NULL,dest) - Vráti hodnotu dlžky reťazca zo (sour) a zapíše výsledok do premennej （dest)
+
+
+.
+.
+.
+
+
+
+
+
+
+
+**/
