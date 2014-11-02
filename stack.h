@@ -6,25 +6,27 @@
 #include <stdbool.h>
 
 
-//zasobnik pracuje so stringami akejkolvek velkosti
+//zasobnik pracuje s pamatou akejkolvek velkosti
 //polozka zasobnika
 typedef struct stack_item S_item;
 struct stack_item
 {
- char *data;
+ void *data;
  S_item * previous;
 }; 
 
-//struktura zasobnik
+//struktura zasobika - it_size -velkost jednej polozky
+//pri pushovani mozne velkost prisposobit polozke pomocou paramtera size_sp
 typedef struct stack_s 
 {
+ size_t it_size;
  S_item *Top;	 
 } Stack;
 
-void init(Stack *stack);
-void push(Stack *stack, char *push_data);
+void init(Stack *stack, size_t i_size);
+void push(Stack *stack, void *push_data, int size_sp);
 int pop(Stack *stack);
-char *top(Stack *stack);
+void *top(Stack *stack);
 bool S_empty(Stack *stack);
 
 #endif
