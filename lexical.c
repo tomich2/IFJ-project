@@ -353,7 +353,7 @@ int is_key_word (char *key)
                 }
                 else break;
             }
-            if (p+1==(strlen(key)) && (j-p)==1)
+            if (p+1==(strlen(key)) && (j-p)==1 && ((strlen(key))>1))
             {
                 switch (i)
                 {
@@ -397,11 +397,6 @@ int is_key_word (char *key)
                         return 20;
                     case 115:
                         return 21;
-                    default:
-                    {
-                        //printf ("Kokotina\n");
-                        return -1;
-                    }
                 }
 
             }
