@@ -29,7 +29,11 @@ TOKEN *get_token ()
         {
             while ((c=fgetc(fp))!='}' && (c!=EOF));
         }
-
+        if (c=='}') c=fgetc(fp);
+        if (isspace(c)!=0)                                                                      // preskoc medzery
+        {
+            while (isspace(c)!=0 && c!=EOF) c=fgetc(fp);
+        }
         i=0;
         switch (c)
         {
@@ -395,7 +399,7 @@ int is_key_word (char *key)
                         return 21;
                     default:
                     {
-                        printf ("Kokotina\n");
+                        //printf ("Kokotina\n");
                         return -1;
                     }
                 }
