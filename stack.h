@@ -28,5 +28,5 @@ void push(Stack *stack, void *push_data, int size_sp);
 int pop(Stack *stack);
 void *top(Stack *stack);
 bool S_empty(Stack *stack);
-
+void S_erase(Stack *stack);
 #endif
