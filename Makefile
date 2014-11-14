@@ -6,9 +6,9 @@ CFLAGS=-std=c99 -g -Wall -Wextra -lm
 %.o: %.c
 	$(CC) $(CFLAGS) -c $<
 
-all: lexical
+all: parser
 
-lexical: lexical.o lexstring.o main.o error.o parser.o rules.o stack.o expr.o
+parser: lexical.o lexstring.o main.o error.o parser.o rules.o stack.o expr.o
 	$(CC) $(CFLAGS) -o $@ lexical.o lexstring.o main.o error.o parser.o rules.o stack.o expr.o
 
 
