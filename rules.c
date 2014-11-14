@@ -12,7 +12,7 @@
 #include "error.h"
 #include "stack.h"
 
-
+                                  // 1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20
 int LLTable[LL_TERMS][LL_NONTERMS]={{1, 2, 0, 0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},     // var
                                     {0, 0, 4, 6, 0, 0, 11, 0, 0, 0, 21, 24, 0, 29, 0, 0, 0, 0, 34, 0}, // id
                                     {1, 3, 0, 5, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},      // function
@@ -27,11 +27,10 @@ int LLTable[LL_TERMS][LL_NONTERMS]={{1, 2, 0, 0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 
                                     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 21, 26, 0, 0, 0, 31, 0, 0, 0, 0},   // if
                                     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 21, 25, 0, 0, 30, 0, 0, 0, 0, 0},   // while
                                     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 35, 0},     // literal
-                                    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 21, 27, 0, 0, 32, 0, 0, 0},         // readln
-                                    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 21, 28, 0, 0, 0, 33, 0, 0},         // write
+                                    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 21, 27, 0, 0, 0, 0, 32, 0, 0, 0, 0},// readln
+                                    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 21, 28, 0, 0, 0, 0, 0, 33, 0, 0},   // write
                                     {0, 0, 0, 0, 0, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},      // forward
                                     {0, 0, 0, 0, 0, 0, 12, 14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 36}};  // right bracket
-
 T_terms token_to_term(TOKEN *t)
 {
     switch(t->identity)
@@ -45,9 +44,6 @@ T_terms token_to_term(TOKEN *t)
       case KwEnd:
         return end_;
       case KwForward:
-        return forward_;
-      case KwFunction:
-        return function_;
       case KwIf:
         return if_;
       case KwInteger:
@@ -66,6 +62,8 @@ T_terms token_to_term(TOKEN *t)
         return write_;
       case OpKonec:
         return semicolon_;
+      case OpCiarka:
+        return comma_;
       case OpPZat:
         return r_bracket_;
       case DtInteger:
@@ -81,284 +79,223 @@ T_terms token_to_term(TOKEN *t)
 }
 
 
-T_ParserItem ** get_rule(TOKEN *token,T_nonterms nonterm)
+void get_rule(TOKEN *token,T_nonterms nonterm, T_ParserItem **PItem_Arr)
 {
   int rule;
   T_terms term;
   term=token_to_term(token);
   rule=LLTable[term][nonterm];
-  T_ParserItem **PItem_Arr;
   switch(rule)
   {
     case 1: // 1. <START> → <DEF_VAR> <FUNC> <BODY>.
-          PItem_Arr=malloc(PItem_size*4);
-          if(PItem_Arr==NULL)Error(99);
           PItem_Arr[0]->type=TERMINAL;
-          PItem_Arr[0]->value.term->identity=OpBodka;
+          PItem_Arr[0]->value.term=OpBodka;
           PItem_Arr[1]->type=NONTERMINAL;
           PItem_Arr[1]->value.nonterm=BODY;
           PItem_Arr[2]->type=NONTERMINAL;
           PItem_Arr[2]->value.nonterm=FUNC;
           PItem_Arr[3]->type=NONTERMINAL;
           PItem_Arr[3]->value.nonterm=DEF_VAR;
-          return PItem_Arr;
+          break;
     case 2: // 2. <DEF_VAR> → var <VAR>
-          PItem_Arr=malloc(PItem_size*2);
-          if(PItem_Arr==NULL)Error(99);
           PItem_Arr[0]->type=NONTERMINAL;
-          PItem_Arr[0]->value.nonterm=DEF_VAR;
+          PItem_Arr[0]->value.nonterm=VAR;
           PItem_Arr[1]->type=TERMINAL;
-          PItem_Arr[1]->value.term->identity=KwVar;
-          return PItem_Arr;
+          PItem_Arr[1]->value.term=KwVar;
+          break;
     case 4: // 4. <VAR> → id :<TYPE>; <VAR_N>
     case 6: // 6. <VAR_N> →  id :<TYPE>; <VAR_N>
-          PItem_Arr=malloc(PItem_size*5);
-          if(PItem_Arr==NULL)Error(99);
           PItem_Arr[0]->type=NONTERMINAL;
           PItem_Arr[0]->value.nonterm=VAR_N;
           PItem_Arr[1]->type=TERMINAL;
-          PItem_Arr[1]->value.term->identity=OpKonec;
+          PItem_Arr[1]->value.term=OpKonec;
           PItem_Arr[2]->type=NONTERMINAL;
           PItem_Arr[2]->value.nonterm=TYPE;
           PItem_Arr[3]->type=TERMINAL;
-          PItem_Arr[3]->value.term->identity=OpDek;
+          PItem_Arr[3]->value.term=OpDek;
           PItem_Arr[4]->type=TERMINAL;
-          PItem_Arr[4]->value.term->identity=ID;
-          return PItem_Arr;
+          PItem_Arr[4]->value.term=ID;
+          break;
     case 7: // 7. <FUNC> →  function id(<PARAM>) :<TYPE>;  <FORWARD>; <FUNC>
-          PItem_Arr=malloc(PItem_size*11);
-          if(PItem_Arr==NULL)Error(99);
           PItem_Arr[0]->type=NONTERMINAL;
           PItem_Arr[0]->value.nonterm=FUNC;
           PItem_Arr[1]->type=TERMINAL;
-          PItem_Arr[1]->value.term->identity=OpKonec;
+          PItem_Arr[1]->value.term=OpKonec;
           PItem_Arr[2]->type=NONTERMINAL;
           PItem_Arr[2]->value.nonterm=FORWARD;
           PItem_Arr[3]->type=TERMINAL;
-          PItem_Arr[3]->value.term->identity=OpKonec;
+          PItem_Arr[3]->value.term=OpKonec;
           PItem_Arr[4]->type=NONTERMINAL;
           PItem_Arr[4]->value.nonterm=TYPE;
           PItem_Arr[5]->type=TERMINAL;
-          PItem_Arr[5]->value.term->identity=OpDek;
+          PItem_Arr[5]->value.term=OpDek;
           PItem_Arr[6]->type=TERMINAL;
-          PItem_Arr[6]->value.term->identity=OpPZat;
+          PItem_Arr[6]->value.term=OpPZat;
           PItem_Arr[7]->type=NONTERMINAL;
           PItem_Arr[7]->value.nonterm=PARAM;
           PItem_Arr[8]->type=TERMINAL;
-          PItem_Arr[8]->value.term->identity=OpLZat;
+          PItem_Arr[8]->value.term=OpLZat;
           PItem_Arr[9]->type=TERMINAL;
-          PItem_Arr[9]->value.term->identity=ID;
+          PItem_Arr[9]->value.term=ID;
           PItem_Arr[10]->type=TERMINAL;
-          PItem_Arr[10]->value.term->identity=KwFunction;
-          return PItem_Arr;
-    case 9: // 9. <FORWARD> → forward
-          PItem_Arr=malloc(PItem_size);
-          if(PItem_Arr==NULL)Error(99);
-          PItem_Arr[0]->type=TERMINAL;
-          PItem_Arr[0]->value.term->identity=KwForward;
-          return PItem_Arr;
+          PItem_Arr[10]->value.term=KwFunction;
+          break;
     case 10: // 10. <FORWARD> →  <DEF_VAR> <BODY>
-          PItem_Arr=malloc(PItem_size*2);
-          if(PItem_Arr==NULL)Error(99);
           PItem_Arr[0]->type=NONTERMINAL;
           PItem_Arr[0]->value.nonterm=BODY;
           PItem_Arr[1]->type=NONTERMINAL;
           PItem_Arr[1]->value.nonterm=DEF_VAR;
-          return PItem_Arr;
+          break;
     case 11: // 11. <PARAM> → id :<TYPE> <PARAM_N>
-          PItem_Arr=malloc(PItem_size*4);
-          if(PItem_Arr==NULL)Error(99);
           PItem_Arr[0]->type=NONTERMINAL;
           PItem_Arr[0]->value.nonterm=PARAM_N;
           PItem_Arr[1]->type=NONTERMINAL;
           PItem_Arr[1]->value.nonterm=TYPE;
           PItem_Arr[2]->type=TERMINAL;
-          PItem_Arr[2]->value.term->identity=OpDek;
+          PItem_Arr[2]->value.term=OpDek;
           PItem_Arr[3]->type=TERMINAL;
-          PItem_Arr[3]->value.term->identity=ID;
-          return PItem_Arr;
+          PItem_Arr[3]->value.term=ID;
+          break;
     case 13: // 13. <PARAM_N> → ;  id :<TYPE> <PARAM_N>
-          PItem_Arr=malloc(PItem_size*5);
-          if(PItem_Arr==NULL)Error(99);
           PItem_Arr[0]->type=NONTERMINAL;
           PItem_Arr[0]->value.nonterm=PARAM_N;
           PItem_Arr[1]->type=NONTERMINAL;
           PItem_Arr[1]->value.nonterm=TYPE;
           PItem_Arr[2]->type=TERMINAL;
-          PItem_Arr[2]->value.term->identity=OpDek;
+          PItem_Arr[2]->value.term=OpDek;
           PItem_Arr[3]->type=TERMINAL;
-          PItem_Arr[3]->value.term->identity=ID;
+          PItem_Arr[3]->value.term=ID;
           PItem_Arr[4]->type=TERMINAL;
-          PItem_Arr[4]->value.term->identity=OpKonec;
-          return PItem_Arr;
+          PItem_Arr[4]->value.term=OpKonec;
+          break;
     case 15: // 15. <TYPE> → integer
-          PItem_Arr=malloc(PItem_size);
-          if(PItem_Arr==NULL)Error(99);
           PItem_Arr[0]->type=TERMINAL;
-          PItem_Arr[0]->value.term->identity=KwInteger;
-          return PItem_Arr;
+          PItem_Arr[0]->value.term=KwInteger;
+          break;
     case 16: // 16. <TYPE> → real
-          PItem_Arr=malloc(PItem_size);
-          if(PItem_Arr==NULL)Error(99);
           PItem_Arr[0]->type=TERMINAL;
-          PItem_Arr[0]->value.term->identity=KwReal;
-          return PItem_Arr;
+          PItem_Arr[0]->value.term=KwReal;
+          break;
     case 17: // 17. <TYPE> → string
-          PItem_Arr=malloc(PItem_size);
-          if(PItem_Arr==NULL)Error(99);
           PItem_Arr[0]->type=TERMINAL;
-          PItem_Arr[0]->value.term->identity=KwString;
-          return PItem_Arr;
+          PItem_Arr[0]->value.term=KwString;
+          break;
     case 18: // 18. <TYPE> → boolean
-          PItem_Arr=malloc(PItem_size);
-          if(PItem_Arr==NULL)Error(99);
           PItem_Arr[0]->type=TERMINAL;
-          PItem_Arr[0]->value.term->identity=KwBoolean;
-          return PItem_Arr;
+          PItem_Arr[0]->value.term=KwBoolean;
+          break;
     case 19: // 19. <BODY> → begin <STAT_S> end
-          PItem_Arr=malloc(PItem_size*3);
-          if(PItem_Arr==NULL)Error(99);
           PItem_Arr[0]->type=TERMINAL;
-          PItem_Arr[0]->value.term->identity=KwEnd;
+          PItem_Arr[0]->value.term=KwEnd;
           PItem_Arr[1]->type=NONTERMINAL;
           PItem_Arr[1]->value.nonterm=STAT_S;
           PItem_Arr[2]->type=TERMINAL;
-          PItem_Arr[2]->value.term->identity=KwBegin;
-          return PItem_Arr;
+          PItem_Arr[2]->value.term=KwBegin;
+          break;
     case 21: // 21. <STAT_S> → <STAT> <STAT_N>
-          PItem_Arr=malloc(PItem_size*2);
-          if(PItem_Arr==NULL)Error(99);
           PItem_Arr[0]->type=NONTERMINAL;
           PItem_Arr[0]->value.nonterm=STAT_N;
           PItem_Arr[1]->type=NONTERMINAL;
           PItem_Arr[1]->value.nonterm=STAT;
-          return PItem_Arr;
+          break;
     case 23: // 23. <STAT_N> → ; <STAT> <STAT_N>
-          PItem_Arr=malloc(PItem_size*3);
-          if(PItem_Arr==NULL)Error(99);
           PItem_Arr[0]->type=NONTERMINAL;
           PItem_Arr[0]->value.nonterm=STAT_N;
           PItem_Arr[1]->type=NONTERMINAL;
           PItem_Arr[1]->value.nonterm=STAT;
           PItem_Arr[2]->type=TERMINAL;
-          PItem_Arr[2]->value.term->identity=OpKonec;
-          return PItem_Arr;
+          PItem_Arr[2]->value.term=OpKonec;
+          break;
     case 24: // 24. <STAT> → <ASSIGN>
-          PItem_Arr=malloc(PItem_size);
-          if(PItem_Arr==NULL)Error(99);
           PItem_Arr[0]->type=NONTERMINAL;
           PItem_Arr[0]->value.nonterm=ASSIGN;
-          return PItem_Arr;
+          break;
     case 25: // 25. <STAT> → <WHILE>
-          PItem_Arr=malloc(PItem_size);
-          if(PItem_Arr==NULL)Error(99);
           PItem_Arr[0]->type=NONTERMINAL;
           PItem_Arr[0]->value.nonterm=WHILE;
-          return PItem_Arr;
+          break;
     case 26: // 26. <STAT> → <IFELSE>
-          PItem_Arr=malloc(PItem_size);
-          if(PItem_Arr==NULL)Error(99);
           PItem_Arr[0]->type=NONTERMINAL;
           PItem_Arr[0]->value.nonterm=IFELSE;
-          return PItem_Arr;
+          break;
     case 27: // 27. <STAT> → <READ>
-          PItem_Arr=malloc(PItem_size);
-          if(PItem_Arr==NULL)Error(99);
           PItem_Arr[0]->type=NONTERMINAL;
           PItem_Arr[0]->value.nonterm=READ;
-          return PItem_Arr;
+          break;
     case 28: // 28. <STAT> → <WRITE>
-          PItem_Arr=malloc(PItem_size);
-          if(PItem_Arr==NULL)Error(99);
           PItem_Arr[0]->type=NONTERMINAL;
           PItem_Arr[0]->value.nonterm=WRITE;
-          return PItem_Arr;
+          break;
     case 29: // 29. <ASSIGN> → id := <EXPR>
-          PItem_Arr=malloc(PItem_size*3);
-          if(PItem_Arr==NULL)Error(99);
           PItem_Arr[0]->type=NONTERMINAL;
           PItem_Arr[0]->value.nonterm=EXPR;
           PItem_Arr[1]->type=TERMINAL;
-          PItem_Arr[1]->value.term->identity=OpPrir;
+          PItem_Arr[1]->value.term=OpPrir;
           PItem_Arr[2]->type=TERMINAL;
-          PItem_Arr[2]->value.term->identity=ID;
-          return PItem_Arr;
+          PItem_Arr[2]->value.term=ID;
+          break;
     case 30: // 30. <WHILE> → while <EXPR> do <BODY>
-          PItem_Arr=malloc(PItem_size*4);
-          if(PItem_Arr==NULL)Error(99);
           PItem_Arr[0]->type=NONTERMINAL;
           PItem_Arr[0]->value.nonterm=BODY;
           PItem_Arr[1]->type=TERMINAL;
-          PItem_Arr[1]->value.term->identity=KwDo;
+          PItem_Arr[1]->value.term=KwDo;
           PItem_Arr[2]->type=NONTERMINAL;
           PItem_Arr[2]->value.nonterm=EXPR;
           PItem_Arr[3]->type=TERMINAL;
-          PItem_Arr[3]->value.term->identity=KwWhile;
-          return PItem_Arr;
+          PItem_Arr[3]->value.term=KwWhile;
+          break;
     case 31: // 31. <IFELSE> → if <EXPR> then <BODY> else <BODY>
-          PItem_Arr=malloc(PItem_size*6);
-          if(PItem_Arr==NULL)Error(99);
           PItem_Arr[0]->type=NONTERMINAL;
           PItem_Arr[0]->value.nonterm=BODY;
           PItem_Arr[1]->type=TERMINAL;
-          PItem_Arr[1]->value.term->identity=KwElse;
+          PItem_Arr[1]->value.term=KwElse;
           PItem_Arr[2]->type=NONTERMINAL;
           PItem_Arr[2]->value.nonterm=BODY;
           PItem_Arr[3]->type=TERMINAL;
-          PItem_Arr[3]->value.term->identity=KwThen;
+          PItem_Arr[3]->value.term=KwThen;
           PItem_Arr[4]->type=NONTERMINAL;
           PItem_Arr[4]->value.nonterm=EXPR;
           PItem_Arr[5]->type=TERMINAL;
-          PItem_Arr[5]->value.term->identity=KwIf;
-          return PItem_Arr;
+          PItem_Arr[5]->value.term=KwIf;
+          break;
     case 32: // 32. <READ> → readln(id)
-          PItem_Arr=malloc(PItem_size*4);
-          if(PItem_Arr==NULL)Error(99);
           PItem_Arr[0]->type=TERMINAL;
-          PItem_Arr[0]->value.term->identity=OpPZat;
+          PItem_Arr[0]->value.term=OpPZat;
           PItem_Arr[1]->type=TERMINAL;
-          PItem_Arr[1]->value.term->identity=ID;
+          PItem_Arr[1]->value.term=ID;
           PItem_Arr[2]->type=TERMINAL;
-          PItem_Arr[2]->value.term->identity=OpLZat;
+          PItem_Arr[2]->value.term=OpLZat;
           PItem_Arr[3]->type=TERMINAL;
-          PItem_Arr[3]->value.term->identity=KwReadln;
-          return PItem_Arr;
+          PItem_Arr[3]->value.term=KwReadln;
+          break;
     case 33: // 33. <WRITE> → write(<TERM>)
-          PItem_Arr=malloc(PItem_size*4);
-          if(PItem_Arr==NULL)Error(99);
           PItem_Arr[0]->type=TERMINAL;
-          PItem_Arr[0]->value.term->identity=OpPZat;
+          PItem_Arr[0]->value.term=OpPZat;
           PItem_Arr[1]->type=NONTERMINAL;
-          PItem_Arr[1]->value.nonterm-=TERM;
+          PItem_Arr[1]->value.nonterm=TERM;
           PItem_Arr[2]->type=TERMINAL;
-          PItem_Arr[2]->value.term->identity=OpLZat;
+          PItem_Arr[2]->value.term=OpLZat;
           PItem_Arr[3]->type=TERMINAL;
-          PItem_Arr[3]->value.term->identity=KwWrite;
-          return PItem_Arr;
+          PItem_Arr[3]->value.term=KwWrite;
+          break;
     case 34: // 34. <TERM> → id <TERM_N>
-          PItem_Arr=malloc(PItem_size*2);
-          if(PItem_Arr==NULL)Error(99);
           PItem_Arr[0]->type=NONTERMINAL;
           PItem_Arr[0]->value.nonterm=TERM_N;
           PItem_Arr[1]->type=TERMINAL;
-          PItem_Arr[1]->value.term->identity=ID;
-          return PItem_Arr;
+          PItem_Arr[1]->value.term=ID;
+          break;
     case 35: // 35. <TERM> → literal <TERM_N>
-          PItem_Arr=malloc(PItem_size*2);
-          if(PItem_Arr==NULL)Error(99);
           PItem_Arr[0]->type=NONTERMINAL;
           PItem_Arr[0]->value.nonterm=TERM_N;
           PItem_Arr[1]->type=TERMINAL;
-          PItem_Arr[1]->value.term->identity=DtInteger; // DtInteger v tomto pripade znamena literal, t.j. akykolvek datovy typ
-          return PItem_Arr;
+          PItem_Arr[1]->value.term=DtInteger; // DtInteger v tomto pripade znamena literal, t.j. akykolvek datovy typ
+          break;
     case 37: // 37. <TERM_N> → , <TERM>
-          PItem_Arr=malloc(PItem_size*2);
-          if(PItem_Arr==NULL)Error(99);
           PItem_Arr[0]->type=NONTERMINAL;
           PItem_Arr[0]->value.nonterm=TERM;
           PItem_Arr[1]->type=TERMINAL;
-          PItem_Arr[1]->value.term->identity=OpCiarka;
-          return PItem_Arr;
-    default: return NULL;
+          PItem_Arr[1]->value.term=OpCiarka;
+          break;
+    default: break;
   }
 }
