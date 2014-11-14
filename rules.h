@@ -12,8 +12,8 @@
 #include <stdlib.h>
 #include "parser.h"
 
-#define LL_TERMS 18
-#define LL_NONTERMS 20
+#define LL_TERMS 19
+#define LL_NONTERMS 21
 
 typedef enum {var_, id_, function_, integer_, real_, string_, boolean_, begin_, end_, comma_,
                     semicolon_, if_, while_, literal_, readln_, write_, forward_, r_bracket_, error=-1}T_terms;
@@ -22,7 +22,8 @@ typedef enum {START, DEF_VAR, VAR, VAR_N, FUNC, FORWARD, PARAM, PARAM_N, TYPE, B
                        ASSIGN, WHILE, IFELSE, READ, WRITE, TERM, TERM_N, EXPR, ERROR=-1}T_nonterms;
 
 T_terms token_to_term(TOKEN *t);
-T_ParserItem ** get_rule(TOKEN *token, T_nonterms nonterm);
+void get_rule(TOKEN *token,T_nonterms nonterm, T_ParserItem **PItem_Arr);
 
 
 #endif
+
