@@ -12,7 +12,7 @@
 #include "rules.h"
 #include "stack.h"
 #include "error.h"
-
+#include "expr.h"
 
 int top_down()
 {
