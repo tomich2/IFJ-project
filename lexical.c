@@ -132,14 +132,19 @@ TOKEN *get_token ()
                         token->mem=string_implementation(c,i,token->mem);
                         c=fgetc(fp);
                     }
+                    token->mem=string_implementation('\0',i+1,token->mem);
                 }
-                else if ((strstr(token->mem,"."))==NULL)
+                else
                 {
                     token->mem=string_implementation('\0',i+1,token->mem);
-                    token->identity = 37;
-                    return token;
+                    if ((strchr(token->mem,'.'))==NULL)
+                    {
+                        token->mem=string_implementation('\0',i+1,token->mem);
+                        token->identity = 37;
+                        return token;
+                    }
                 }
-                token->mem=string_implementation('\0',i+1,token->mem);
+                if (token->mem[i+1]!=0) token->mem=string_implementation('\0',i+1,token->mem);
                 token->identity = 39;
                 return token;
             }
