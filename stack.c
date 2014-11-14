@@ -63,4 +63,7 @@ void *top(Stack *stack)
  return tmp->data;
 }
 
-
+void S_erase(Stack *stack)
+{
+ while(!S_empty(stack)) pop(stack);
+}
