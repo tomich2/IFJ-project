@@ -81,7 +81,7 @@ int GetRule(int a, int b)
 
 int Reduction(Stack *stack)
 {
-  int rule;
+  //int rule;
   T_ParserItem tmp;
 	tmp=*(T_ParserItem*) (top(stack));
 	pop(stack);
