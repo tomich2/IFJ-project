@@ -10,6 +10,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include "lexical.h"
 
 typedef enum{NONTERMINAL, TERMINAL, EMPTY=-1}ItemType;
 typedef union{
