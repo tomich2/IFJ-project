@@ -11,15 +11,22 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-typedef enum{NONTERMINAL, TERMINAL}ItemType;
+typedef enum{NONTERMINAL, TERMINAL, EMPTY=-1}ItemType;
 typedef union{
         int nonterm;
-        TOKEN *term;
+        identita term;
         }U_Item;
+
 typedef struct{
         ItemType type;
         U_Item value;
         }T_ParserItem;
 
-size_t PItem_size=sizeof(T_ParserItem*);
+
+int top_down();
+void PItems_alloc(T_ParserItem ***Ptr);
+void PItems_free(T_ParserItem ***Ptr);
+
+
+
 #endif
