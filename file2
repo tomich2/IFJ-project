@@ -5,8 +5,5 @@ Begin
  readln(name);
  write('Enter your surname:');
  readln(surname);
- write;{new line}
- write;{new line}
  Write('Your full name is: ',name,' ',surname);
- Readln;
 End.
