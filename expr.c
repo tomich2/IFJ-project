@@ -61,7 +61,8 @@ oprs converttooprs(identita id)
 	case DtInteger:
 	case DtChar:
         case DtReal:
-	case DtBoolean:
+	case BooleanTrue:
+	case BooleanFalse:
 	case DtString:
 	    return ETerm;
 	case OpCiarka:
