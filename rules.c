@@ -79,7 +79,7 @@ T_terms token_to_term(TOKEN *t)
 }
 
 
-void get_rule(TOKEN *token,T_nonterms nonterm, T_ParserItem **PItem_Arr)
+int get_rule(TOKEN *token,T_nonterms nonterm, T_ParserItem **PItem_Arr)
 {
   int rule;
   T_terms term;
@@ -87,6 +87,8 @@ void get_rule(TOKEN *token,T_nonterms nonterm, T_ParserItem **PItem_Arr)
   rule=LLTable[term][nonterm];
   switch(rule)
   {
+    case 0:
+          return 1;
     case 1: // 1. <START> → <DEF_VAR> <FUNC> <BODY>.
           PItem_Arr[0]->type=TERMINAL;
           PItem_Arr[0]->value.term=OpBodka;
@@ -296,6 +298,17 @@ void get_rule(TOKEN *token,T_nonterms nonterm, T_ParserItem **PItem_Arr)
           PItem_Arr[1]->type=TERMINAL;
           PItem_Arr[1]->value.term=OpCiarka;
           break;
+    // epsilon pravidla
+    case 3:
+     case 5:
+      case 8:
+       case 12:
+        case 14:
+         case 20:
+          case 22:
+           case 36:
+                  break;
     default: break;
   }
+return 0;
 }
