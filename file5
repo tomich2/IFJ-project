@@ -5,5 +5,5 @@ var x:real;
 begin
  x:=5.45e11;
  x:=54545.787;
- z:=true;
+ z:=true
 end.
