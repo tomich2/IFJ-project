@@ -25,13 +25,13 @@ int top_down()
   Stack p_stack; // zasobnik
   init(&p_stack,sizeof(T_ParserItem));
   input=get_token();
-  if(input==NULL)
+  if(input==NULL) // prazdny subor=syntakticka chyba
   {
     PItems_free(&PItems);
     free(input->mem);
     free(input);
     close_file();
-    Error(INTERN_INTERPRETATION_ERR);
+    Error(SYNTAX_ERR);
   }
   get_rule(input,START,PItems); // podla pravidla vykona expanziu a pravu stranu pravidla ulozi do PItems
 
@@ -45,7 +45,7 @@ i=0;
 
   while(!S_empty(&p_stack)) // ked bude zasobnik prazdny, syntakticka analyza konci
   {
-    if(input==NULL)
+    if(input==NULL) // zdrojovy subor je nekompletny=syntakticka chyba
     {
       PItems_free(&PItems);
       free(input->mem);
@@ -60,7 +60,7 @@ i=0;
 
       if(PItem_top->value.nonterm==EXPR) // ak je na vrchole zasobnika neterminal EXPR(vyraz), spracuje ho precedencna analyza
       {
-        if(ExprParse())
+        if(ExprParse()) // chyby vyraz=syntakticka chyba
         {
           PItems_free(&PItems);
           free(input->mem);
@@ -74,7 +74,7 @@ i=0;
       }
       else // pre normalne neterminaly vykona expanziu podla pravidla, pravu stranu ulozi do PItems a nasledne na zasobnik
       {
-        if(get_rule(input,PItem_top->value.nonterm,PItems))
+        if(get_rule(input,PItem_top->value.nonterm,PItems)) // neexistuje pravidlo=syntakticka chyba
         {
           PItems_free(&PItems);
           free(input->mem);
@@ -136,6 +136,14 @@ i=0;
     input=get_token();
 
     }
+  }
+  if(input!=NULL) // ak zdrojovy subor obsahuje nejake znaky po ukoncujucej bodke
+  {
+   PItems_free(&PItems);
+   free(input->mem);
+   free(input);
+   close_file();
+   Error(SYNTAX_ERR);
   }
   free(input);
   PItems_free(&PItems);
