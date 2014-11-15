@@ -8,5 +8,5 @@ Begin
  Write('Input number 2:');
  Readln(Num2);
  Sum := Num1 + Num2;  
- Write(Sum);
+ Write(Sum)
 End.
