@@ -47,6 +47,7 @@ i=0;
     {
       PItems_free(&PItems);
       free(input);
+      S_erase(&p_stack);
       Error(SYNTAX_ERR);
     }
     PItem_top=top(&p_stack);
@@ -59,6 +60,7 @@ i=0;
         {
           PItems_free(&PItems);
           free(input);
+          S_erase(&p_stack);
           Error(SYNTAX_ERR);
         }
         pop(&p_stack); //  expandovany neterminal sa odstrani zo zasobnika
@@ -70,6 +72,7 @@ i=0;
         {
           PItems_free(&PItems);
           free(input);
+          S_erase(&p_stack);
           Error(SYNTAX_ERR);
         }
         pop(&p_stack); //  expandovany neterminal sa odstrani zo zasobnika
@@ -98,6 +101,7 @@ i=0;
         {
           PItems_free(&PItems);
           free(input);
+          S_erase(&p_stack);
           Error(SYNTAX_ERR);
         }
       }
@@ -112,6 +116,7 @@ i=0;
         {
           PItems_free(&PItems);
           free(input);
+          S_erase(&p_stack);
           Error(SYNTAX_ERR);
         }
       }
