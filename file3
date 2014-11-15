@@ -9,5 +9,5 @@ begin
    else begin
        write('a is not less than 20' );
        end;
-    write('value of a is : ', a);
+    write('value of a is : ', a)
 end.
