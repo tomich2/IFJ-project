@@ -35,9 +35,6 @@ int top_down()
 
   while(PItems[i]->type!=EMPTY) // ulozi PItems na zasobnik
   {
-  if(PItems[i]->type==TERMINAL)printf("PItems type: term\nPItems value: %d\n", PItems[i]->value.term);
-          else if(PItems[i]->type==NONTERMINAL)printf("PItems type: nonterm\nPItems value: %d\n", PItems[i]->value.nonterm);
-          else printf("PItems type: empty\n");
     push(&p_stack,PItems[i],-1);
     PItems[i]->type=EMPTY;
     i++;
@@ -79,9 +76,6 @@ i=0;
         PItem_top=NULL;
         while(PItems[i]->type!=EMPTY)
         {
-          if(PItems[i]->type==TERMINAL)printf("PItems type: term\nPItems value: %d\n", PItems[i]->value.term);
-          else if(PItems[i]->type==NONTERMINAL)printf("PItems type: nonterm\nPItems value: %d\n", PItems[i]->value.nonterm);
-          else printf("PItems type: empty\n");
           push(&p_stack,PItems[i],-1);
           PItems[i]->type=EMPTY;
           i++;
