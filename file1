@@ -9,5 +9,4 @@ Begin
  Readln(Num2);
  Sum := Num1 + Num2;  
  Writeln(Sum);
- Readln;
 End.
