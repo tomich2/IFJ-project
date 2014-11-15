@@ -14,18 +14,22 @@
 #include "stack.h"
 #include "parser.h"
 
+
 int main (int argc, char **argv)
 {
+  int test;
     open_file(argv[1],argc);
     c=fgetc(fp);
-
     token=malloc(sizeof(TOKEN));
     if (token==NULL)
     {
+        free(token);
         close_file();
         Error(99);
     }
-
-   if(!top_down()) printf("subor je spravny\n");
+    test=top_down();
+    printf("Syntakticka analyza v poriadku. Hura do pice %d \n", test);
+    free(token);
+    close_file();
     return 0;
 }
