@@ -22,7 +22,7 @@ typedef enum {START, DEF_VAR, VAR, VAR_N, FUNC, FORWARD, PARAM, PARAM_N, TYPE, B
                        ASSIGN, WHILE, IFELSE, READ, WRITE, TERM, TERM_N, EXPR, ERROR=-1}T_nonterms;
 
 T_terms token_to_term(TOKEN *t);
-void get_rule(TOKEN *token,T_nonterms nonterm, T_ParserItem **PItem_Arr);
+int get_rule(TOKEN *token,T_nonterms nonterm, T_ParserItem **PItem_Arr);
 
 
 #endif
