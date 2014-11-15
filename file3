@@ -3,9 +3,11 @@ var
    a : integer;
 begin
    a := 100;
-   if( a < 20 ) then
-       write('a is less than 20' )
-   else 
+   if( a < 20 ) then begin
+       write('a is less than 20' );
+       end
+   else begin
        write('a is not less than 20' );
+       end;
     write('value of a is : ', a);
 end.
