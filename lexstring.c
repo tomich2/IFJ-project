@@ -31,7 +31,7 @@ char *allocate_string (int i,char *mem)
         if (mem_realloc==NULL)
         {
             close_file();
-            Error(99);
+            Error(INTERN_INTERPRETATION_ERR);
         }
         kluc++;                                                                                 // inkrementuj konstantu velkosti alokovanej pamate
         mem=mem_realloc;
@@ -46,7 +46,7 @@ char *first_allocation ()
     if (token->mem==NULL)
     {
         close_file();
-        Error(99);
+        Error(INTERN_INTERPRETATION_ERR);
     }
     return token->mem;
 }
