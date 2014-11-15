@@ -14,6 +14,7 @@
 #include "error.h"
 #include "expr.h"
 
+
 int top_down()
 {
   T_ParserItem **PItems=NULL; // ukazovatel na ukazovatel terminalu alebo neterminalu, v podstate "pole" terminalov a neterminalov ulozenych v strukture
@@ -24,7 +25,12 @@ int top_down()
   Stack p_stack; // zasobnik
   init(&p_stack,sizeof(T_ParserItem));
   input=get_token();
-  if(input==NULL)Error(99);
+  if(input==NULL)
+  {
+    PItems_free(&PItems);
+    free(input);
+    Error(99);
+  }
   get_rule(input,START,PItems); // podla pravidla vykona expanziu a pravu stranu pravidla ulozi do PItems
 
   while(PItems[i]->type!=EMPTY) // ulozi PItems na zasobnik
@@ -40,19 +46,35 @@ i=0;
 
   while(!S_empty(&p_stack)) // ked bude zasobnik prazdny, syntakticka analyza konci
   {
+    if(input==NULL)
+    {
+      PItems_free(&PItems);
+      free(input);
+      Error(2);
+    }
     PItem_top=top(&p_stack);
     if(PItem_top->type==NONTERMINAL) // na vrchole zasobnika je neterminal
     {
 
       if(PItem_top->value.nonterm==EXPR) // ak je na vrchole zasobnika neterminal EXPR(vyraz), spracuje ho precedencna analyza
       {
-        if(ExprParse())Error(2);
+        if(ExprParse())
+        {
+          PItems_free(&PItems);
+          free(input);
+          Error(2);
+        }
         pop(&p_stack); //  expandovany neterminal sa odstrani zo zasobnika
         PItem_top=NULL;
       }
       else // pre normalne neterminaly vykona expanziu podla pravidla, pravu stranu ulozi do PItems a nasledne na zasobnik
       {
-        get_rule(input,PItem_top->value.nonterm,PItems);
+        if(get_rule(input,PItem_top->value.nonterm,PItems))
+        {
+          PItems_free(&PItems);
+          free(input);
+          Error(2);
+        }
         pop(&p_stack); //  expandovany neterminal sa odstrani zo zasobnika
         PItem_top=NULL;
         while(PItems[i]->type!=EMPTY)
@@ -80,6 +102,8 @@ i=0;
         }
         else // terminal nie je literal=syntakticka chyba
         {
+          PItems_free(&PItems);
+          free(input);
           Error(2);
         }
       }
@@ -92,6 +116,8 @@ i=0;
         }
         else // terminaly sa nezhoduju=syntakticka chyba
         {
+          PItems_free(&PItems);
+          free(input);
           Error(2);
         }
       }
