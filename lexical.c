@@ -414,12 +414,12 @@ int open_file (char *filename,int argc)
 {
     if (argc!=2)
     {
-        Error(99);
+        Error(INTERN_INTERPRETATION_ERR);
     }
     fp = fopen (filename,"r");
     if (fp==NULL)
     {
-        Error(99);
+        Error(INTERN_INTERPRETATION_ERR);
     }
     return 0;
 }
