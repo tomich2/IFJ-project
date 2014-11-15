@@ -29,7 +29,7 @@ int top_down()
   {
     PItems_free(&PItems);
     free(input);
-    Error(99);
+    Error(INTERN_INTERPRETATION_ERR);
   }
   get_rule(input,START,PItems); // podla pravidla vykona expanziu a pravu stranu pravidla ulozi do PItems
 
@@ -47,7 +47,7 @@ i=0;
     {
       PItems_free(&PItems);
       free(input);
-      Error(2);
+      Error(SYNTAX_ERR);
     }
     PItem_top=top(&p_stack);
     if(PItem_top->type==NONTERMINAL) // na vrchole zasobnika je neterminal
@@ -59,7 +59,7 @@ i=0;
         {
           PItems_free(&PItems);
           free(input);
-          Error(2);
+          Error(SYNTAX_ERR);
         }
         pop(&p_stack); //  expandovany neterminal sa odstrani zo zasobnika
         PItem_top=NULL;
@@ -70,7 +70,7 @@ i=0;
         {
           PItems_free(&PItems);
           free(input);
-          Error(2);
+          Error(SYNTAX_ERR);
         }
         pop(&p_stack); //  expandovany neterminal sa odstrani zo zasobnika
         PItem_top=NULL;
@@ -98,7 +98,7 @@ i=0;
         {
           PItems_free(&PItems);
           free(input);
-          Error(2);
+          Error(SYNTAX_ERR);
         }
       }
       else
@@ -112,7 +112,7 @@ i=0;
         {
           PItems_free(&PItems);
           free(input);
-          Error(2);
+          Error(SYNTAX_ERR);
         }
       }
     free(input->mem);
