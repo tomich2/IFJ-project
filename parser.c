@@ -28,7 +28,9 @@ int top_down()
   if(input==NULL)
   {
     PItems_free(&PItems);
+    free(input->mem);
     free(input);
+    close_file();
     Error(INTERN_INTERPRETATION_ERR);
   }
   get_rule(input,START,PItems); // podla pravidla vykona expanziu a pravu stranu pravidla ulozi do PItems
@@ -46,8 +48,10 @@ i=0;
     if(input==NULL)
     {
       PItems_free(&PItems);
+      free(input->mem);
       free(input);
       S_erase(&p_stack);
+      close_file();
       Error(SYNTAX_ERR);
     }
     PItem_top=top(&p_stack);
@@ -59,8 +63,10 @@ i=0;
         if(ExprParse())
         {
           PItems_free(&PItems);
+          free(input->mem);
           free(input);
           S_erase(&p_stack);
+          close_file();
           Error(SYNTAX_ERR);
         }
         pop(&p_stack); //  expandovany neterminal sa odstrani zo zasobnika
@@ -71,8 +77,10 @@ i=0;
         if(get_rule(input,PItem_top->value.nonterm,PItems))
         {
           PItems_free(&PItems);
+          free(input->mem);
           free(input);
           S_erase(&p_stack);
+          close_file();
           Error(SYNTAX_ERR);
         }
         pop(&p_stack); //  expandovany neterminal sa odstrani zo zasobnika
@@ -100,8 +108,10 @@ i=0;
         else // terminal nie je literal=syntakticka chyba
         {
           PItems_free(&PItems);
+          free(input->mem);
           free(input);
           S_erase(&p_stack);
+          close_file();
           Error(SYNTAX_ERR);
         }
       }
@@ -115,8 +125,10 @@ i=0;
         else // terminaly sa nezhoduju=syntakticka chyba
         {
           PItems_free(&PItems);
+          free(input->mem);
           free(input);
           S_erase(&p_stack);
+          close_file();
           Error(SYNTAX_ERR);
         }
       }
