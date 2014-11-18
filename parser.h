@@ -10,7 +10,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "lexical.h"
+#include "stack.h"
 
 typedef enum{NONTERMINAL, TERMINAL, EMPTY=-1}ItemType;
 typedef union{
@@ -27,6 +27,8 @@ typedef struct{
 int top_down();
 void PItems_alloc(T_ParserItem ***Ptr);
 void PItems_free(T_ParserItem ***Ptr);
+void free_and_exitErr(TOKEN *t, T_ParserItem **p, Stack st, int stack_erase);
+
 
 
 
