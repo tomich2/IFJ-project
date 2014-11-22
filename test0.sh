@@ -4,6 +4,8 @@ red='\e[0;31m';
 NC='\e[0m';
 green='\e[0;32m';
 
+DIRECTORY=test0.outputs;
+
 if [ ! -d "$DIRECTORY" ];
     then
         mkdir test0.outputs;
