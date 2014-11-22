@@ -17,6 +17,7 @@ int kluc=1;
 char *string_implementation (char c,int i,char *mem)
 {
     if (i%(NATIVE_CHAR-1)==0 && i>0) mem=allocate_string(i,mem);                                // ak je potreba viac miesta, alokuj
+    if (mem==NULL) return NULL;
     mem[i]=c;                                                                                   // uloz znak
     return mem;                                                                                 // vrat ukazovatel
 }
@@ -30,8 +31,7 @@ char *allocate_string (int i,char *mem)
         mem_realloc=(char*)realloc(((char*)mem),(sizeof(char)*NATIVE_CHAR*kluc));               // uvolni pomocou realloc tolko miesta kolko potrebujes
         if (mem_realloc==NULL)
         {
-            close_file();
-            Error(INTERN_INTERPRETATION_ERR);
+            return NULL;
         }
         kluc++;                                                                                 // inkrementuj konstantu velkosti alokovanej pamate
         mem=mem_realloc;
@@ -45,8 +45,7 @@ char *first_allocation ()
     kluc=2;
     if (token->mem==NULL)
     {
-        close_file();
-        Error(INTERN_INTERPRETATION_ERR);
+        return NULL;
     }
     return token->mem;
 }
