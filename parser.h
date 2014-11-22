@@ -12,9 +12,16 @@
 #include <stdlib.h>
 #include "stack.h"
 
+typedef struct non_term
+{
+	int type;
+	void *data;
+} nont;
+
+
 typedef enum{NONTERMINAL, TERMINAL, EMPTY=-1}ItemType;
 typedef union{
-        int nonterm;
+        nont nonterm;
         identita term;
         }U_Item;
 
