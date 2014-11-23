@@ -27,11 +27,13 @@ int top_down()
   input=get_token();
   if(input==NULL) // prazdny subor=syntakticka chyba
   {
-    free_and_exitErr(input,PItems,p_stack,0,SYNTAX_ERR);
+    free_all(input,PItems,p_stack,0);
+    return SYNTAX_ERR;
   }
   if(get_rule(input,START,PItems)) // podla pravidla vykona expanziu a pravu stranu pravidla ulozi do PItems
   {
-    free_and_exitErr(input,PItems,p_stack,0,SYNTAX_ERR); // ak je prvy token nespravny=syntakticka chyba
+    free_all(input,PItems,p_stack,0); // ak je prvy token nespravny=syntakticka chyba
+    return SYNTAX_ERR;
   }
 
   while(PItems[i]->type!=EMPTY) // ulozi PItems na zasobnik
@@ -46,7 +48,8 @@ i=0;
   {
     if(input==NULL) // zdrojovy subor je nekompletny=syntakticka chyba
     {
-      free_and_exitErr(input,PItems,p_stack,1,SYNTAX_ERR);
+      free_all(input,PItems,p_stack,1);
+      return SYNTAX_ERR;
     }
     PItem_top=top(&p_stack);
     if(PItem_top->type==NONTERMINAL) // na vrchole zasobnika je neterminal
@@ -54,9 +57,10 @@ i=0;
 
       if(PItem_top->value.nonterm.type==EXPR) // ak je na vrchole zasobnika neterminal EXPR(vyraz), spracuje ho precedencna analyza
       {
-        if(ExprParse()) // chyby vyraz=syntakticka chyba
+        if(ExprParse()) // chybny vyraz=syntakticka chyba
         {
-          free_and_exitErr(input,PItems,p_stack,1,SYNTAX_ERR);
+          free_all(input,PItems,p_stack,1);
+          return SYNTAX_ERR;
         }
         pop(&p_stack); //  expandovany neterminal sa odstrani zo zasobnika
         PItem_top=NULL;
@@ -65,7 +69,8 @@ i=0;
       {
         if(get_rule(input,PItem_top->value.nonterm.type,PItems)) // neexistuje pravidlo=syntakticka chyba
         {
-          free_and_exitErr(input,PItems,p_stack,1,SYNTAX_ERR);
+          free_all(input,PItems,p_stack,1);
+          return SYNTAX_ERR;
         }
         pop(&p_stack); //  expandovany neterminal sa odstrani zo zasobnika
         PItem_top=NULL;
@@ -91,19 +96,21 @@ i=0;
         }
         else // terminal nie je literal=syntakticka chyba
         {
-          free_and_exitErr(input,PItems,p_stack,1,SYNTAX_ERR);
+          free_all(input,PItems,p_stack,1);
+          return SYNTAX_ERR;
         }
       }
       else
       {
-        if(input->identity==PItem_top->value.term) // ak sa typ terminalu zhoduje so vstupom, odstrani sa terminal zo zasobniku a pamati a pokracuje sa na dalsi vstup
+        if(input->identity==PItem_top->value.term) // ak sa typ terminalu zhoduje so vstupom, odstrani sa terminal zo zasobniku a pokracuje sa na dalsi vstup
         {
           pop(&p_stack);
           PItem_top=NULL;
         }
         else // terminaly sa nezhoduju=syntakticka chyba
         {
-          free_and_exitErr(input,PItems,p_stack,1,SYNTAX_ERR);
+          free_all(input,PItems,p_stack,1);
+          return SYNTAX_ERR;
         }
       }
     free(input->mem);
@@ -113,7 +120,9 @@ i=0;
   }
   if(input!=NULL) // ak zdrojovy subor obsahuje nejake znaky po ukoncujucej bodke
   {
-   free_and_exitErr(input,PItems,p_stack,0,SYNTAX_ERR);
+   free_all(input,PItems,p_stack,0);
+   return SYNTAX_ERR;
+
   }
   free(input);
   PItems_free(&PItems);
@@ -140,12 +149,11 @@ void PItems_free(T_ParserItem ***Ptr)
   free(*Ptr);
 }
 
-void free_and_exitErr(TOKEN *t, T_ParserItem **p, Stack st, int stack_erase, int err_type)
+void free_all(TOKEN *t, T_ParserItem **p, Stack st, int stack_erase)
 {
-  PItems_free(&p);
+  PItems_free(&p);
   free(t->mem);
   free(t);
   if(stack_erase)S_erase(&st);
   close_file();
-  Error(err_type);
 }
