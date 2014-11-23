@@ -275,17 +275,17 @@ int ExprParse()
 				}
 			 else 
 				{
-				  printf("chyba pri redukcii celkovo\n");
+				// printf("chyba pri redukcii celkovo\n");
 				 // free (token->mem);
 				  S_erase(&stack);
-  			 	  return 0; 
+  			 	  return 1; 
 				}
 			 break;
 		 case Q: 
-			 printf("chyba pri redukcii tabulka\n");
+			// printf("chyba pri redukcii tabulka\n");
 			// free (token->mem);
 			 S_erase(&stack);
-  			 return 0; 
+  			 return 1; 
 		}
 
 	}
