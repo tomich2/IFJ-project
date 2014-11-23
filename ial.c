@@ -12,6 +12,142 @@
 
 #include "error.h"
 #include "ial.h"
+#include "garbage.h"
+
+int length_func (char *str)
+{
+    int i=0;
+    while (str[i]!='\0') i++;
+    return i;
+}
+
+
+char * copy_func (char *str,unsigned int i, unsigned int n)
+{
+    if (i+n-1>(strlen(str))) return NULL;
+    char * x=malloc(sizeof(char)*n+1*(sizeof(char)));
+    x[n]='\0';
+    InsertFirst(LGar,x);
+    int p=0;
+    for (unsigned int j=i-1;j<i+n-1;j++)
+    {
+        x[p]=str[j];
+        if (x[p]=='\0') return x;
+        p++;
+    }
+    return x;
+}
+
+
+unsigned int find_func (char *str,char *search_str)
+{
+    int length=strlen(search_str);
+    int str_len=((int)strlen(str));
+    if (length>str_len) return 0;
+    int array[length];
+    unsigned indicator=0;
+    int i;
+    for (i=0;i<length-1;i++)
+    {
+        array[i]=length-i-1;
+
+        if (str[i]==str[length])
+            indicator=array[i];
+    }
+    if (indicator==0) array[length-1]=length;
+    else array[length-1]=indicator;
+
+    i=length-1;
+    int j;
+    int copy_i=i;
+    while (1)
+    {
+        j=length-1;
+        if (search_str[length-1]==str[i])
+        {
+            copy_i=i;
+            i--;
+            j--;
+            while (j>=0 && search_str[j]==str[i])
+            {
+                i--;
+                j--;
+            }
+            if (j==-1) return i+2;
+            j=length-1;
+            while (j>=0 && search_str[j]!=str[i]) j--;
+            i=copy_i;
+            if (j==-1) i=i+array[length-1];
+            else i=i+array[j];
+            if (i>=str_len) return 0;
+        }
+        if (str[i]=='\0') return 0;
+        i++;
+        if (str[i]=='\0') return 0;
+    }
+}
+
+void func_Sift_Down(char * str, int Left, int Right)
+{
+    int i,j;
+    char p;
+    bool Cont;
+    i=Left;
+    j=2*i;
+    p=str[i-1];
+    Cont=(j<Right) ? 1 : 0;
+    while (Cont)
+    {
+        if (j<Right)
+        {
+            if (str[j-1]<str[j])
+            {
+                j++;
+            }
+
+        }
+        if (p>=str[j-1])
+        {
+            Cont=false;
+        }
+
+        else
+        {
+            str[i-1]=str[j-1];
+            i=j;
+            j=2*i;
+            Cont=(j<Right) ? 1 : 0;
+        }
+
+    }
+    str[i-1]=p;
+}
+
+char * sort_func (char * str1)
+{
+    int N=strlen(str1);
+    char * str;
+    str=malloc(sizeof(char)*N+1*(sizeof(char)));
+    str[N]='\0';
+    InsertFirst(LGar,str);
+    memcpy(str,str1,N);
+    int i, Left, Right,p;
+    Left=N/2;
+    Right=N;
+    for (i=Left;i>0;i--)
+    {
+        func_Sift_Down(str,i,Right);
+    }
+    for (Right=N;Right>1;Right--)
+    {
+        p=str[0];
+        str[0]=str[Right-1];
+        str[Right-1]=p;
+        func_Sift_Down(str,1,Right-1);
+    }
+    return str;
+}
+
 
 unsigned int hash_function(const char *str, unsigned long htab_size) 
 { 
