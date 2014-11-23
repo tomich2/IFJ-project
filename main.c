@@ -13,6 +13,7 @@
 #include "error.h"
 #include "stack.h"
 #include "parser.h"
+#include "garbage.h"
 
 
 int main (int argc, char **argv)
@@ -21,6 +22,8 @@ int main (int argc, char **argv)
     open_file(argv[1],argc);
     c=fgetc(fp);
     token=malloc(sizeof(TOKEN));
+    LGar=malloc(sizeof(struct TGarbage));
+    InitList (LGar);
     if (token==NULL)
     {
         free(token);
@@ -30,6 +33,8 @@ int main (int argc, char **argv)
     test=top_down();
     printf("Syntakticka analyza v poriadku. Hura do pice %d \n", test);
     free(token);
+    DisposeList(LGar);
+    free(LGar);
     close_file();
     return 0;
 }
