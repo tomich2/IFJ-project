@@ -10,6 +10,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 typedef enum types_tab { FUNCTION, IDENTIFIER, LOOP } types;
 
@@ -45,5 +46,11 @@ int htab_new(htab_t *t,char *key,types type, void *data, size_t data_size); //no
 //key - identifikator, type - funkcia premenna navestie viz enum types, data- void pointer cokolvek, data_size - velkost priadnych dat
 void htab_free(htab_t *t); //uvolnenie celej tabulky vraten htab_clear
 void htab_clear(htab_t *t); //uvolnenie vsetkych prvkov tabulky
+
+int length_func(char *str);
+char * copy_func (char *str,unsigned int i, unsigned int n);
+unsigned int find_func (char *str,char *search_str);
+char * sort_func (char * str);
+void func_Sift_Down(char * str,int Left,int Right);
 #endif
 	
