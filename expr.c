@@ -225,9 +225,9 @@ int ExprParse()
   in.type=TERMINAL;
   in.value.term=EEnd;
   push(&stack, &in, -1);
-
-  if ((lexem=get_token())!=NULL) token=lexem;
-  else token->identity=EEnd;
+ lexem=token;
+ /*if ((lexem=get_token())!=NULL) token=lexem;
+ else token->identity=EEnd;*/
    free (token->mem);
   token->mem=NULL;
   top=GetTerm(&stack, 0);
