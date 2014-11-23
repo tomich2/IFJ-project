@@ -79,16 +79,15 @@ int GetRule(int a, int b)
 {
  return PrecTable[a][b];
 }
-
 int Reduction(Stack *stack)
 {
-  //int rule;
+  int rule;
   T_ParserItem tmp;
 	tmp=*(T_ParserItem*) (top(stack));
 	pop(stack);
-	if (tmp.type==0) //mame neterminal
+	if (tmp.type==0) //mame neterminal 
 		{
-		 if(tmp.value.nonterm!=Exp) return -1; //ak to nie je E -chyba
+		 if(tmp.value.nonterm.type!=Exp) return -1; //ak to nie je E -chyba
 		 tmp= *(T_ParserItem *) top(stack); //novy pop
 		 pop(stack);
 		 if(tmp.type==0) return -1; //ak to je neterminal chyba (ocakavame ciarku alebo operator)
@@ -98,11 +97,11 @@ int Reduction(Stack *stack)
 			 pop(stack);
 			 if(tmp.type==0) //ak to je neterminal co ocakavame
 				{
-				 if(tmp.value.nonterm==handle) return -1; //ak je to handle -chyba
+				 if(tmp.value.nonterm.type==handle) return -1; //ak je to handle -chyba
 				 tmp= *(T_ParserItem *) top(stack); //novy pop
 			 	 pop(stack);
 				 if(tmp.type==1) return -1; //ak je to terminal -chyba
-				 if(tmp.value.nonterm==handle)	return 2; // ak sme dostali handle co ocakavame redukujeme na LExp -> Exp, (L)Exp
+				 if(tmp.value.nonterm.type==handle)	return 2; // ak sme dostali handle co ocakavame redukujeme na LExp -> Exp, (L)Exp
 				 else return -1;			  // ak to nie je handle -chyba
 				}
 			 else return -1;
@@ -113,11 +112,11 @@ int Reduction(Stack *stack)
                          pop(stack);
                          if(tmp.type==0) //ak to je neterminal co ocakavame
                                 {
-                                 if(tmp.value.nonterm!=1) return -1; //ak to nie je E -chyba
+                                 if(tmp.value.nonterm.type!=1) return -1; //ak to nie je E -chyba
                                  tmp= *(T_ParserItem *) top(stack); //novy pop
                                  pop(stack);
                                  if(tmp.type==1) return -1; //ak je to terminal -chyba
-                                 if(tmp.value.nonterm==handle) return 1; // ak sme dostali handle co ocakavame redukujeme na Exp -> Exp op Exp
+                                 if(tmp.value.nonterm.type==handle) return 1; // ak sme dostali handle co ocakavame redukujeme na Exp -> Exp op Exp
                                  else return -1;                          // ak to nie je handle -chyba
                                 }
                          else return -1;
@@ -125,21 +124,21 @@ int Reduction(Stack *stack)
 			}
 		 return -1;
 		}
-	else
+	else 
 		{
-		 if((converttooprs(tmp.value.term)==EId) || (converttooprs(tmp.value.term)==ETerm))
+		 if((converttooprs(tmp.value.term)==EId) || (converttooprs(tmp.value.term)==ETerm)) 
 			{
 		 	 tmp=*(T_ParserItem *) top(stack); //novy pop
 		 	 pop(stack);
 		 	 if(tmp.type==1) return -1; //ak je to terminal -chyba
-		 	 if(tmp.value.nonterm==handle)	return 1; // ak sme dostali handle co ocakavame redukujeme na Exp -> term
+		 	 if(tmp.value.nonterm.type==handle)	return 1; // ak sme dostali handle co ocakavame redukujeme na Exp -> term
 		 	 else return -1;			  // ak to nie je handle -chyba
 			}
 		 if(converttooprs(tmp.value.term)==ERpar) // mame pravu zatvorku
 			{
 		 	 tmp= *(T_ParserItem *) top(stack); //novy pop
 		 	 pop(stack);
-		 	 if(tmp.type==1) // mame terminal
+		 	 if(tmp.type==1) // mame terminal 
 				{
 				 if(converttooprs(tmp.value.term)!=ELpar) return -1; // ak to nie je lava zatvorka -chyba
 				 else
@@ -147,14 +146,14 @@ int Reduction(Stack *stack)
 					 tmp= *(T_ParserItem *) top(stack); //novy pop
 			 	 	 pop(stack);
 		 	 		 if(tmp.type==0) return -1; //ak je to neterminal -chyba
-				 	 if(tmp.value.nonterm!=EId)	return -1; // ak sme nedostali identifikator funkcie -chyba
+				 	 if(tmp.value.nonterm.type!=EId)	return -1; // ak sme nedostali identifikator funkcie -chyba
 		 	 		 tmp= *(T_ParserItem *) top(stack); //novy pop
 				 	 pop(stack);
 				 	 if(tmp.type==1) return -1; //ak je to terminal -chyba
-				 	 if(tmp.value.nonterm==handle)	return 1; // ak sme dostali handle co ocakavame redukujeme na Exp->f()
+				 	 if(tmp.value.nonterm.type==handle)	return 1; // ak sme dostali handle co ocakavame redukujeme na Exp->f()
 				 	 else return -1;			  // ak to nie je handle -chyba
 					}
-				}
+				} 
 			 else // mame neterminal
 				{
 				  tmp= *(T_ParserItem *) top(stack); //novy pop
@@ -164,20 +163,20 @@ int Reduction(Stack *stack)
                                         {
                                          tmp= *(T_ParserItem *) top(stack); //novy pop
                                          pop(stack);
-                                         if(tmp.type==0) //ak je to neterminal
+                                         if(tmp.type==0) //ak je to neterminal 
 						{
-						 if (tmp.value.nonterm==handle) return 1; // a je to handle tak redukujeme E->(E) alebo E->(L)
+						 if (tmp.value.nonterm.type==handle) return 1; // a je to handle tak redukujeme E->(E) alebo E->(L) 
 					 	 else return -1;
 						}
 					 else //ak to je terminal
 						{
-
+						 
                                          	 if(converttooprs(tmp.value.term)!=EId)    return -1; // ak sme nedostali identifikator funkcie -chyba
-
+						 
                                          	 tmp= *(T_ParserItem *) top(stack); //novy pop
                                          	 pop(stack);
                                          	 if(tmp.type==1) return -1; //ak je to terminal -chyba
-                                         	 if(tmp.value.nonterm==handle) return 1; // ak sme dostali handle co ocakavame redukujeme na Exp->f(E) alebo Exp -> f(L)
+                                         	 if(tmp.value.nonterm.type==handle) return 1; // ak sme dostali handle co ocakavame redukujeme na Exp->f(E) alebo Exp -> f(L)
 						 else return -1;  // ak to nie je handle -chyba
 						}
                                         }
@@ -185,9 +184,9 @@ int Reduction(Stack *stack)
 
 				}
 			}
-
+		
 		}
-
+			     
   return 0;
 }
 
@@ -197,9 +196,9 @@ T_ParserItem *GetTerm(Stack *stack, bool handle)
   T_ParserItem *tmp2;
   T_ParserItem hdl;
   hdl.type=0;
-  hdl.value.nonterm=0;
+  hdl.value.nonterm.type=0;
   tmp= *(T_ParserItem *) top(stack); //novy pop
-  if (tmp.type==0)
+  if (tmp.type==0) 
 	{
 	  pop(stack);
 	  tmp2=(T_ParserItem *) top(stack);
@@ -207,7 +206,7 @@ T_ParserItem *GetTerm(Stack *stack, bool handle)
 	  push(stack,&tmp,-1);
 	  return tmp2;
 	}
-  else
+  else 
 	{
 	  tmp2=(T_ParserItem *) top(stack);
 	  if (handle) push(stack,&hdl,-1);
@@ -226,9 +225,9 @@ int ExprParse()
   in.type=TERMINAL;
   in.value.term=EEnd;
   push(&stack, &in, -1);
-  lexem=token;
-  /*if ((lexem=get_token())!=NULL) token=lexem;
-  else token->identity=EEnd;*/
+
+  if ((lexem=get_token())!=NULL) token=lexem;
+  else token->identity=EEnd;
    free (token->mem);
   token->mem=NULL;
   top=GetTerm(&stack, 0);
@@ -240,7 +239,7 @@ int ExprParse()
 	// printf ("%s - %d\n",token->mem,token->identity);
 	 switch (GetRule(converttooprs(top->value.term),converttooprs(token->identity)))
 		{
-		 case E:
+		 case E: 
 			 in.type=TERMINAL;
 			 in.value.term=token->identity;
 			 push(&stack, &in , -1);
@@ -251,7 +250,7 @@ int ExprParse()
 			 token->mem=NULL;
 			 top=GetTerm(&stack, 0);
 			 break;
-		 case L:
+		 case L: 
 			  top=GetTerm(&stack, 1);
 			 in.type=TERMINAL;
 			 in.value.term=token->identity;
@@ -259,36 +258,35 @@ int ExprParse()
 			 //free (token->mem);
 			 if ((lexem=get_token())!=NULL) token=lexem;
 	 		 else token->identity=EEnd;
-
+			
 			 free (token->mem);
 			 token->mem=NULL;
-
+  			
 			 top=GetTerm(&stack, 0);
 			 break;
 		 case R:
-			 if ((reduct=Reduction(&stack))>0)
+			 if ((reduct=Reduction(&stack))>0) 
 				{
 				  in.type=NONTERMINAL;
-			 	  in.value.nonterm=reduct;
+			 	  in.value.nonterm.type=reduct;
 				 // printf("redukujeme zasobnik na %i\n",reduct);
 			 	  push(&stack, &in , -1);
 				  top=GetTerm(&stack, 0);
 				}
-			 else
+			 else 
 				{
-				 // printf("chyba pri redukcii celkovo\n");
-				// free (token->mem);
+				  printf("chyba pri redukcii celkovo\n");
+				 // free (token->mem);
 				  S_erase(&stack);
-  			 	  return 1;
+  			 	  return 0; 
 				}
 			 break;
-		 case Q:
-			// printf("chyba pri redukcii tabulka\n");
+		 case Q: 
+			 printf("chyba pri redukcii tabulka\n");
 			// free (token->mem);
 			 S_erase(&stack);
-  			 return 1;
+  			 return 0; 
 		}
-
 
 	}
 S_erase(&stack);
