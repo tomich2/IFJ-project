@@ -8,8 +8,8 @@ CFLAGS=-std=c99 -g -Wall -Wextra -lm
 
 all: parser
 
-parser: lexical.o lexstring.o main.o error.o parser.o rules.o stack.o expr.o ial.o
-	$(CC) $(CFLAGS) -o $@ lexical.o lexstring.o main.o error.o parser.o rules.o stack.o expr.o ial.o
+parser: lexical.o lexstring.o main.o error.o parser.o rules.o stack.o expr.o ial.o garbage.o
+	$(CC) $(CFLAGS) -o $@ lexical.o lexstring.o main.o error.o parser.o rules.o stack.o expr.o ial.o garbage.o
 
 
 ## ## ## ##
@@ -22,4 +22,5 @@ rules.o: rules.c rules.h
 stack.o: stack.c stack.h
 expr.o: expr.c expr.h
 main.o: main.c
+garbage.o: garbage.c garbage.h
 ## ## ## ##
