@@ -34,6 +34,6 @@ typedef struct{
 int top_down();
 void PItems_alloc(T_ParserItem ***Ptr);
 void PItems_free(T_ParserItem ***Ptr);
-void free_and_exitErr(TOKEN *t, T_ParserItem **p, Stack st, int stack_erase, int err_type);
+void free_all(TOKEN *t, T_ParserItem **p, Stack st, int stack_erase);
 
 #endif
