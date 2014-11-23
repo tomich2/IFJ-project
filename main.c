@@ -31,10 +31,11 @@ int main (int argc, char **argv)
         Error(99);
     }
     test=top_down();
-    printf("Syntakticka analyza v poriadku. Hura do pice %d \n", test);
-    free(token);
     DisposeList(LGar);
     free(LGar);
+    if(test==0)printf("Syntakticka analyza v poriadku.\n");
+    else Error(test);
+    free(token);
     close_file();
     return 0;
 }
