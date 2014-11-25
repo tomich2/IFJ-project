@@ -79,7 +79,7 @@ int GetRule(int a, int b)
 }
 int Reduction(Stack *stack)
 {
-  int rule;
+ // int rule;
   T_ParserItem tmp;
 	tmp=*(T_ParserItem*) (top(stack));
 	pop(stack);
@@ -238,8 +238,12 @@ ERROR_MSG ExprParse()
 			 in.type=TERMINAL;
 			 in.value.term=token->identity;
 			 push(&stack, &in , -1);
-			 if ((err=get_token())==NULL) return err;
-	 		 
+			 if ((err=get_token())!=EVERYTHINGSOKAY) 
+			 	{
+			 	  if(token->mem!=NULL) free(token->mem); 
+				  S_erase(&stack);
+  			 	  return SYNTAX_ERR; 
+				}
 			 free (token->mem);
 			 token->mem=NULL;
 			 top=GetTerm(&stack, 0);
@@ -250,7 +254,12 @@ ERROR_MSG ExprParse()
 			 in.value.term=token->identity;
 			 push(&stack, &in , -1);
 			
-			 if ((err=get_token())==NULL) return err;
+			 if ((err=get_token())!=EVERYTHINGSOKAY) 
+			 	{
+			 	  if(token->mem!=NULL) free(token->mem);
+				  S_erase(&stack);
+  			 	  return SYNTAX_ERR; 
+				}
 			
 			 free (token->mem);
 			 token->mem=NULL;
