@@ -26,8 +26,7 @@ action PrecTable [16] [16] =
 	 {/*<> */L,  L,  L,  L,  R,  R,  R,   R,   R,   R,  L,  L,  R,  L,  R,  R},
 	 {/* i */R,  R,  R,  R,  R,  R,  R,   R,   R,   R,  Q,  Q,  R,  E,  R,  R},
  	 {/* f */R,  R,  R,  R,  R,  R,  R,   R,   R,   R,  Q,  Q,  R,  Q,  R,  R},
-      // {/* f */Q,  Q,  Q,  Q,  Q,  Q,  Q,   Q,   Q,   Q,  Q,  Q,  Q,  E,  Q,  Q},
-	 {/* , */L,  L,  L,  L,  L,  L,  L,   L,   L,   L,  L,  L,  R,  L,  R,  Q},
+ 	 {/* , */L,  L,  L,  L,  L,  L,  L,   L,   L,   L,  L,  L,  R,  L,  R,  Q},
 	 {/* ( */L,  L,  L,  L,  L,  L,  L,   L,   L,   L,  L,  L,  L,  L,  E,  Q},
 	 {/* ) */R,  R,  R,  R,  R,  R,  R,   R,   R,   R,  Q,  Q,  R,  Q,  R,  R},
 	 {/* $ */L,  L,  L,  L,  L,  L,  L,   L,   L,   L,  L,  L,  Q,  L,  Q,  Q}
@@ -59,8 +58,7 @@ oprs converttooprs(identita id)
 	case ID:
 	    return EId;
 	case DtInteger:
-	case DtChar:
-        case DtReal:
+	case DtReal:
 	case BooleanTrue:
 	case BooleanFalse:
 	case DtString:
@@ -214,38 +212,34 @@ T_ParserItem *GetTerm(Stack *stack, bool handle)
 	}
 }
 
-int ExprParse()
+ERROR_MSG ExprParse()
 {
   Stack stack;
   init(&stack, sizeof(T_ParserItem));
   int reduct;
+  ERROR_MSG err;
+
   T_ParserItem in;
   T_ParserItem *top;
-  TOKEN *lexem;
   in.type=TERMINAL;
   in.value.term=EEnd;
   push(&stack, &in, -1);
- lexem=token;
- /*if ((lexem=get_token())!=NULL) token=lexem;
- else token->identity=EEnd;*/
-   free (token->mem);
+ 
+ 
+  free (token->mem);
   token->mem=NULL;
   top=GetTerm(&stack, 0);
   while ((converttooprs(top->value.term)!=EEnd) || (converttooprs(token->identity)!=EEnd))
 	{
-	 if (lexem!=NULL) token=lexem;
-	 else token->identity=EEnd;
 	 top=GetTerm(&stack, 0);
-	// printf ("%s - %d\n",token->mem,token->identity);
 	 switch (GetRule(converttooprs(top->value.term),converttooprs(token->identity)))
 		{
 		 case E: 
 			 in.type=TERMINAL;
 			 in.value.term=token->identity;
 			 push(&stack, &in , -1);
-			 if ((lexem=get_token())!=NULL) token=lexem;
-	 		 else token->identity=EEnd;
-
+			 if ((err=get_token())==NULL) return err;
+	 		 
 			 free (token->mem);
 			 token->mem=NULL;
 			 top=GetTerm(&stack, 0);
@@ -255,9 +249,8 @@ int ExprParse()
 			 in.type=TERMINAL;
 			 in.value.term=token->identity;
 			 push(&stack, &in , -1);
-			 //free (token->mem);
-			 if ((lexem=get_token())!=NULL) token=lexem;
-	 		 else token->identity=EEnd;
+			
+			 if ((err=get_token())==NULL) return err;
 			
 			 free (token->mem);
 			 token->mem=NULL;
@@ -269,26 +262,21 @@ int ExprParse()
 				{
 				  in.type=NONTERMINAL;
 			 	  in.value.nonterm.type=reduct;
-				 // printf("redukujeme zasobnik na %i\n",reduct);
-			 	  push(&stack, &in , -1);
+				  push(&stack, &in , -1);
 				  top=GetTerm(&stack, 0);
 				}
 			 else 
 				{
-				// printf("chyba pri redukcii celkovo\n");
-				 // free (token->mem);
 				  S_erase(&stack);
-  			 	  return 1; 
+  			 	  return SYNTAX_ERR; 
 				}
 			 break;
 		 case Q: 
-			// printf("chyba pri redukcii tabulka\n");
-			// free (token->mem);
 			 S_erase(&stack);
-  			 return 1; 
+  			 return SYNTAX_ERR; 
 		}
 
 	}
 S_erase(&stack);
-return 0;
+return EVERYTHINGSOKAY;
 }
