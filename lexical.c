@@ -10,13 +10,13 @@
 #include <ctype.h>
 #include "lexical.h"
 #include "lexstring.h"
-#include "error.h"
+
 
 //retazec klucovych slov
 const char key_words [] = {",begin,boolean,do,else,end,false,find,forward,function,if,integer,readln,real,sort,string,then,true,var,while,write,"};
 //
 
-TOKEN *get_token ()
+ERROR_MSG get_token ()
 {
         int i;
 
@@ -24,7 +24,11 @@ TOKEN *get_token ()
         {
             while (isspace(c)!=0 && c!=EOF) c=fgetc(fp);
         }
-        if (c==EOF) return NULL;
+        if (c==EOF)
+        {
+            token->identity=EndOfFile;
+            return EVERYTHINGSOKAY;
+        }
         if (c=='{')                                                                             //preskakovanie komentarov
         {
             while ((c=fgetc(fp))!='}' && (c!=EOF));
@@ -44,24 +48,24 @@ TOKEN *get_token ()
                         if (i==0)
                         {
                             token->mem=first_allocation ();
-                            if (token->mem==NULL) return NULL;
+                            if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
                             token->mem=string_implementation(c,i,token->mem);
-                            if (token->mem==NULL) return NULL;
+                            if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
                         }
                         c=fgetc(fp);
                         while ((c>='A' && c<='Z') || (c>='a' && c<='z') || (c=='_') || (c>='0' && c<='9'))
                         {
                             i++;
                             token->mem=string_implementation(c,i,token->mem);
-                            if (token->mem==NULL) return NULL;
+                            if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
                             c=fgetc(fp);
                         }
                         int Iden;
                         token->mem=string_implementation('\0',i+1,token->mem);
-                        if (token->mem==NULL) return NULL;
-                        if ((Iden=is_key_word(token->mem))==0) token->identity=1;
+                        if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
+                        if ((Iden=is_key_word(token->mem))==0) token->identity=ID;
                         else token->identity=Iden;
-                        return token;
+                        return EVERYTHINGSOKAY;
                     }
 
             case '0'...'9':                                                                     // je to cislo
@@ -69,29 +73,29 @@ TOKEN *get_token ()
                 if (i==0)
                 {
                     token->mem=first_allocation ();
-                    if (token->mem==NULL) return NULL;
+                    if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
                     token->mem=string_implementation(c,i,token->mem);
-                    if (token->mem==NULL) return NULL;
+                    if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
                 }
                 c=fgetc(fp);
                 while (c>='0' && c<='9')
                 {
                     i++;
                     token->mem=string_implementation(c,i,token->mem);
-                    if (token->mem==NULL) return NULL;
+                    if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
                     c=fgetc(fp);
                 }
                 if (c=='.')
                 {
                     i++;
                     token->mem=string_implementation(c,i,token->mem);
-                    if (token->mem==NULL) return NULL;
+                    if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
                     c=fgetc(fp);
                     while ((c)>='0' && c<='9')
                     {
                         i++;
                         token->mem=string_implementation(c,i,token->mem);
-                        if (token->mem==NULL) return NULL;
+                        if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
                         c=fgetc(fp);
                     }
                     switch (c)
@@ -101,13 +105,13 @@ TOKEN *get_token ()
                         {
                             i++;
                             token->mem=string_implementation(c,i,token->mem);
-                            if (token->mem==NULL) return NULL;
+                            if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
                             c=fgetc(fp);
                             while ((c)>='0' && c<='9')
                             {
                                 i++;
                                 token->mem=string_implementation(c,i,token->mem);
-                                if (token->mem==NULL) return NULL;
+                                if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
                                 c=fgetc(fp);
                             }
                             break;
@@ -117,7 +121,7 @@ TOKEN *get_token ()
                         {
                             i++;
                             token->mem=string_implementation(c,i,token->mem);
-                            if (token->mem==NULL) return NULL;
+                            if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
                             c=fgetc(fp);
                             if (c=='e' || c=='E')
                             {
@@ -126,7 +130,7 @@ TOKEN *get_token ()
                                 {
                                     i++;
                                     token->mem=string_implementation(c,i,token->mem);
-                                    if (token->mem==NULL) return NULL;
+                                    if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
                                     c=fgetc(fp);
                                 }
                             }
@@ -138,34 +142,34 @@ TOKEN *get_token ()
                 {
                     i++;
                     token->mem=string_implementation(c,i,token->mem);
-                    if (token->mem==NULL) return NULL;
+                    if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
                     c=fgetc(fp);
                     while ((c)>='0' && c<='9')
                     {
                         i++;
                         token->mem=string_implementation(c,i,token->mem);
-                        if (token->mem==NULL) return NULL;
+                        if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
                         c=fgetc(fp);
                     }
                     token->mem=string_implementation('\0',i+1,token->mem);
-                    if (token->mem==NULL) return NULL;
+                    if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
                 }
                 else
                 {
                     token->mem=string_implementation('\0',i+1,token->mem);
-                    if (token->mem==NULL) return NULL;
+                    if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
                     if ((strchr(token->mem,'.'))==NULL)
                     {
                         token->mem=string_implementation('\0',i+1,token->mem);
-                        if (token->mem==NULL) return NULL;
-                        token->identity = 37;
-                        return token;
+                        if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
+                        token->identity = DtInteger;
+                        return EVERYTHINGSOKAY;
                     }
                 }
                 if (token->mem[i+1]!=0) token->mem=string_implementation('\0',i+1,token->mem);
-                if (token->mem==NULL) return NULL;
-                token->identity = 39;
-                return token;
+                if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
+                token->identity = DtReal;
+                return EVERYTHINGSOKAY;
             }
 
             case '+':                                                                                   // je to numericky operator
@@ -176,18 +180,18 @@ TOKEN *get_token ()
                             if (i==0)
                             {
                                 token->mem=first_allocation ();
-                                if (token->mem==NULL) return NULL;
+                                if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
                                 token->mem=string_implementation(c,i,token->mem);
-                                if (token->mem==NULL) return NULL;
+                                if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
                             }
                             token->mem=string_implementation('\0',i+1,token->mem);
-                            if (token->mem==NULL) return NULL;
-                            if (c=='+') token->identity=22;
-                            if (c=='-') token->identity=23;
-                            if (c=='*') token->identity=24;
-                            if (c=='/') token->identity=25;
+                            if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
+                            if (c=='+') token->identity=OpPlus;
+                            if (c=='-') token->identity=OpMinus;
+                            if (c=='*') token->identity=OpKrat;
+                            if (c=='/') token->identity=OpDiv;
                             c=fgetc(fp);
-                            return token;
+                            return EVERYTHINGSOKAY;
                         }
 
             case ':':                                                                                   // je to :, moze sa jednat o priradenie
@@ -195,23 +199,23 @@ TOKEN *get_token ()
                 if (i==0)
                 {
                     token->mem=first_allocation ();
-                    if (token->mem==NULL) return NULL;
+                    if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
                     token->mem=string_implementation(c,i,token->mem);
-                    if (token->mem==NULL) return NULL;
+                    if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
                 }
-                token->identity=26;
+                token->identity=OpDek;
                 c=fgetc(fp);
                 if (c=='=')                                                                             // jedna sa o priradenie
                 {
                     i++;
                     token->mem=string_implementation(c,i,token->mem);
-                    if (token->mem==NULL) return NULL;
+                    if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
                     c=fgetc(fp);
-                    token->identity=27;
+                    token->identity=OpPrir;
                 }
                 token->mem=string_implementation('\0',i+1,token->mem);
-                if (token->mem==NULL) return NULL;
-                return token;
+                if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
+                return EVERYTHINGSOKAY;
             }
 
             case ';':
@@ -219,15 +223,15 @@ TOKEN *get_token ()
                 if (i==0)
                 {
                     token->mem=first_allocation ();
-                    if (token->mem==NULL) return NULL;
+                    if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
                     token->mem=string_implementation(c,i,token->mem);
-                    if (token->mem==NULL) return NULL;
+                    if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
                 }
                 token->mem=string_implementation('\0',i+1,token->mem);
-                if (token->mem==NULL) return NULL;
+                if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
                 c=fgetc(fp);
-                token->identity = 28;
-                return token;
+                token->identity = OpKonec;
+                return EVERYTHINGSOKAY;
             }
 
             case '=':
@@ -235,14 +239,14 @@ TOKEN *get_token ()
                 if (i==0)
                 {
                     token->mem=first_allocation ();
-                    if (token->mem==NULL) return NULL;
+                    if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
                     token->mem=string_implementation(c,i,token->mem);
-                    if (token->mem==NULL) return NULL;
+                    if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
                 }
                 token->mem=string_implementation('\0',i+1,token->mem);
                 c=fgetc(fp);
-                token->identity = 33;
-                return token;
+                token->identity = OpRovny;
+                return EVERYTHINGSOKAY;
             }
 
             case ',':
@@ -250,15 +254,15 @@ TOKEN *get_token ()
                 if (i==0)
                 {
                     token->mem=first_allocation ();
-                    if (token->mem==NULL) return NULL;
+                    if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
                     token->mem=string_implementation(c,i,token->mem);
-                    if (token->mem==NULL) return NULL;
+                    if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
                 }
                 token->mem=string_implementation('\0',i+1,token->mem);
-                if (token->mem==NULL) return NULL;
+                if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
                 c=fgetc(fp);
-                token->identity = 43;
-                return token;
+                token->identity = OpCiarka;
+                return EVERYTHINGSOKAY;
             }
 
             case '>':
@@ -266,54 +270,54 @@ TOKEN *get_token ()
                 if (i==0)
                 {
                     token->mem=first_allocation ();
-                    if (token->mem==NULL) return NULL;
+                    if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
                     token->mem=string_implementation(c,i,token->mem);
-                    if (token->mem==NULL) return NULL;
+                    if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
                 }
-                token->identity=29;
+                token->identity=OpVacsi;
                 c=fgetc(fp);
                 if (c=='=')
                 {
                     i++;
                     token->mem=string_implementation(c,i,token->mem);
-                    if (token->mem==NULL) return NULL;
-                    token->identity = 31;
+                    if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
+                    token->identity = OpVacsiR;
                 }
                 token->mem=string_implementation('\0',i+1,token->mem);
-                if (token->mem==NULL) return NULL;
+                if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
                 c=fgetc(fp);
-                return token;
+                return EVERYTHINGSOKAY;
             }
 
             case '<':
             {
                 if (i==0)
                 {
-                    token->identity=30;
+                    token->identity=OpMensi;
                     token->mem=first_allocation ();
-                    if (token->mem==NULL) return NULL;
+                    if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
                     token->mem=string_implementation(c,i,token->mem);
-                    if (token->mem==NULL) return NULL;
+                    if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
                 }
                 c=fgetc(fp);
                 if (c=='>')
                 {
                     i++;
-                    token->identity=42;
+                    token->identity=OpNerovny;
                     token->mem=string_implementation(c,i,token->mem);
-                    if (token->mem==NULL) return NULL;
+                    if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
                 }
                 if (c=='=')
                 {
                     i++;
-                    token->identity=32;
+                    token->identity=OpMensiR;
                     token->mem=string_implementation(c,i,token->mem);
-                    if (token->mem==NULL) return NULL;
+                    if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
                 }
                 token->mem=string_implementation('\0',i+1,token->mem);
-                if (token->mem==NULL) return NULL;
+                if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
                 c=fgetc(fp);
-                return token;
+                return EVERYTHINGSOKAY;
             }
 
             case '(':
@@ -322,16 +326,16 @@ TOKEN *get_token ()
                 if (i==0)
                 {
                     token->mem=first_allocation ();
-                    if (token->mem==NULL) return NULL;
+                    if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
                     token->mem=string_implementation(c,i,token->mem);
-                    if (token->mem==NULL) return NULL;
+                    if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
                 }
                 token->mem=string_implementation('\0',i+1,token->mem);
-                if (token->mem==NULL) return NULL;
-                if (c=='(') token->identity=34;
-                else token->identity=35;
+                if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
+                if (c=='(') token->identity=OpLZat;
+                else token->identity=OpPZat;
                 c=fgetc(fp);
-                return token;
+                return EVERYTHINGSOKAY;
             }
 
             case '\'':
@@ -339,30 +343,30 @@ TOKEN *get_token ()
                 if (i==0)
                 {
                     token->mem=first_allocation ();
-                    if (token->mem==NULL) return NULL;
+                    if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
                     token->mem=string_implementation(c,i,token->mem);
-                    if (token->mem==NULL) return NULL;
+                    if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
                 }
                 c=fgetc(fp);
                 while (c!='\'' && c!=EOF)
                 {
                     i++;
                     token->mem=string_implementation(c,i,token->mem);
-                    if (token->mem==NULL) return NULL;
+                    if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
                     c=fgetc(fp);
                 }
                 if (c=='\'')
                 {
                     i++;
                     token->mem=string_implementation(c,i,token->mem);
-                    if (token->mem==NULL) return NULL;
+                    if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
                 }
-                else return NULL;
+                else return INTERN_INTERPRETATION_ERR;
                 c=fgetc(fp);
                 token->mem=string_implementation('\0',i+1,token->mem);
-                if (token->mem==NULL) return NULL;
-                token->identity = 41;
-                return token;
+                if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
+                token->identity = DtString;
+                return EVERYTHINGSOKAY;
             }
 
             case '.':
@@ -370,19 +374,20 @@ TOKEN *get_token ()
                 if (i==0)
                 {
                     token->mem=first_allocation ();
-                    if (token->mem==NULL) return NULL;
+                    if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
                     token->mem=string_implementation(c,i,token->mem);
-                    if (token->mem==NULL) return NULL;
+                    if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
                     c=fgetc(fp);
                     token->mem=string_implementation('\0',i+1,token->mem);
-                    if (token->mem==NULL) return NULL;
-                    token->identity = 36;
-                    return token;
+                    if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
+                    token->identity = OpBodka;
+                    return EVERYTHINGSOKAY;
                 }
             }
         }
 
-    return NULL;
+    token->identity=EndOfFile;
+    return EVERYTHINGSOKAY;
 }
 
 int CaseInsensitiveCharCmp (char c1, char c2)
