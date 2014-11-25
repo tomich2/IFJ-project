@@ -26,9 +26,13 @@ int main (int argc, char **argv)
     InitList (LGar);
     if (token==NULL)
     {
-        free(token);
         close_file();
         Error(99);
+    }
+    if (LGar==NULL)
+    {
+       close_file();
+       Error(99);
     }
     test=top_down();
     DisposeList(LGar);
