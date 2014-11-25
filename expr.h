@@ -7,6 +7,8 @@
 
 #include "stack.h"
 #include "parser.h"
+#include "error.h"
+
 typedef enum prec { R /* Right > */, L /* Left < */, E /* Equal = */, Q /* Error */ } action;
 
 typedef enum Operator { EPlus, EMinus, EMulti, EDiv, EEqual,
@@ -17,5 +19,5 @@ oprs converttooprs(identita id);
 int GetRule(int a, int b);
 T_ParserItem *GetTerm(Stack *stack, bool hdl);
 int Reduction(Stack *stack);
-int ExprParse();
+ERROR_MSG ExprParse();
 #endif
