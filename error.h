@@ -5,11 +5,16 @@
 ///////        Tomas Chomo
 ///////        Findo
 
+#ifndef _ERROR_H
+#define _ERROR_H
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
 
-typedef enum ERR {  LEXICAL_ERR=1,
+typedef enum ERR {
+                    EVERYTHINGSOKAY=0,
+                    LEXICAL_ERR=1,
                     SYNTAX_ERR,
                     SEMANTIC_ERR,
                     EXPRESSION_ERR,
@@ -22,3 +27,5 @@ typedef enum ERR {  LEXICAL_ERR=1,
                  }ERROR_MSG;
 
 void Error(int p);
+
+#endif
