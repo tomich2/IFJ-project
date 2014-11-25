@@ -24,3 +24,6 @@ expr.o: expr.c expr.h
 main.o: main.c
 garbage.o: garbage.c garbage.h
 ## ## ## ##
+
+clean:
+	rm *.o
