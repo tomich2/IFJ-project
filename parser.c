@@ -15,24 +15,26 @@
 #include "expr.h"
 
 
-int top_down()
+ERROR_MSG top_down()
 {
+  ERROR_MSG err;
   T_ParserItem **PItems=NULL; // ukazovatel na ukazovatel terminalu alebo neterminalu, v podstate "pole" terminalov a neterminalov ulozenych v strukture
   PItems_alloc(&PItems);
   T_ParserItem *PItem_top; // prvok na vrchole zasobniku
   int i=0;
-  TOKEN *input; // ukazovatel na token
+  T_State state;
   Stack p_stack; // zasobnik
   init(&p_stack,sizeof(T_ParserItem));
-  input=get_token();
-  if(input==NULL) // prazdny subor=syntakticka chyba
+  htab_t *glob_sym_table=htab_init(GTAB_SIZE);
+  err=get_token();
+  if(err) // lexikalna chyba alebo prazdny subor=syntakticka chyba
   {
-    free_all(input,PItems,p_stack,0);
-    return SYNTAX_ERR;
+    free_all(PItems,p_stack,0,glob_sym_table);
+    return (token->identity==EndOfFile) ? SYNTAX_ERR : err;
   }
-  if(get_rule(input,START,PItems)) // podla pravidla vykona expanziu a pravu stranu pravidla ulozi do PItems
+  if(get_rule(START,PItems)) // podla pravidla vykona expanziu a pravu stranu pravidla ulozi do PItems
   {
-    free_all(input,PItems,p_stack,0); // ak je prvy token nespravny=syntakticka chyba
+    free_all(PItems,p_stack,0,glob_sym_table); // ak je prvy token nespravny=syntakticka chyba
     return SYNTAX_ERR;
   }
 
@@ -46,9 +48,9 @@ i=0;
 
   while(!S_empty(&p_stack)) // ked bude zasobnik prazdny, syntakticka analyza konci
   {
-    if(input==NULL) // zdrojovy subor je nekompletny=syntakticka chyba
+    if(token->identity==EndOfFile) // zdrojovy subor je nekompletny=syntakticka chyba
     {
-      free_all(input,PItems,p_stack,1);
+      free_all(PItems,p_stack,1,glob_sym_table);
       return SYNTAX_ERR;
     }
     PItem_top=top(&p_stack);
@@ -57,19 +59,20 @@ i=0;
 
       if(PItem_top->value.nonterm.type==EXPR) // ak je na vrchole zasobnika neterminal EXPR(vyraz), spracuje ho precedencna analyza
       {
-        if(ExprParse()) // chybny vyraz=syntakticka chyba
+        err=ExprParse();
+        if(err) // chybny vyraz=syntakticka chyba
         {
-          free_all(input,PItems,p_stack,1);
-          return SYNTAX_ERR;
+          free_all(PItems,p_stack,1,glob_sym_table);
+          return err;
         }
         pop(&p_stack); //  expandovany neterminal sa odstrani zo zasobnika
         PItem_top=NULL;
       }
       else // pre normalne neterminaly vykona expanziu podla pravidla, pravu stranu ulozi do PItems a nasledne na zasobnik
       {
-        if(get_rule(input,PItem_top->value.nonterm.type,PItems)) // neexistuje pravidlo=syntakticka chyba
+        if(get_rule(PItem_top->value.nonterm.type,PItems)) // neexistuje pravidlo=syntakticka chyba
         {
-          free_all(input,PItems,p_stack,1);
+          free_all(PItems,p_stack,1,glob_sym_table);
           return SYNTAX_ERR;
         }
         pop(&p_stack); //  expandovany neterminal sa odstrani zo zasobnika
@@ -89,44 +92,50 @@ i=0;
 
       if(PItem_top->value.term==DtInteger) // terminal je literal, moze byt akykolvek datovy typ
       {
-        if(input->identity==DtInteger || input->identity==DtChar || input->identity==DtReal || input->identity==DtBoolean || input->identity==DtString)
+        if(token->identity==DtInteger || token->identity==DtReal || token->identity==DtString)
         {
           pop(&p_stack);
           PItem_top=NULL;
         }
         else // terminal nie je literal=syntakticka chyba
         {
-          free_all(input,PItems,p_stack,1);
+          free_all(PItems,p_stack,1,glob_sym_table);
           return SYNTAX_ERR;
         }
       }
       else
       {
-        if(input->identity==PItem_top->value.term) // ak sa typ terminalu zhoduje so vstupom, odstrani sa terminal zo zasobniku a pokracuje sa na dalsi vstup
+        if(token->identity==PItem_top->value.term) // ak sa typ terminalu zhoduje so vstupom, odstrani sa terminal zo zasobniku a pokracuje sa na dalsi vstup
         {
           pop(&p_stack);
           PItem_top=NULL;
         }
         else // terminaly sa nezhoduju=syntakticka chyba
         {
-          free_all(input,PItems,p_stack,1);
+          free_all(PItems,p_stack,1,glob_sym_table);
           return SYNTAX_ERR;
         }
       }
-    free(input->mem);
-    input=get_token();
+    free(token->mem);
+    token->mem=NULL;
+    err=get_token();
+    if(err)
+    {
+      free_all(PItems,p_stack,1,glob_sym_table);
+      return err;
+    }
 
     }
   }
-  if(input!=NULL) // ak zdrojovy subor obsahuje nejake znaky po ukoncujucej bodke
+  if(token->identity!=EndOfFile) // ak zdrojovy subor obsahuje nejake znaky po ukoncujucej bodke
   {
-   free_all(input,PItems,p_stack,0);
+   free_all(PItems,p_stack,0,glob_sym_table);
    return SYNTAX_ERR;
 
   }
-  free(input);
   PItems_free(&PItems);
-  return 0;
+  htab_free(glob_sym_table);
+  return EVERYTHINGSOKAY;
 }
 
 void PItems_alloc(T_ParserItem ***Ptr)
@@ -149,11 +158,11 @@ void PItems_free(T_ParserItem ***Ptr)
   free(*Ptr);
 }
 
-void free_all(TOKEN *t, T_ParserItem **p, Stack st, int stack_erase)
+void free_all(T_ParserItem **p, Stack st, int stack_erase, htab_t *gsymtab)
 {
   PItems_free(&p);
-  free(t->mem);
-  free(t);
+  if(token->mem!=NULL)free(token->mem);
   if(stack_erase)S_erase(&st);
+  htab_free(gsymtab);
   close_file();
 }
