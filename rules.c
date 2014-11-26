@@ -31,9 +31,9 @@ int LLTable[LL_TERMS][LL_NONTERMS]={{1, 2, 0, 0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 
                                     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 21, 28, 0, 0, 0, 0, 0, 33, 0, 0},   // write
                                     {0, 0, 0, 0, 0, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},      // forward
                                     {0, 0, 0, 0, 0, 0, 12, 14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 36}};  // right bracket
-T_terms token_to_term(TOKEN *t)
+T_terms token_to_term()
 {
-    switch(t->identity)
+    switch(token->identity)
     {
       case ID:
         return id_;
@@ -67,11 +67,9 @@ T_terms token_to_term(TOKEN *t)
       case OpPZat:
         return r_bracket_;
       case DtInteger:
-        case DtChar:
-          case DtReal:
-            case DtBoolean:
-             case DtString:
-              return literal_;
+       case DtReal:
+        case DtString:
+         return literal_;
       default:
         break;
     }
@@ -79,16 +77,16 @@ T_terms token_to_term(TOKEN *t)
 }
 
 
-int get_rule(TOKEN *token,T_nonterms nonterm, T_ParserItem **PItem_Arr)
+int get_rule(T_nonterms nonterm, T_ParserItem **PItem_Arr)
 {
   int rule;
   T_terms term;
-  term=token_to_term(token);
+  term=token_to_term();
   rule=LLTable[term][nonterm];
   switch(rule)
   {
     case 0:
-          return 1;
+          return 1; // pravidlo neexistuje
     case 1: // 1. <START> → <DEF_VAR> <FUNC> <BODY>.
           PItem_Arr[0]->type=TERMINAL;
           PItem_Arr[0]->value.term=OpBodka;
