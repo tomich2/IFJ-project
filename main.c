@@ -18,7 +18,7 @@
 
 int main (int argc, char **argv)
 {
-  int test;
+  ERROR_MSG test;
     open_file(argv[1],argc);
     c=fgetc(fp);
     token=malloc(sizeof(TOKEN));
@@ -37,9 +37,9 @@ int main (int argc, char **argv)
     test=top_down();
     DisposeList(LGar);
     free(LGar);
-    if(test==0)printf("Syntakticka analyza v poriadku.\n");
-    else Error(test);
     free(token);
     close_file();
+    if(test==EVERYTHINGSOKAY)printf("Syntakticka analyza v poriadku.\n");
+    else Error(test);
     return 0;
 }
