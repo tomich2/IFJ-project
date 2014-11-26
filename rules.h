@@ -21,8 +21,8 @@ typedef enum {var_, id_, function_, integer_, real_, string_, boolean_, begin_, 
 typedef enum {START, DEF_VAR, VAR, VAR_N, FUNC, FORWARD, PARAM, PARAM_N, TYPE, BODY, STAT_S, STAT, STAT_N,
                        ASSIGN, WHILE, IFELSE, READ, WRITE, TERM, TERM_N, EXPR, ERROR=-1}T_nonterms;
 
-T_terms token_to_term(TOKEN *t);
-int get_rule(TOKEN *token,T_nonterms nonterm, T_ParserItem **PItem_Arr);
+T_terms token_to_term();
+int get_rule(T_nonterms nonterm, T_ParserItem **PItem_Arr);
 
 
 #endif
