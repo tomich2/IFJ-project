@@ -26,4 +26,4 @@ garbage.o: garbage.c garbage.h
 ## ## ## ##
 
 clean:
-	rm *.o
+	rm -rf *.o parser
