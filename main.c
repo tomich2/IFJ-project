@@ -38,8 +38,8 @@ int main (int argc, char **argv)
     DisposeList(LGar);
     free(LGar);
     free(token);
-    close_file();
     if(test==EVERYTHINGSOKAY)printf("Syntakticka analyza v poriadku.\n");
     else Error(test);
+    close_file();
     return 0;
 }
