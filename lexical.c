@@ -639,45 +639,45 @@ int is_key_word (char *key)
                 switch (i)
                 {
                     case 6:
-                        return 2;
+                        return KwBegin;
                     case 14:
-                        return 3;
+                        return KwBoolean;
                     case 17:
-                        return 4;
+                        return KwDo;
                     case 22:
-                        return 5;
+                        return KwElse;
                     case 26:
-                        return 6;
+                        return KwEnd;
                     case 32:
-                        return 7;
+                        return BooleanFalse;
                     case 37:
-                        return 8;
+                        return KwFind;
                     case 45:
-                        return 9;
+                        return KwForward;
                     case 54:
-                        return 10;
+                        return KwFunction;
                     case 57:
-                        return 11;
+                        return KwIf;
                     case 65:
-                        return 12;
+                        return KwInteger;
                     case 72:
-                        return 13;
+                        return KwReadln;
                     case 77:
-                        return 14;
+                        return KwReal;
                     case 82:
-                        return 15;
+                        return KwSort;
                     case 89:
-                        return 16;
+                        return KwString;
                     case 94:
-                        return 17;
+                        return KwThen;
                     case 99:
-                        return 18;
+                        return BooleanTrue;
                     case 103:
-                        return 19;
+                        return KwVar;
                     case 109:
-                        return 20;
+                        return KwWhile;
                     case 115:
-                        return 21;
+                        return KwWrite;
                 }
 
             }
