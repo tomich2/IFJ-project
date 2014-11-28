@@ -19,7 +19,6 @@ const char key_words [] = {",begin,boolean,do,else,end,false,find,forward,functi
 ERROR_MSG get_token ()
 {
         int i;
-
         if (isspace(c)!=0)                                                                      // preskoc medzery
         {
             while (isspace(c)!=0 && c!=EOF) c=fgetc(fp);
@@ -116,7 +115,7 @@ ERROR_MSG get_token ()
                             }
                             break;
                         }
-                        case '+':
+                    /*    case '+':
                         case '-':
                         {
                             i++;
@@ -135,7 +134,7 @@ ERROR_MSG get_token ()
                                 }
                             }
                             break;
-                        }
+                        }*/
                     }
                 }
                 if (c=='e' || c=='E')
@@ -144,6 +143,12 @@ ERROR_MSG get_token ()
                     token->mem=string_implementation(c,i,token->mem);
                     if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
                     c=fgetc(fp);
+                    if (c=='+' || c=='-')
+                    {
+                        i++;
+                        token->mem=string_implementation(c,i,token->mem);
+                        if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
+                    }
                     while ((c)>='0' && c<='9')
                     {
                         i++;
