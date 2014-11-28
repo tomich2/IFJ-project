@@ -47,21 +47,37 @@ ERROR_MSG get_token ()
                         if (i==0)
                         {
                             token->mem=first_allocation ();
-                            if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
+                            if (token->mem==NULL)
+                            {
+                                free(token->mem);
+                                return INTERN_INTERPRETATION_ERR;
+                            }
                             token->mem=string_implementation(c,i,token->mem);
-                            if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
+                            if (token->mem==NULL)
+                            {
+                                free(token->mem);
+                                return INTERN_INTERPRETATION_ERR;
+                            }
                         }
                         c=fgetc(fp);
                         while ((c>='A' && c<='Z') || (c>='a' && c<='z') || (c=='_') || (c>='0' && c<='9'))
                         {
                             i++;
                             token->mem=string_implementation(c,i,token->mem);
-                            if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
+                            if (token->mem==NULL)
+                            {
+                                free(token->mem);
+                                return INTERN_INTERPRETATION_ERR;
+                            }
                             c=fgetc(fp);
                         }
                         int Iden;
                         token->mem=string_implementation('\0',i+1,token->mem);
-                        if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
+                        if (token->mem==NULL)
+                        {
+                                free(token->mem);
+                                return INTERN_INTERPRETATION_ERR;
+                        }
                         if ((Iden=is_key_word(token->mem))==0) token->identity=ID;
                         else token->identity=Iden;
                         return EVERYTHINGSOKAY;
@@ -72,29 +88,49 @@ ERROR_MSG get_token ()
                 if (i==0)
                 {
                     token->mem=first_allocation ();
-                    if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
+                    if (token->mem==NULL)
+                    {
+                        free(token->mem);
+                        return INTERN_INTERPRETATION_ERR;
+                    }
                     token->mem=string_implementation(c,i,token->mem);
-                    if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
+                    if (token->mem==NULL)
+                    {
+                        free(token->mem);
+                        return INTERN_INTERPRETATION_ERR;
+                    }
                 }
                 c=fgetc(fp);
                 while (c>='0' && c<='9')
                 {
                     i++;
                     token->mem=string_implementation(c,i,token->mem);
-                    if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
+                    if (token->mem==NULL)
+                    {
+                        free(token->mem);
+                        return INTERN_INTERPRETATION_ERR;
+                    }
                     c=fgetc(fp);
                 }
                 if (c=='.')
                 {
                     i++;
                     token->mem=string_implementation(c,i,token->mem);
-                    if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
+                    if (token->mem==NULL)
+                    {
+                        free(token->mem);
+                        return INTERN_INTERPRETATION_ERR;
+                    }
                     c=fgetc(fp);
                     while ((c)>='0' && c<='9')
                     {
                         i++;
                         token->mem=string_implementation(c,i,token->mem);
-                        if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
+                        if (token->mem==NULL)
+                        {
+                            free(token->mem);
+                            return INTERN_INTERPRETATION_ERR;
+                        }
                         c=fgetc(fp);
                     }
                     switch (c)
@@ -104,13 +140,21 @@ ERROR_MSG get_token ()
                         {
                             i++;
                             token->mem=string_implementation(c,i,token->mem);
-                            if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
+                            if (token->mem==NULL)
+                            {
+                                free(token->mem);
+                                return INTERN_INTERPRETATION_ERR;
+                            }
                             c=fgetc(fp);
                             while ((c)>='0' && c<='9')
                             {
                                 i++;
                                 token->mem=string_implementation(c,i,token->mem);
-                                if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
+                                if (token->mem==NULL)
+                                {
+                                    free(token->mem);
+                                    return INTERN_INTERPRETATION_ERR;
+                                }
                                 c=fgetc(fp);
                             }
                             break;
@@ -141,38 +185,66 @@ ERROR_MSG get_token ()
                 {
                     i++;
                     token->mem=string_implementation(c,i,token->mem);
-                    if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
+                    if (token->mem==NULL)
+                    {
+                        free(token->mem);
+                        return INTERN_INTERPRETATION_ERR;
+                    }
                     c=fgetc(fp);
                     if (c=='+' || c=='-')
                     {
                         i++;
                         token->mem=string_implementation(c,i,token->mem);
-                        if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
+                        if (token->mem==NULL)
+                        {
+                            free(token->mem);
+                            return INTERN_INTERPRETATION_ERR;
+                        }
                     }
                     while ((c)>='0' && c<='9')
                     {
                         i++;
                         token->mem=string_implementation(c,i,token->mem);
-                        if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
+                        if (token->mem==NULL)
+                        {
+                            free(token->mem);
+                            return INTERN_INTERPRETATION_ERR;
+                        }
                         c=fgetc(fp);
                     }
                     token->mem=string_implementation('\0',i+1,token->mem);
-                    if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
+                    if (token->mem==NULL)
+                    {
+                        free(token->mem);
+                        return INTERN_INTERPRETATION_ERR;
+                    }
                 }
                 else
                 {
                     token->mem=string_implementation('\0',i+1,token->mem);
-                    if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
+                    if (token->mem==NULL)
+                    {
+                        free(token->mem);
+                        return INTERN_INTERPRETATION_ERR;
+                    }
                     if ((strchr(token->mem,'.'))==NULL)
                     {
                         token->mem=string_implementation('\0',i+1,token->mem);
-                        if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
+                        if (token->mem==NULL)
+                        {
+                            free(token->mem);
+                            return INTERN_INTERPRETATION_ERR;
+                        }
                         token->identity = DtInteger;
                         return EVERYTHINGSOKAY;
                     }
                 }
                 if (token->mem[i+1]!=0) token->mem=string_implementation('\0',i+1,token->mem);
-                if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
+                if (token->mem==NULL)
+                {
+                    free(token->mem);
+                    return INTERN_INTERPRETATION_ERR;
+                }
                 token->identity = DtReal;
                 return EVERYTHINGSOKAY;
             }
@@ -185,12 +257,24 @@ ERROR_MSG get_token ()
                             if (i==0)
                             {
                                 token->mem=first_allocation ();
-                                if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
+                                if (token->mem==NULL)
+                                {
+                                    free(token->mem);
+                                    return INTERN_INTERPRETATION_ERR;
+                                }
                                 token->mem=string_implementation(c,i,token->mem);
-                                if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
+                                if (token->mem==NULL)
+                                {
+                                    free(token->mem);
+                                    return INTERN_INTERPRETATION_ERR;
+                                }
                             }
                             token->mem=string_implementation('\0',i+1,token->mem);
-                            if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
+                            if (token->mem==NULL)
+                            {
+                                free(token->mem);
+                                return INTERN_INTERPRETATION_ERR;
+                            }
                             if (c=='+') token->identity=OpPlus;
                             if (c=='-') token->identity=OpMinus;
                             if (c=='*') token->identity=OpKrat;
@@ -204,9 +288,17 @@ ERROR_MSG get_token ()
                 if (i==0)
                 {
                     token->mem=first_allocation ();
-                    if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
+                    if (token->mem==NULL)
+                    {
+                        free(token->mem);
+                        return INTERN_INTERPRETATION_ERR;
+                    }
                     token->mem=string_implementation(c,i,token->mem);
-                    if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
+                    if (token->mem==NULL)
+                    {
+                        free(token->mem);
+                        return INTERN_INTERPRETATION_ERR;
+                    }
                 }
                 token->identity=OpDek;
                 c=fgetc(fp);
@@ -214,12 +306,20 @@ ERROR_MSG get_token ()
                 {
                     i++;
                     token->mem=string_implementation(c,i,token->mem);
-                    if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
+                    if (token->mem==NULL)
+                    {
+                        free(token->mem);
+                        return INTERN_INTERPRETATION_ERR;
+                    }
                     c=fgetc(fp);
                     token->identity=OpPrir;
                 }
                 token->mem=string_implementation('\0',i+1,token->mem);
-                if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
+                if (token->mem==NULL)
+                {
+                    free(token->mem);
+                    return INTERN_INTERPRETATION_ERR;
+                }
                 return EVERYTHINGSOKAY;
             }
 
@@ -228,12 +328,24 @@ ERROR_MSG get_token ()
                 if (i==0)
                 {
                     token->mem=first_allocation ();
-                    if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
+                    if (token->mem==NULL)
+                    {
+                        free(token->mem);
+                        return INTERN_INTERPRETATION_ERR;
+                    }
                     token->mem=string_implementation(c,i,token->mem);
-                    if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
+                    if (token->mem==NULL)
+                    {
+                        free(token->mem);
+                        return INTERN_INTERPRETATION_ERR;
+                    }
                 }
                 token->mem=string_implementation('\0',i+1,token->mem);
-                if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
+                if (token->mem==NULL)
+                {
+                    free(token->mem);
+                    return INTERN_INTERPRETATION_ERR;
+                }
                 c=fgetc(fp);
                 token->identity = OpKonec;
                 return EVERYTHINGSOKAY;
@@ -244,9 +356,17 @@ ERROR_MSG get_token ()
                 if (i==0)
                 {
                     token->mem=first_allocation ();
-                    if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
+                    if (token->mem==NULL)
+                    {
+                        free(token->mem);
+                        return INTERN_INTERPRETATION_ERR;
+                    }
                     token->mem=string_implementation(c,i,token->mem);
-                    if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
+                    if (token->mem==NULL)
+                    {
+                        free(token->mem);
+                        return INTERN_INTERPRETATION_ERR;
+                    }
                 }
                 token->mem=string_implementation('\0',i+1,token->mem);
                 c=fgetc(fp);
@@ -259,12 +379,24 @@ ERROR_MSG get_token ()
                 if (i==0)
                 {
                     token->mem=first_allocation ();
-                    if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
+                    if (token->mem==NULL)
+                    {
+                        free(token->mem);
+                        return INTERN_INTERPRETATION_ERR;
+                    }
                     token->mem=string_implementation(c,i,token->mem);
-                    if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
+                    if (token->mem==NULL)
+                    {
+                        free(token->mem);
+                        return INTERN_INTERPRETATION_ERR;
+                    }
                 }
                 token->mem=string_implementation('\0',i+1,token->mem);
-                if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
+                if (token->mem==NULL)
+                {
+                    free(token->mem);
+                    return INTERN_INTERPRETATION_ERR;
+                }
                 c=fgetc(fp);
                 token->identity = OpCiarka;
                 return EVERYTHINGSOKAY;
@@ -275,9 +407,17 @@ ERROR_MSG get_token ()
                 if (i==0)
                 {
                     token->mem=first_allocation ();
-                    if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
+                    if (token->mem==NULL)
+                    {
+                        free(token->mem);
+                        return INTERN_INTERPRETATION_ERR;
+                    }
                     token->mem=string_implementation(c,i,token->mem);
-                    if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
+                    if (token->mem==NULL)
+                    {
+                        free(token->mem);
+                        return INTERN_INTERPRETATION_ERR;
+                    }
                 }
                 token->identity=OpVacsi;
                 c=fgetc(fp);
@@ -285,11 +425,19 @@ ERROR_MSG get_token ()
                 {
                     i++;
                     token->mem=string_implementation(c,i,token->mem);
-                    if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
+                    if (token->mem==NULL)
+                    {
+                        free(token->mem);
+                        return INTERN_INTERPRETATION_ERR;
+                    }
                     token->identity = OpVacsiR;
                 }
                 token->mem=string_implementation('\0',i+1,token->mem);
-                if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
+                if (token->mem==NULL)
+                {
+                    free(token->mem);
+                    return INTERN_INTERPRETATION_ERR;
+                }
                 c=fgetc(fp);
                 return EVERYTHINGSOKAY;
             }
@@ -300,9 +448,17 @@ ERROR_MSG get_token ()
                 {
                     token->identity=OpMensi;
                     token->mem=first_allocation ();
-                    if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
+                    if (token->mem==NULL)
+                    {
+                        free(token->mem);
+                        return INTERN_INTERPRETATION_ERR;
+                    }
                     token->mem=string_implementation(c,i,token->mem);
-                    if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
+                    if (token->mem==NULL)
+                    {
+                        free(token->mem);
+                        return INTERN_INTERPRETATION_ERR;
+                    }
                 }
                 c=fgetc(fp);
                 if (c=='>')
@@ -310,17 +466,29 @@ ERROR_MSG get_token ()
                     i++;
                     token->identity=OpNerovny;
                     token->mem=string_implementation(c,i,token->mem);
-                    if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
+                    if (token->mem==NULL)
+                    {
+                        free(token->mem);
+                        return INTERN_INTERPRETATION_ERR;
+                    }
                 }
                 if (c=='=')
                 {
                     i++;
                     token->identity=OpMensiR;
                     token->mem=string_implementation(c,i,token->mem);
-                    if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
+                    if (token->mem==NULL)
+                    {
+                        free(token->mem);
+                        return INTERN_INTERPRETATION_ERR;
+                    }
                 }
                 token->mem=string_implementation('\0',i+1,token->mem);
-                if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
+                if (token->mem==NULL)
+                {
+                    free(token->mem);
+                    return INTERN_INTERPRETATION_ERR;
+                }
                 c=fgetc(fp);
                 return EVERYTHINGSOKAY;
             }
@@ -331,12 +499,24 @@ ERROR_MSG get_token ()
                 if (i==0)
                 {
                     token->mem=first_allocation ();
-                    if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
+                    if (token->mem==NULL)
+                    {
+                        free(token->mem);
+                        return INTERN_INTERPRETATION_ERR;
+                    }
                     token->mem=string_implementation(c,i,token->mem);
-                    if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
+                    if (token->mem==NULL)
+                    {
+                        free(token->mem);
+                        return INTERN_INTERPRETATION_ERR;
+                    }
                 }
                 token->mem=string_implementation('\0',i+1,token->mem);
-                if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
+                if (token->mem==NULL)
+                {
+                    free(token->mem);
+                    return INTERN_INTERPRETATION_ERR;
+                }
                 if (c=='(') token->identity=OpLZat;
                 else token->identity=OpPZat;
                 c=fgetc(fp);
@@ -348,28 +528,48 @@ ERROR_MSG get_token ()
                 if (i==0)
                 {
                     token->mem=first_allocation ();
-                    if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
+                    if (token->mem==NULL)
+                    {
+                        free(token->mem);
+                        return INTERN_INTERPRETATION_ERR;
+                    }
                     token->mem=string_implementation(c,i,token->mem);
-                    if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
+                    if (token->mem==NULL)
+                    {
+                        free(token->mem);
+                        return INTERN_INTERPRETATION_ERR;
+                    }
                 }
                 c=fgetc(fp);
                 while (c!='\'' && c!=EOF)
                 {
                     i++;
                     token->mem=string_implementation(c,i,token->mem);
-                    if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
+                    if (token->mem==NULL)
+                    {
+                        free(token->mem);
+                        return INTERN_INTERPRETATION_ERR;
+                    }
                     c=fgetc(fp);
                 }
                 if (c=='\'')
                 {
                     i++;
                     token->mem=string_implementation(c,i,token->mem);
-                    if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
+                    if (token->mem==NULL)
+                    {
+                        free(token->mem);
+                        return INTERN_INTERPRETATION_ERR;
+                    }
                 }
                 else return INTERN_INTERPRETATION_ERR;
                 c=fgetc(fp);
                 token->mem=string_implementation('\0',i+1,token->mem);
-                if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
+                if (token->mem==NULL)
+                {
+                    free(token->mem);
+                    return INTERN_INTERPRETATION_ERR;
+                }
                 token->identity = DtString;
                 return EVERYTHINGSOKAY;
             }
@@ -379,12 +579,24 @@ ERROR_MSG get_token ()
                 if (i==0)
                 {
                     token->mem=first_allocation ();
-                    if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
+                    if (token->mem==NULL)
+                    {
+                        free(token->mem);
+                        return INTERN_INTERPRETATION_ERR;
+                    }
                     token->mem=string_implementation(c,i,token->mem);
-                    if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
+                    if (token->mem==NULL)
+                    {
+                        free(token->mem);
+                        return INTERN_INTERPRETATION_ERR;
+                    }
                     c=fgetc(fp);
                     token->mem=string_implementation('\0',i+1,token->mem);
-                    if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
+                    if (token->mem==NULL)
+                    {
+                        free(token->mem);
+                        return INTERN_INTERPRETATION_ERR;
+                    }
                     token->identity = OpBodka;
                     return EVERYTHINGSOKAY;
                 }
