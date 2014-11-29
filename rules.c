@@ -44,6 +44,9 @@ T_terms token_to_term()
       case KwEnd:
         return end_;
       case KwForward:
+        return forward_;
+      case KwFunction:
+        return function_;
       case KwIf:
         return if_;
       case KwInteger:
@@ -77,7 +80,7 @@ T_terms token_to_term()
 }
 
 
-int get_rule(T_nonterms nonterm, T_ParserItem **PItem_Arr)
+int get_rule(T_nonterms nonterm, T_ParserItem **PItem_Arr, T_State *st, bool *is_f)
 {
   int rule;
   T_terms term;
@@ -85,6 +88,7 @@ int get_rule(T_nonterms nonterm, T_ParserItem **PItem_Arr)
   rule=LLTable[term][nonterm];
   switch(rule)
   {
+    case -1:
     case 0:
           return 1; // pravidlo neexistuje
     case 1: // 1. <START> → <DEF_VAR> <FUNC> <BODY>.
@@ -96,12 +100,15 @@ int get_rule(T_nonterms nonterm, T_ParserItem **PItem_Arr)
           PItem_Arr[2]->value.nonterm.type=FUNC;
           PItem_Arr[3]->type=NONTERMINAL;
           PItem_Arr[3]->value.nonterm.type=DEF_VAR;
+          *is_f=false;
           break;
     case 2: // 2. <DEF_VAR> → var <VAR>
           PItem_Arr[0]->type=NONTERMINAL;
           PItem_Arr[0]->value.nonterm.type=VAR;
           PItem_Arr[1]->type=TERMINAL;
           PItem_Arr[1]->value.term=KwVar;
+          if(*is_f==false)*st=GLOBVAR_DEK;
+          else *st=LOCVAR_DEK;
           break;
     case 4: // 4. <VAR> → id :<TYPE>; <VAR_N>
     case 6: // 6. <VAR_N> →  id :<TYPE>; <VAR_N>
@@ -139,6 +146,12 @@ int get_rule(T_nonterms nonterm, T_ParserItem **PItem_Arr)
           PItem_Arr[9]->value.term=ID;
           PItem_Arr[10]->type=TERMINAL;
           PItem_Arr[10]->value.term=KwFunction;
+          *is_f=true;
+          *st=FUNC_ID;
+          break;
+    case 9: // 9. <FORWARD> → forward
+          PItem_Arr[0]->type=TERMINAL;
+          PItem_Arr[0]->value.term=KwForward;
           break;
     case 10: // 10. <FORWARD> →  <DEF_VAR> <BODY>
           PItem_Arr[0]->type=NONTERMINAL;
@@ -155,6 +168,7 @@ int get_rule(T_nonterms nonterm, T_ParserItem **PItem_Arr)
           PItem_Arr[2]->value.term=OpDek;
           PItem_Arr[3]->type=TERMINAL;
           PItem_Arr[3]->value.term=ID;
+          *st=FUNC_PARAMS;
           break;
     case 13: // 13. <PARAM_N> → ;  id :<TYPE> <PARAM_N>
           PItem_Arr[0]->type=NONTERMINAL;
@@ -191,6 +205,9 @@ int get_rule(T_nonterms nonterm, T_ParserItem **PItem_Arr)
           PItem_Arr[1]->value.nonterm.type=STAT_S;
           PItem_Arr[2]->type=TERMINAL;
           PItem_Arr[2]->value.term=KwBegin;
+          if(*is_f==false)*st=MAIN_BODY;
+          else *st=FUNC_BODY;
+          *is_f=false;
           break;
     case 21: // 21. <STAT_S> → <STAT> <STAT_N>
           PItem_Arr[0]->type=NONTERMINAL;
@@ -297,11 +314,13 @@ int get_rule(T_nonterms nonterm, T_ParserItem **PItem_Arr)
           PItem_Arr[1]->value.term=OpCiarka;
           break;
     // epsilon pravidla
+    case 12:
+        case 14:
+              *st=FUNC_TYPE;
     case 3:
      case 5:
       case 8:
-       case 12:
-        case 14:
+
          case 20:
           case 22:
            case 36:
