@@ -1,5 +1,6 @@
 var
-   a,_al9: integer;
+   a: integer;
+   _al9:integer;
 begin
    a := 10;
    _al9 :=5;
