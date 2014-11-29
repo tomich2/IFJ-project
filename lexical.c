@@ -122,6 +122,11 @@ ERROR_MSG get_token ()
                         return INTERN_INTERPRETATION_ERR;
                     }
                     c=fgetc(fp);
+                    if (c<'0' || c>'9')
+                    {
+                        free(token->mem);
+                        return LEXICAL_ERR;
+                    }
                     while ((c)>='0' && c<='9')
                     {
                         i++;
@@ -146,6 +151,24 @@ ERROR_MSG get_token ()
                                 return INTERN_INTERPRETATION_ERR;
                             }
                             c=fgetc(fp);
+                            if (c=='+' || c=='-')
+                            {
+                                i++;
+                                token->mem=string_implementation(c,i,token->mem);
+                                if (token->mem==NULL)
+                                {
+                                    free(token->mem);
+                                    return INTERN_INTERPRETATION_ERR;
+                                }
+                            }
+                            else
+                            {
+                                if (c<'0' || c>'9')
+                                {
+                                    free(token->mem);
+                                    return LEXICAL_ERR;
+                                }
+                            }
                             while ((c)>='0' && c<='9')
                             {
                                 i++;
@@ -191,6 +214,11 @@ ERROR_MSG get_token ()
                         return INTERN_INTERPRETATION_ERR;
                     }
                     c=fgetc(fp);
+                    if ((c!='+' || c!='-') &&  (c<'0' || c>'9'))
+                    {
+                        free(token->mem);
+                        return LEXICAL_ERR;
+                    }
                     if (c=='+' || c=='-')
                     {
                         i++;
@@ -562,7 +590,11 @@ ERROR_MSG get_token ()
                         return INTERN_INTERPRETATION_ERR;
                     }
                 }
-                else return INTERN_INTERPRETATION_ERR;
+                else
+                {
+                    free(token->mem);
+                    return LEXICAL_ERR;
+                }
                 c=fgetc(fp);
                 token->mem=string_implementation('\0',i+1,token->mem);
                 if (token->mem==NULL)
