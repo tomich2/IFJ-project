@@ -21,7 +21,7 @@ if [ $value = $expected ];
         echo -e "Testing no file                    ${red}FAIL, return code $value, expected $expected${NC}" ;
 fi
 
-./parser file0 > ./test0.outputs/file0.output 2>&1;
+./parser ./test/file0 > ./test0.outputs/file0.output 2>&1;
 value=$?;
 expected=0;
 if [ $value = $expected ];
@@ -31,7 +31,7 @@ if [ $value = $expected ];
         echo -e "Testing file0                      ${red}FAIL, return code $value, expected $expected${NC}";
 fi
 
-./parser file1 > test0.outputs/file1.output 2>&1;
+./parser ./test/file1 > test0.outputs/file1.output 2>&1;
 value=$?;
 expected=0;
 if [ $value = $expected ];
@@ -41,7 +41,7 @@ if [ $value = $expected ];
         echo -e "Testing file1                      ${red}FAIL, return code $value, expected $expected${NC}";
 fi
 
-./parser file2 > test0.outputs/file2.output 2>&1;
+./parser ./test/file2 > test0.outputs/file2.output 2>&1;
 value=$?;
 expected=0;
 if [ $value = 0 ];
@@ -51,7 +51,7 @@ if [ $value = 0 ];
         echo -e "Testing file2                      ${red}FAIL, return code $value, expected $expected${NC}";
 fi
 
-./parser file3 > test0.outputs/file3.output 2>&1;
+./parser ./test/file3 > test0.outputs/file3.output 2>&1;
 value=$?;
 expected=0;
 if [ $value = $expected ];
@@ -61,7 +61,7 @@ if [ $value = $expected ];
         echo -e "Testing file3                      ${red}FAIL, return code $value, expected $expected${NC}";
 fi
 
-./parser file4 > test0.outputs/file4.output 2>&1;
+./parser ./test/file4 > test0.outputs/file4.output 2>&1;
 value=$?;
 expected=0;
 if [ $value = $expected ];
@@ -71,7 +71,7 @@ if [ $value = $expected ];
         echo -e "Testing file4                      ${red}FAIL, return code $value, expected $expected${NC}";
 fi
 
-./parser file5 > test0.outputs/file5.output 2>&1;
+./parser ./test/file5 > test0.outputs/file5.output 2>&1;
 value=$?;
 expected=0;
 if [ $value = $expected ];
@@ -81,7 +81,7 @@ if [ $value = $expected ];
         echo -e "Testing file5                      ${red}FAIL, return code $value, expected $expected${NC}";
 fi
 
-./parser file6 > test0.outputs/file6.output 2>&1;
+./parser ./test/file6 > test0.outputs/file6.output 2>&1;
 value=$?;
 expected=2;
 if [ $value = $expected ];
@@ -91,7 +91,7 @@ if [ $value = $expected ];
         echo -e "Testing file6                      ${red}FAIL, return code $value, expected $expected${NC}";
 fi
 
-./parser file7 > test0.outputs/file7.output 2>&1;
+./parser ./test/file7 > test0.outputs/file7.output 2>&1;
 value=$?;
 expected=3;
 if [ $value = $expected ];
@@ -101,7 +101,7 @@ if [ $value = $expected ];
         echo -e "Testing file7                      ${red}FAIL, return code $value, expected $expected${NC}";
 fi
 
-./parser file8 > test0.outputs/file8.output 2>&1;
+./parser ./test/file8 > test0.outputs/file8.output 2>&1;
 value=$?;
 expected=2;
 if [ $value = $expected ];
@@ -111,7 +111,7 @@ if [ $value = $expected ];
         echo -e "Testing file8                      ${red}FAIL, return code $value, expected $expected${NC}";
 fi
 
-./parser file9 > test0.outputs/file9.output 2>&1;
+./parser ./test/file9 > test0.outputs/file9.output 2>&1;
 value=$?;
 expected=3;
 if [ $value = $expected ];
@@ -121,7 +121,7 @@ if [ $value = $expected ];
         echo -e "Testing file9                      ${red}FAIL, return code $value, expected $expected${NC}";
 fi
 
-./parser file10 > test0.outputs/file10.output 2>&1;
+./parser ./test/file10 > test0.outputs/file10.output 2>&1;
 value=$?;
 expected=2;
 if [ $value = $expected ];
@@ -131,7 +131,7 @@ if [ $value = $expected ];
         echo -e "Testing file10                     ${red}FAIL, return code $value, expected $expected${NC}";
 fi
 
-./parser file11 > test0.outputs/file11.output 2>&1;
+./parser ./test/file11 > test0.outputs/file11.output 2>&1;
 value=$?;
 expected=2;
 if [ $value = $expected ];
@@ -141,7 +141,7 @@ if [ $value = $expected ];
         echo -e "Testing file11                     ${red}FAIL, return code $value, expected $expected${NC}";
 fi
 
-./parser file12 > test0.outputs/file12.output 2>&1;
+./parser ./test/file12 > test0.outputs/file12.output 2>&1;
 value=$?;
 expected=1;
 if [ $value = $expected ];
@@ -151,7 +151,7 @@ if [ $value = $expected ];
         echo -e "Testing file12                     ${red}FAIL, return code $value, expected $expected${NC}";
 fi
 
-./parser file13 > test0.outputs/file13.output 2>&1;
+./parser ./test/file13 > test0.outputs/file13.output 2>&1;
 value=$?;
 expected=0;
 if [ $value = $expected ];
@@ -161,7 +161,7 @@ if [ $value = $expected ];
         echo -e "Testing file13                     ${red}FAIL, return code $value, expected $expected${NC}";
 fi
 
-./parser file14 > test0.outputs/file14.output 2>&1;
+./parser ./test/file14 > test0.outputs/file14.output 2>&1;
 value=$?;
 expected=0;
 if [ $value = $expected ];
@@ -171,7 +171,7 @@ if [ $value = $expected ];
         echo -e "Testing file14                     ${red}FAIL, return code $value, expected $expected${NC}";
 fi
 
-./parser file15 > test0.outputs/file15.output 2>&1;
+./parser ./test/file15 > test0.outputs/file15.output 2>&1;
 value=$?;
 expected=0;
 if [ $value = $expected ];
@@ -181,7 +181,7 @@ if [ $value = $expected ];
         echo -e "Testing file15                     ${red}FAIL, return code $value, expected $expected${NC}";
 fi
 
-./parser file16 > test0.outputs/file16.output 2>&1;
+./parser ./test/file16 > test0.outputs/file16.output 2>&1;
 value=$?;
 expected=0;
 if [ $value = $expected ];
@@ -191,7 +191,7 @@ if [ $value = $expected ];
         echo -e "Testing file16                     ${red}FAIL, return code $value, expected $expected${NC}";
 fi
 
-./parser file17 > test0.outputs/file17.output 2>&1;
+./parser ./test/file17 > test0.outputs/file17.output 2>&1;
 value=$?;
 expected=2;
 if [ $value = $expected ];
@@ -201,7 +201,7 @@ if [ $value = $expected ];
         echo -e "Testing file17                     ${red}FAIL, return code $value, expected $expected${NC}";
 fi
 
-./parser file18 > test0.outputs/file18.output 2>&1;
+./parser ./test/file18 > test0.outputs/file18.output 2>&1;
 value=$?;
 expected=1;
 if [ $value = $expected ];
