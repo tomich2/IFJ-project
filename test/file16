@@ -2,6 +2,10 @@ var
    a: integer;
 begin
    a := 10;
-   if a<>0 then write('neni nula')
-   else write ('je nula')
+   if a<>0 then begin 
+		write('neni nula') 
+		end
+   else begin 
+	write ('je nula') 
+	end
 end.
