@@ -1,0 +1,5 @@
+var
+   a_5: integer;
+begin
+   a_5 := 10
+end.
