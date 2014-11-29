@@ -141,4 +141,77 @@ if [ $value = $expected ];
         echo -e "Testing file11                     ${red}FAIL, return code $value, expected $expected${NC}";
 fi
 
+./parser file12 > test0.outputs/file12.output 2>&1;
+value=$?;
+expected=1;
+if [ $value = $expected ];
+    then
+        echo -e "Testing file12                     ${green}PASS${NC}";
+    else
+        echo -e "Testing file12                     ${red}FAIL, return code $value, expected $expected${NC}";
+fi
+
+./parser file13 > test0.outputs/file13.output 2>&1;
+value=$?;
+expected=0;
+if [ $value = $expected ];
+    then
+        echo -e "Testing file13                     ${green}PASS${NC}";
+    else
+        echo -e "Testing file13                     ${red}FAIL, return code $value, expected $expected${NC}";
+fi
+
+./parser file14 > test0.outputs/file14.output 2>&1;
+value=$?;
+expected=0;
+if [ $value = $expected ];
+    then
+        echo -e "Testing file14                     ${green}PASS${NC}";
+    else
+        echo -e "Testing file14                     ${red}FAIL, return code $value, expected $expected${NC}";
+fi
+
+./parser file15 > test0.outputs/file15.output 2>&1;
+value=$?;
+expected=0;
+if [ $value = $expected ];
+    then
+        echo -e "Testing file15                     ${green}PASS${NC}";
+    else
+        echo -e "Testing file15                     ${red}FAIL, return code $value, expected $expected${NC}";
+fi
+
+./parser file16 > test0.outputs/file16.output 2>&1;
+value=$?;
+expected=0;
+if [ $value = $expected ];
+    then
+        echo -e "Testing file16                     ${green}PASS${NC}";
+    else
+        echo -e "Testing file16                     ${red}FAIL, return code $value, expected $expected${NC}";
+fi
+
+./parser file17 > test0.outputs/file17.output 2>&1;
+value=$?;
+expected=2;
+if [ $value = $expected ];
+    then
+        echo -e "Testing file17                     ${green}PASS${NC}";
+    else
+        echo -e "Testing file17                     ${red}FAIL, return code $value, expected $expected${NC}";
+fi
+
+./parser file18 > test0.outputs/file18.output 2>&1;
+value=$?;
+expected=1;
+if [ $value = $expected ];
+    then
+        echo -e "Testing file18                     ${green}PASS${NC}";
+    else
+        echo -e "Testing file18                     ${red}FAIL, return code $value, expected $expected${NC}";
+fi
+
+
+
+
 exit 0;
