@@ -1,0 +1,9 @@
+var x:real;
+    y:string;
+    z:boolean;
+
+begin
+ x:=5.45e11;
+ x:=54545.787;
+ z:=true
+end.
