@@ -1,0 +1,4 @@
+var a:integer;
+begin
+    write('value of a: '', a)
+end.
