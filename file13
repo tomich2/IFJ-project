@@ -1,7 +1,0 @@
-var
-   a,_al9: integer;
-begin
-   a := 10;
-   _al9 :=5;
-   a := a + _al9
-end.
