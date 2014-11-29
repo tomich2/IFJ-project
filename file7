@@ -1,9 +1,0 @@
-Var surname: String;
-    name:string;
-Begin
- write('Enter your name:');
- readln(names);
- write('Enter your surname:');
- readln(surname);
- Write('Your full name is: ',name,' ',surname)
-End.
