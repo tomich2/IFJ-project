@@ -1,0 +1,5 @@
+var
+  bubble : double;
+begin
+  bubble := 7E
+end.
