@@ -1,0 +1,3 @@
+begin
+  write('never-ending string)
+end.
