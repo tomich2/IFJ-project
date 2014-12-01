@@ -170,6 +170,12 @@ ERROR_MSG get_token ()
                                     return LEXICAL_ERR;
                                 }
                             }
+                            c=fgetc(fp);
+                            if (c>'9' || c<'0')
+                            {
+                                free(token->mem);
+                                return LEXICAL_ERR;
+                            }
                             while ((c)>='0' && c<='9')
                             {
                                 i++;
@@ -217,6 +223,7 @@ ERROR_MSG get_token ()
                     c=fgetc(fp);
                     if ((c!='+' || c!='-') &&  (c<'0' || c>'9'))
                     {
+                        printf("pica");
                         free(token->mem);
                         return LEXICAL_ERR;
                     }
@@ -258,6 +265,7 @@ ERROR_MSG get_token ()
                     }
                     if ((strchr(token->mem,'.'))==NULL)
                     {
+
                         token->mem=string_implementation('\0',i+1,token->mem);
                         if (token->mem==NULL)
                         {
@@ -265,6 +273,7 @@ ERROR_MSG get_token ()
                             return INTERN_INTERPRETATION_ERR;
                         }
                         token->identity = DtInteger;
+
                         return EVERYTHINGSOKAY;
                     }
                 }
@@ -623,6 +632,11 @@ ERROR_MSG get_token ()
                 {
 
                     c=fgetc(fp);
+                    if (c<32)
+                    {
+                        free(token->mem);
+                        return LEXICAL_ERR;
+                    }
                     if ((c==';' || c==')' || c==',' )) break;
                     i++;
                     token->mem=string_implementation(c,i,token->mem);
@@ -635,6 +649,11 @@ ERROR_MSG get_token ()
                     {
                         parity++;
                         c=fgetc(fp);
+                        if (c<32)
+                        {
+                            free(token->mem);
+                            return LEXICAL_ERR;
+                        }
                         if (c==')' || c==',' || c==';')
                         {
                             end=true;
@@ -747,6 +766,8 @@ ERROR_MSG get_token ()
 
             default:
             {
+                //token->identity=EndOfFile;
+                //free(token->mem);
                 return LEXICAL_ERR;
             }
         }
