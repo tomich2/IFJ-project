@@ -13,8 +13,9 @@ typedef struct listItem
 
 typedef struct tListOfInstr
 {
-  tListItem *first;  // ukazatel na prvni prvek
-  tListItem *last;   // ukazatel na posledni prvek
+  tListItem *first;  
+  tListItem *last;   
+  tListItem *active;
 } tListOfInstr;
 
 
