@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <stdbool.h>
 #include "lexical.h"
 #include "lexstring.h"
 
@@ -568,20 +569,11 @@ ERROR_MSG get_token ()
                         return INTERN_INTERPRETATION_ERR;
                     }
                 }
-                c=fgetc(fp);
-                while (c!='\'' && c!=EOF)
+                int parity=1;
+                bool end=false;
+               /* while (1)
                 {
-                    i++;
-                    token->mem=string_implementation(c,i,token->mem);
-                    if (token->mem==NULL)
-                    {
-                        free(token->mem);
-                        return INTERN_INTERPRETATION_ERR;
-                    }
                     c=fgetc(fp);
-                }
-                if (c=='\'')
-                {
                     i++;
                     token->mem=string_implementation(c,i,token->mem);
                     if (token->mem==NULL)
@@ -589,13 +581,85 @@ ERROR_MSG get_token ()
                         free(token->mem);
                         return INTERN_INTERPRETATION_ERR;
                     }
-                }
-                else
+                    if (c=='\'')
+                    {
+                        parity++;
+                        c=fgetc(fp);
+                        if (parity % 2 == 1)
+                        {
+                            i++;
+                            token->mem=string_implementation(c,i,token->mem);
+                            if (token->mem==NULL)
+                            {
+                                free(token->mem);
+                                return INTERN_INTERPRETATION_ERR;
+                            }
+                            break;
+                        }
+                        if ((c!='#' && c!='\''))
+                        {
+                            end=true;
+                            break;
+                        }
+                        else
+                        {
+                            i++;
+                            token->mem=string_implementation(c,i,token->mem);
+                            if (token->mem==NULL)
+                            {
+                                free(token->mem);
+                                return INTERN_INTERPRETATION_ERR;
+                            }
+                        }
+                    }
+                    if (end)
+                    {
+                        break;
+                    }
+
+                }*/
+
+                while (1)
                 {
-                    free(token->mem);
-                    return LEXICAL_ERR;
+
+                    c=fgetc(fp);
+                    if (parity % 2 == 0 && (c==';' || c==')' || c==',' )) break;
+                    i++;
+                    token->mem=string_implementation(c,i,token->mem);
+                    if (token->mem==NULL)
+                    {
+                        free(token->mem);
+                        return INTERN_INTERPRETATION_ERR;
+                    }
+                    if (c=='\'')
+                    {
+                        parity++;
+                        c=fgetc(fp);
+                        if (c==')' || c==',' || c==';')
+                        {
+                            end=true;
+                            break;
+                        }
+                        else
+                        {
+                            if (c=='\'') parity++;
+                            i++;
+                            token->mem=string_implementation(c,i,token->mem);
+                            if (token->mem==NULL)
+                            {
+                                free(token->mem);
+                                return INTERN_INTERPRETATION_ERR;
+                            }
+                        }
+
+                    }
+                    if (end) break;
                 }
-                c=fgetc(fp);
+
+
+
+
+                //c=fgetc(fp);
                 token->mem=string_implementation('\0',i+1,token->mem);
                 if (token->mem==NULL)
                 {
@@ -632,6 +696,54 @@ ERROR_MSG get_token ()
                     token->identity = OpBodka;
                     return EVERYTHINGSOKAY;
                 }
+            }
+
+           /* case '#':
+            {
+                if (i==0)
+                {
+                    token->mem=first_allocation ();
+                    if (token->mem==NULL)
+                    {
+                        free(token->mem);
+                        return INTERN_INTERPRETATION_ERR;
+                    }
+                    token->mem=string_implementation(c,i,token->mem);
+                    if (token->mem==NULL)
+                    {
+                        free(token->mem);
+                        return INTERN_INTERPRETATION_ERR;
+                    }
+                    c=fgetc(fp);
+                    if (c<'0' || c>'9')
+                    {
+                        free(token->mem);
+                        return LEXICAL_ERR;
+                    }
+                    while (c>='0' && c<='9')
+                    {
+                        i++;
+                        token->mem=string_implementation(c,i,token->mem);
+                        if (token->mem==NULL)
+                        {
+                            free(token->mem);
+                            return INTERN_INTERPRETATION_ERR;
+                        }
+                        c=fgetc(fp);
+                    }
+                    token->mem=string_implementation('\0',i+1,token->mem);
+                    if (token->mem==NULL)
+                    {
+                        free(token->mem);
+                        return INTERN_INTERPRETATION_ERR;
+                    }
+                    return EVERYTHINGSOKAY;
+                }*/
+
+
+            default:
+            {
+                return LEXICAL_ERR;
             }
         }
 
