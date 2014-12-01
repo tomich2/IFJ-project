@@ -223,7 +223,6 @@ ERROR_MSG get_token ()
                     c=fgetc(fp);
                     if ((c!='+' || c!='-') &&  (c<'0' || c>'9'))
                     {
-                        printf("pica");
                         free(token->mem);
                         return LEXICAL_ERR;
                     }
