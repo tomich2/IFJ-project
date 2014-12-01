@@ -26,7 +26,7 @@ typedef enum{NONTERMINAL, TERMINAL, EMPTY=-1}ItemType;
 
 typedef enum{GLOBVAR_DEK, FUNC_ID, FUNC_PARAMS, FUNC_TYPE, LOCVAR_DEK, FUNC_BODY, MAIN_BODY}T_State;
 
-typedef enum{tINTEGER, tSTRING, tREAL, tBOOLEAN}T_vartype;
+typedef enum{tINTEGER, tSTRING, tREAL, tBOOLEAN, tERR=-1}T_vartype;
 
 typedef union{
         nont nonterm;
@@ -53,13 +53,16 @@ typedef struct{
         char *act_funcID;
         int n;
         char *act_rptypes;
+        bool was_func;
+        bool is_ret;
+        bool is_write;
         }T_Actual;
 
 ERROR_MSG top_down();
-ERROR_MSG semantic(T_State *st, htab_t *gsymtab, htab_t *lsymtab, T_Actual *Ac);
+ERROR_MSG semantic(T_State *st, htab_t *gsymtab, htab_t *lsymtab, T_Actual *Ac, T_vartype *expt, size_t tmems);
 ERROR_MSG PItems_alloc(T_ParserItem ***Ptr);
 void PItems_free(T_ParserItem ***Ptr);
 void free_all(T_ParserItem **p, Stack st, int stack_erase, int token_mem_free, htab_t *gsymtab, htab_t *lsymtab, T_Actual *Ac);
-
+int get_type(char *str,int pos);
 
 #endif
