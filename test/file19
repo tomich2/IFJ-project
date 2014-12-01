@@ -1,0 +1,5 @@
+var
+  what : string;
+begin
+  @
+end.
