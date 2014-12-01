@@ -623,7 +623,7 @@ ERROR_MSG get_token ()
                 {
 
                     c=fgetc(fp);
-                    if (parity % 2 == 0 && (c==';' || c==')' || c==',' )) break;
+                    if ((c==';' || c==')' || c==',' )) break;
                     i++;
                     token->mem=string_implementation(c,i,token->mem);
                     if (token->mem==NULL)
@@ -658,7 +658,11 @@ ERROR_MSG get_token ()
 
 
 
-
+                if (parity % 2 ==1)
+                {
+                    free(token->mem);
+                    return LEXICAL_ERR;
+                }
                 //c=fgetc(fp);
                 token->mem=string_implementation('\0',i+1,token->mem);
                 if (token->mem==NULL)
