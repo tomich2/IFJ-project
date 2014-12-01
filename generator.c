@@ -12,6 +12,7 @@ void listInit(tListOfInstr *L)
 {
   L->first  = NULL;
   L->last   = NULL;
+  L->active = NULL;
 }
   
 void listFree(tListOfInstr *L)
