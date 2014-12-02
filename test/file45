@@ -1,0 +1,5 @@
+var
+  NotSoString : double;
+begin
+  NotSoString := 'I am so string...'
+end.
