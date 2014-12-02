@@ -1,0 +1,5 @@
+var
+  where : string;
+begin
+  where := find('where', 'w')
+end.
