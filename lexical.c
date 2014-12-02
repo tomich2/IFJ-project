@@ -11,7 +11,7 @@
 #include <stdbool.h>
 #include "lexical.h"
 #include "lexstring.h"
-
+#include "ial.h"
 
 //retazec klucovych slov
 const char key_words [] = {",begin,boolean,do,else,end,false,find,forward,function,if,integer,readln,real,sort,string,then,true,var,while,write,"};
@@ -32,6 +32,10 @@ ERROR_MSG get_token ()
         if (c=='{')                                                                             //preskakovanie komentarov
         {
             while ((c=fgetc(fp))!='}' && (c!=EOF));
+            if (c==EOF)
+            {
+                return LEXICAL_ERR;
+            }
         }
         if (c=='}') c=fgetc(fp);
         if (isspace(c)!=0)                                                                      // preskoc medzery
@@ -189,26 +193,6 @@ ERROR_MSG get_token ()
                             }
                             break;
                         }
-                    /*    case '+':
-                        case '-':
-                        {
-                            i++;
-                            token->mem=string_implementation(c,i,token->mem);
-                            if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
-                            c=fgetc(fp);
-                            if (c=='e' || c=='E')
-                            {
-                                c=fgetc(fp);
-                                while ((c)>='0' && c<='9')
-                                {
-                                    i++;
-                                    token->mem=string_implementation(c,i,token->mem);
-                                    if (token->mem==NULL) return INTERN_INTERPRETATION_ERR;
-                                    c=fgetc(fp);
-                                }
-                            }
-                            break;
-                        }*/
                     }
                 }
                 if (c=='e' || c=='E')
@@ -577,55 +561,9 @@ ERROR_MSG get_token ()
                         return INTERN_INTERPRETATION_ERR;
                     }
                 }
+
                 int parity=1;
                 bool end=false;
-               /* while (1)
-                {
-                    c=fgetc(fp);
-                    i++;
-                    token->mem=string_implementation(c,i,token->mem);
-                    if (token->mem==NULL)
-                    {
-                        free(token->mem);
-                        return INTERN_INTERPRETATION_ERR;
-                    }
-                    if (c=='\'')
-                    {
-                        parity++;
-                        c=fgetc(fp);
-                        if (parity % 2 == 1)
-                        {
-                            i++;
-                            token->mem=string_implementation(c,i,token->mem);
-                            if (token->mem==NULL)
-                            {
-                                free(token->mem);
-                                return INTERN_INTERPRETATION_ERR;
-                            }
-                            break;
-                        }
-                        if ((c!='#' && c!='\''))
-                        {
-                            end=true;
-                            break;
-                        }
-                        else
-                        {
-                            i++;
-                            token->mem=string_implementation(c,i,token->mem);
-                            if (token->mem==NULL)
-                            {
-                                free(token->mem);
-                                return INTERN_INTERPRETATION_ERR;
-                            }
-                        }
-                    }
-                    if (end)
-                    {
-                        break;
-                    }
-
-                }*/
 
                 while (1)
                 {
@@ -648,16 +586,74 @@ ERROR_MSG get_token ()
                     {
                         parity++;
                         c=fgetc(fp);
-                        if (c<32)
-                        {
-                            free(token->mem);
-                            return LEXICAL_ERR;
-                        }
-                        if (c==')' || c==',' || c==';')
+
+                        if (c==')' || c==',' || c==';' || c=='\n')
                         {
                             end=true;
                             break;
                         }
+                        i++;
+                        token->mem=string_implementation(c,i,token->mem);
+                        if (token->mem==NULL)
+                        {
+                            free(token->mem);
+                            return INTERN_INTERPRETATION_ERR;
+                        }
+                        if (c=='#')
+                        {
+                            token->mem=string_implementation(c,i,token->mem);
+                            if (token->mem==NULL)
+                            {
+                                free(token->mem);
+                                return INTERN_INTERPRETATION_ERR;
+                            }
+                            c=fgetc(fp);
+                            int init = i;
+                            while (c>='0' && c<='9')
+                            {
+                                i++;
+                                token->mem=string_implementation(c,i,token->mem);
+                                if (token->mem==NULL)
+                                {
+                                    free(token->mem);
+                                    return INTERN_INTERPRETATION_ERR;
+                                }
+                                c=fgetc(fp);
+                            }
+
+                            char convert [i-init+1];
+                            strncpy(convert,(token->mem+init+1),i-init);
+                            convert[i-init]='\0';
+                            if (c=='\'')
+                            {
+                                i++;
+                                parity++;
+                                token->mem=string_implementation(c,i,token->mem);
+                                if (token->mem==NULL)
+                                {
+                                    free(token->mem);
+                                    return INTERN_INTERPRETATION_ERR;
+                                }
+                                int numero = atoi(convert);
+                                if (numero<=0 || numero==39 || numero>=32)
+                                {
+                                    free(token->mem);
+                                    return LEXICAL_ERR;
+                                }
+
+                            }
+                            else
+                            {
+                                free(token->mem);
+                                return LEXICAL_ERR;
+                            }
+
+
+
+
+
+                        }
+
                         else
                         {
                             if (c=='\'') parity++;
