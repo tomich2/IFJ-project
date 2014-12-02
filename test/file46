@@ -1,0 +1,5 @@
+var
+  NotSoInteger : double;
+begin
+  NotSoInteger := 56
+end.
