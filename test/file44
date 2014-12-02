@@ -1,0 +1,5 @@
+var
+  NotSoString : integer;
+begin
+  NotSoString := sort('unsortable string')
+end.
