@@ -1,0 +1,7 @@
+var
+  fake : string;
+  unsortable : integer;
+begin
+  unsortable := 12345;
+  fake := sort(unsortable)
+end.
