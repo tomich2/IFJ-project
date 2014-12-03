@@ -26,7 +26,7 @@ value=$?;
 expected=0;
 if [ $value = $expected ];
     then
-	if diff ./test0.outputs/file0.output ./test/file0.cmp >/dev/null ; 
+	if diff ./test0.outputs/file0.output ./test/file0.cmp >/dev/null ;
         then
 	echo -e "Testing file0                      ${green}PASS${NC}";
 	else
@@ -41,7 +41,7 @@ value=$?;
 expected=0;
 if [ $value = $expected ];
     then
-	if diff ./test0.outputs/file1.output ./test/file1.cmp >/dev/null ; 
+	if diff ./test0.outputs/file1.output ./test/file1.cmp >/dev/null ;
         then
 	echo -e "Testing file1                      ${green}PASS${NC}";
 	else
@@ -56,7 +56,7 @@ value=$?;
 expected=0;
 if [ $value = $expected ];
     then
-	if diff ./test0.outputs/file2.output ./test/file2.cmp >/dev/null ; 
+	if diff ./test0.outputs/file2.output ./test/file2.cmp >/dev/null ;
         then
 	echo -e "Testing file2                      ${green}PASS${NC}";
 	else
@@ -71,7 +71,7 @@ value=$?;
 expected=0;
 if [ $value = $expected ];
     then
-	if diff ./test0.outputs/file3.output ./test/file3.cmp >/dev/null ; 
+	if diff ./test0.outputs/file3.output ./test/file3.cmp >/dev/null ;
         then
 	echo -e "Testing file3                      ${green}PASS${NC}";
 	else
@@ -86,7 +86,7 @@ value=$?;
 expected=0;
 if [ $value = $expected ];
     then
-	if diff ./test0.outputs/file4.output ./test/file4.cmp >/dev/null ; 
+	if diff ./test0.outputs/file4.output ./test/file4.cmp >/dev/null ;
         then
 	echo -e "Testing file4                      ${green}PASS${NC}";
 	else
@@ -99,9 +99,10 @@ fi
 ./parser ./test/file5 > test0.outputs/file5.output 2>&1;
 value=$?;
 expected=0;
+touch ./test/file5.cmp
 if [ $value = $expected ];
     then
-	if diff ./test0.outputs/file5.output ./test/file5.cmp >/dev/null ; 
+	if diff ./test0.outputs/file5.output ./test/file5.cmp >/dev/null ;
         then
 	echo -e "Testing file5                      ${green}PASS${NC}";
 	else
@@ -110,6 +111,7 @@ if [ $value = $expected ];
     else
         echo -e "Testing file5                      ${red}FAIL, return code $value, expected $expected${NC}";
 fi
+rm ./test/file5.cmp
 
 ./parser ./test/file6 > test0.outputs/file6.output 2>&1;
 value=$?;
@@ -184,9 +186,10 @@ fi
 ./parser ./test/file13 > test0.outputs/file13.output 2>&1;
 value=$?;
 expected=0;
+touch ./test/file13.cmp
 if [ $value = $expected ];
     then
-	if diff ./test0.outputs/file13.output ./test/file13.cmp >/dev/null ; 
+	if diff ./test0.outputs/file13.output ./test/file13.cmp >/dev/null ;
         then
 	echo -e "Testing file13                     ${green}PASS${NC}";
 	else
@@ -195,13 +198,15 @@ if [ $value = $expected ];
     else
         echo -e "Testing file13                     ${red}FAIL, return code $value, expected $expected${NC}";
 fi
+rm ./test/file13.cmp
 
 ./parser ./test/file14 > test0.outputs/file14.output 2>&1;
 value=$?;
 expected=0;
+touch ./test/file14.cmp
 if [ $value = $expected ];
     then
-	if diff ./test0.outputs/file14.output ./test/file14.cmp >/dev/null ; 
+	if diff ./test0.outputs/file14.output ./test/file14.cmp >/dev/null ;
         then
 	echo -e "Testing file14                     ${green}PASS${NC}";
 	else
@@ -210,13 +215,15 @@ if [ $value = $expected ];
     else
         echo -e "Testing file14                     ${red}FAIL, return code $value, expected $expected${NC}";
 fi
+rm ./test/file14.cmp
 
 ./parser ./test/file15 > test0.outputs/file15.output 2>&1;
 value=$?;
 expected=0;
+touch ./test/file15.cmp
 if [ $value = $expected ];
     then
-	if diff ./test0.outputs/file15.output ./test/file15.cmp >/dev/null ; 
+	if diff ./test0.outputs/file15.output ./test/file15.cmp >/dev/null ;
         then
 	echo -e "Testing file15                     ${green}PASS${NC}";
 	else
@@ -225,13 +232,14 @@ if [ $value = $expected ];
     else
         echo -e "Testing file15                     ${red}FAIL, return code $value, expected $expected${NC}";
 fi
+rm ./test/file15.cmp
 
 ./parser ./test/file16 > test0.outputs/file16.output 2>&1;
 value=$?;
 expected=0;
 if [ $value = $expected ];
     then
-	if diff ./test0.outputs/file16.output ./test/file16.cmp >/dev/null ; 
+	if diff ./test0.outputs/file16.output ./test/file16.cmp >/dev/null ;
         then
 	echo -e "Testing file16                     ${green}PASS${NC}";
 	else
