@@ -51,6 +51,7 @@ typedef struct
 {
 		int i;
 		double r;
+		bool b;
 		char *s;
 		//string s;
 }VariableData;
