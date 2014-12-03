@@ -61,6 +61,7 @@ typedef enum
 		VAR_Int,
 		VAR_Real,
 		VAR_String
+		VAR_Var
 }VariableType;
 	 
 
