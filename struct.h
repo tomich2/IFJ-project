@@ -61,7 +61,7 @@ typedef enum
 		VAR_Int,
 		VAR_Real,
 		VAR_String
-		VAR_Var
+		VAR_Var		//ked bude typu VAR_Var tak v data.s bude nazov, nie obycajny string
 }VariableType;
 	 
 
