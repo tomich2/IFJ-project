@@ -29,6 +29,7 @@ typedef struct fitem{
 
 typedef struct{
         t_flist_item *First;
+        t_flist_item *Active;
         }t_func_list;
 
 typedef struct item{
@@ -42,6 +43,7 @@ typedef struct item{
 typedef struct{
         t_list_item *First;
         t_list_item *Last;
+        t_list_item *Active;
         }t_varfunc_list;
 
 typedef struct labitem{
@@ -53,6 +55,7 @@ typedef struct labitem{
 typedef struct{
         t_lablist_item *First;
         t_lablist_item *Last;
+        t_lablist_item *Active;
         }t_lablist;
 
 void varfuncL_init(t_varfunc_list *l);
