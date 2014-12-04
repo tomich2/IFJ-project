@@ -6,7 +6,6 @@
 #include "struct.h"
 #include "generator.h"
 #include "error.h" 
-#include "error.c"
 
 void listInit(tListOfInstr *L)
 {
