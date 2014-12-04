@@ -16,12 +16,27 @@ void listInit(tListOfInstr *L)
   
 void listFree(tListOfInstr *L)
 {
-  tListItem *ptr;
+  tListItem *tmp;
+  tInstruction *instr;
+  struct Variable *var;
   while (L->first != NULL)
   {
-    ptr = L->first;
+    tmp = L->first;
+    instr= L->first->Instr;
+    if ((L->first->Instr->a)!=NULL)
+    {
+		var = L->first->Instr->a;
+		free(var);
+	}
+	if ((L->first->Instr->b)!=NULL)
+    {
+		var = L->first->Instr->b;
+		free(var);
+	}
+	
     L->first = L->first->nextItem;
-    free(ptr);
+    free(tmp);
+    free(instr);
   }
 }
 
