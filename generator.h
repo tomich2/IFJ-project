@@ -13,16 +13,15 @@ typedef struct listItem
 
 typedef struct tListOfInstr
 {
-  tListItem *first;  
-  tListItem *last;   
+  tListItem *first;  // ukazatel na prvni prvek
+  tListItem *last;   // ukazatel na posledni prvek
   tListItem *active;
 } tListOfInstr;
 
 
 void listInit(tListOfInstr *L);
 void listFree(tListOfInstr *L);
-void listInsertLast(tListOfInstr *L, tInstruction *I);
-tInstruction* generator(InstName name, Variable *a, Variable *b, void *s);
+tListItem* generator(tListOfInstr *L, InstName name, Variable *a, Variable *b, void *s);
 
 
 
