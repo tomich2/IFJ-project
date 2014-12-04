@@ -25,23 +25,7 @@ void listFree(tListOfInstr *L)
   }
 }
 
-void listInsertLast(tListOfInstr *L, tInstruction *I)
-{
-  tListItem *newItem;
-  newItem = malloc(sizeof (tListItem));
-  if (newItem==NULL)
-	Error(7);
-  newItem->Instr = I;
-  newItem->nextItem = NULL;
-  if (L->first == NULL)
-     L->first = newItem;
-  else
-     L->last->nextItem=newItem;
-  L->last=newItem;
-}
-
-
-tInstruction* generator(InstName name, Variable *a, Variable *b, void *s)
+tListItem* generator(tListOfInstr *L, InstName name, Variable *a, Variable *b, void *s)
 {
 	tInstruction *instr=malloc(sizeof(tInstruction));
 	if (instr==NULL)
@@ -50,5 +34,18 @@ tInstruction* generator(InstName name, Variable *a, Variable *b, void *s)
 	instr->a=a;
 	instr->b=b;
 	instr->res=s;
-	return instr;
+	
+	tListItem *newItem;
+	newItem = malloc(sizeof (tListItem));
+	if (newItem==NULL)
+		Error(7);
+	newItem->Instr = instr;
+	newItem->nextItem = NULL;
+	if (L->first == NULL)
+		L->first = newItem;
+	else
+		L->last->nextItem=newItem;
+	L->last=newItem;
+  
+	return newItem;
 }
