@@ -13,6 +13,7 @@ void varfuncL_init(t_varfunc_list *l)
 {
   l->First=NULL;
   l->Last=NULL;
+  l->Active=NULL;
 }
 
 int varfuncL_insertlast(t_varfunc_list *l, t_func_list *flistp, types typep, char *idp, T_vartype dtypep)
@@ -66,6 +67,7 @@ void varfuncL_dispose(t_varfunc_list *l)
 void funcL_init(t_func_list *l)
 {
   l->First=NULL;
+  l->Active=NULL;
 }
 
 int funcL_insertfirst(t_func_list *l, char *idp, T_vartype dtypep, bool is_parp)
@@ -112,6 +114,7 @@ void labL_init(t_lablist *l)
 {
   l->First=NULL;
   l->Last=NULL;
+  l->Active=NULL;
 }
 
 int labL_insertlast(t_lablist *l, tListItem *insptr, int labID)
