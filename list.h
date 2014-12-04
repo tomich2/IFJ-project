@@ -14,6 +14,7 @@
 #include <string.h>
 #include "ial.h"
 #include "generator.h"
+#include "struct.h"
 
 #ifndef TVART
 #define TVART
@@ -22,7 +23,7 @@ typedef enum{tINTEGER, tSTRING, tREAL, tBOOLEAN, tERR=-1}T_vartype;
 
 typedef struct fitem{
         struct fitem *next;
-        T_vartype dattype;
+        VariableType dattype;
         bool is_param;
         char *item_ID;
         }t_flist_item;
@@ -36,7 +37,7 @@ typedef struct item{
         struct item *next;
         t_func_list *flist; // ukazovatel na zoznam parametrov a lokalnych premennych
         types type; // funkcia alebo premenna
-        T_vartype dattype; // datovy typ
+        VariableType dattype; // datovy typ
         char *item_ID;
         }t_list_item;
 
