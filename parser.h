@@ -13,24 +13,40 @@
 #include <stdbool.h>
 #include "stack.h"
 #include "ial.h"
+#include "lexical.h"
+#include "list.h"
+#include "generator.h"
 
 #define GTAB_SIZE 11
-
-typedef struct non_term
-{
-	int type;
-	void *data;
-} nont;
+#define MAX_RPTYPES 20
+#define TMPLEN 11 // dlzka unikatnej docasnej premennej
+#define TMPU "42TMP14ifj" // 42TMP14ifj unikatna docasna premenna
 
 typedef enum{NONTERMINAL, TERMINAL, EMPTY=-1}ItemType;
 
 typedef enum{GLOBVAR_DEK, FUNC_ID, FUNC_PARAMS, FUNC_TYPE, LOCVAR_DEK, FUNC_BODY, MAIN_BODY}T_State;
 
-typedef enum{tINTEGER, tSTRING, tREAL, tBOOLEAN, tERR=-1}T_vartype;
+#ifndef TVART
+#define TVART
+typedef enum{tINTEGER, tSTRING, tREAL, tBOOLEAN, VAR, tERR=-1}T_vartype;
+#endif
+
+typedef struct non_term
+{
+	int type;
+	T_vartype d_type;
+	char *index;
+} nont;
+
+typedef struct tterm
+{
+	identita type;
+	char *index;
+} tterm;
 
 typedef union{
         nont nonterm;
-        identita term;
+        tterm term;
         }U_Item;
 
 typedef struct{
@@ -45,24 +61,29 @@ typedef struct{
 
 typedef struct{
         bool is_def;
+        bool is_ret;
         char *ret_par_types; // retazec zaciatocnych pismen typov navratovej hodnoty a parametrov
         }T_FuncData;
 
 typedef struct{
         char *act_varID;
         char *act_funcID;
-        int n;
+        int rpt_size;
         char *act_rptypes;
         bool was_func;
-        bool is_ret;
         bool is_write;
+        bool is_readln;
+        bool is_ret_err;
+        int begincnt;
+        int labIDcnt;
         }T_Actual;
 
+
 ERROR_MSG top_down();
-ERROR_MSG semantic(T_State *st, htab_t *gsymtab, htab_t *lsymtab, T_Actual *Ac, T_vartype *expt, size_t tmems);
+ERROR_MSG semantic(T_State *st, htab_t *gsymtab, htab_t *lsymtab, T_Actual *Ac, T_vartype *expt, size_t tmems, t_varfunc_list *vflistp, t_func_list *flistp, t_lablist *lablistp, tListOfInstr *inslistp);
 ERROR_MSG PItems_alloc(T_ParserItem ***Ptr);
 void PItems_free(T_ParserItem ***Ptr);
-void free_all(T_ParserItem **p, Stack st, int stack_erase, int token_mem_free, htab_t *gsymtab, htab_t *lsymtab, T_Actual *Ac);
+void free_all(T_ParserItem **p, Stack st, int stack_erase, int token_mem_free, htab_t *gsymtab, htab_t *lsymtab, T_Actual *Ac, t_varfunc_list *vflistp, t_lablist *lablistp, tListOfInstr *inslistp, int l_dispose);
 int get_type(char *str,int pos);
 
 #endif
