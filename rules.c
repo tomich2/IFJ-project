@@ -20,7 +20,7 @@ int LLTable[LL_TERMS][LL_NONTERMS]={{1, 2, 0, 0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 
                                     {0, 0, 0, 0, 0, 0, 0, 0, 16, 0, 0, 0, 0 ,0, 0, 0, 0, 0, 0, 0},     // real
                                     {0, 0, 0, 0, 0, 0, 0, 0, 17, 0, 0, 0, 0 ,0, 0, 0, 0, 0, 0, 0},     // string
                                     {0, 0, 0, 0, 0, 0, 0, 0, 18, 0, 0, 0, 0 ,0, 0, 0, 0, 0, 0, 0},     // boolean
-                                    {1, 3, 0, 5, 8, 10, 0, 0, 0, 19, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},    // begin
+                                    {1, 3, 0, 5, 8, 10, 0, 0, 0, 19, 21, 38, 0, 0, 0, 0, 0, 0, 0, 0},    // begin
                                     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 20, 0, 22, 0, 0, 0, 0, 0, 0, 0},    // end
                                     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 37},     // comma
                                     {0, 0, 0, 0, 0, 0, 0, 13, 0, 0, 0, 0, 23, 0, 0, 0, 0, 0, 0, 0},    // semicolon
@@ -93,7 +93,7 @@ int get_rule(T_nonterms nonterm, T_ParserItem **PItem_Arr, T_State *st, bool *is
           return 1; // pravidlo neexistuje
     case 1: // 1. <START> → <DEF_VAR> <FUNC> <BODY>.
           PItem_Arr[0]->type=TERMINAL;
-          PItem_Arr[0]->value.term=OpBodka;
+          PItem_Arr[0]->value.term.type=OpBodka;
           PItem_Arr[1]->type=NONTERMINAL;
           PItem_Arr[1]->value.nonterm.type=BODY;
           PItem_Arr[2]->type=NONTERMINAL;
@@ -106,7 +106,7 @@ int get_rule(T_nonterms nonterm, T_ParserItem **PItem_Arr, T_State *st, bool *is
           PItem_Arr[0]->type=NONTERMINAL;
           PItem_Arr[0]->value.nonterm.type=VAR;
           PItem_Arr[1]->type=TERMINAL;
-          PItem_Arr[1]->value.term=KwVar;
+          PItem_Arr[1]->value.term.type=KwVar;
           if(*is_f==false)*st=GLOBVAR_DEK;
           else *st=LOCVAR_DEK;
           break;
@@ -115,43 +115,43 @@ int get_rule(T_nonterms nonterm, T_ParserItem **PItem_Arr, T_State *st, bool *is
           PItem_Arr[0]->type=NONTERMINAL;
           PItem_Arr[0]->value.nonterm.type=VAR_N;
           PItem_Arr[1]->type=TERMINAL;
-          PItem_Arr[1]->value.term=OpKonec;
+          PItem_Arr[1]->value.term.type=OpKonec;
           PItem_Arr[2]->type=NONTERMINAL;
           PItem_Arr[2]->value.nonterm.type=TYPE;
           PItem_Arr[3]->type=TERMINAL;
-          PItem_Arr[3]->value.term=OpDek;
+          PItem_Arr[3]->value.term.type=OpDek;
           PItem_Arr[4]->type=TERMINAL;
-          PItem_Arr[4]->value.term=ID;
+          PItem_Arr[4]->value.term.type=ID;
           break;
     case 7: // 7. <FUNC> →  function id(<PARAM>) :<TYPE>;  <FORWARD>; <FUNC>
           PItem_Arr[0]->type=NONTERMINAL;
           PItem_Arr[0]->value.nonterm.type=FUNC;
           PItem_Arr[1]->type=TERMINAL;
-          PItem_Arr[1]->value.term=OpKonec;
+          PItem_Arr[1]->value.term.type=OpKonec;
           PItem_Arr[2]->type=NONTERMINAL;
           PItem_Arr[2]->value.nonterm.type=FORWARD;
           PItem_Arr[3]->type=TERMINAL;
-          PItem_Arr[3]->value.term=OpKonec;
+          PItem_Arr[3]->value.term.type=OpKonec;
           PItem_Arr[4]->type=NONTERMINAL;
           PItem_Arr[4]->value.nonterm.type=TYPE;
           PItem_Arr[5]->type=TERMINAL;
-          PItem_Arr[5]->value.term=OpDek;
+          PItem_Arr[5]->value.term.type=OpDek;
           PItem_Arr[6]->type=TERMINAL;
-          PItem_Arr[6]->value.term=OpPZat;
+          PItem_Arr[6]->value.term.type=OpPZat;
           PItem_Arr[7]->type=NONTERMINAL;
           PItem_Arr[7]->value.nonterm.type=PARAM;
           PItem_Arr[8]->type=TERMINAL;
-          PItem_Arr[8]->value.term=OpLZat;
+          PItem_Arr[8]->value.term.type=OpLZat;
           PItem_Arr[9]->type=TERMINAL;
-          PItem_Arr[9]->value.term=ID;
+          PItem_Arr[9]->value.term.type=ID;
           PItem_Arr[10]->type=TERMINAL;
-          PItem_Arr[10]->value.term=KwFunction;
+          PItem_Arr[10]->value.term.type=KwFunction;
           *is_f=true;
           *st=FUNC_ID;
           break;
     case 9: // 9. <FORWARD> → forward
           PItem_Arr[0]->type=TERMINAL;
-          PItem_Arr[0]->value.term=KwForward;
+          PItem_Arr[0]->value.term.type=KwForward;
           break;
     case 10: // 10. <FORWARD> →  <DEF_VAR> <BODY>
           PItem_Arr[0]->type=NONTERMINAL;
@@ -165,9 +165,9 @@ int get_rule(T_nonterms nonterm, T_ParserItem **PItem_Arr, T_State *st, bool *is
           PItem_Arr[1]->type=NONTERMINAL;
           PItem_Arr[1]->value.nonterm.type=TYPE;
           PItem_Arr[2]->type=TERMINAL;
-          PItem_Arr[2]->value.term=OpDek;
+          PItem_Arr[2]->value.term.type=OpDek;
           PItem_Arr[3]->type=TERMINAL;
-          PItem_Arr[3]->value.term=ID;
+          PItem_Arr[3]->value.term.type=ID;
           *st=FUNC_PARAMS;
           break;
     case 13: // 13. <PARAM_N> → ;  id :<TYPE> <PARAM_N>
@@ -176,38 +176,37 @@ int get_rule(T_nonterms nonterm, T_ParserItem **PItem_Arr, T_State *st, bool *is
           PItem_Arr[1]->type=NONTERMINAL;
           PItem_Arr[1]->value.nonterm.type=TYPE;
           PItem_Arr[2]->type=TERMINAL;
-          PItem_Arr[2]->value.term=OpDek;
+          PItem_Arr[2]->value.term.type=OpDek;
           PItem_Arr[3]->type=TERMINAL;
-          PItem_Arr[3]->value.term=ID;
+          PItem_Arr[3]->value.term.type=ID;
           PItem_Arr[4]->type=TERMINAL;
-          PItem_Arr[4]->value.term=OpKonec;
+          PItem_Arr[4]->value.term.type=OpKonec;
           break;
     case 15: // 15. <TYPE> → integer
           PItem_Arr[0]->type=TERMINAL;
-          PItem_Arr[0]->value.term=KwInteger;
+          PItem_Arr[0]->value.term.type=KwInteger;
           break;
     case 16: // 16. <TYPE> → real
           PItem_Arr[0]->type=TERMINAL;
-          PItem_Arr[0]->value.term=KwReal;
+          PItem_Arr[0]->value.term.type=KwReal;
           break;
     case 17: // 17. <TYPE> → string
           PItem_Arr[0]->type=TERMINAL;
-          PItem_Arr[0]->value.term=KwString;
+          PItem_Arr[0]->value.term.type=KwString;
           break;
     case 18: // 18. <TYPE> → boolean
           PItem_Arr[0]->type=TERMINAL;
-          PItem_Arr[0]->value.term=KwBoolean;
+          PItem_Arr[0]->value.term.type=KwBoolean;
           break;
     case 19: // 19. <BODY> → begin <STAT_S> end
           PItem_Arr[0]->type=TERMINAL;
-          PItem_Arr[0]->value.term=KwEnd;
+          PItem_Arr[0]->value.term.type=KwEnd;
           PItem_Arr[1]->type=NONTERMINAL;
           PItem_Arr[1]->value.nonterm.type=STAT_S;
           PItem_Arr[2]->type=TERMINAL;
-          PItem_Arr[2]->value.term=KwBegin;
+          PItem_Arr[2]->value.term.type=KwBegin;
           if(*is_f==false)*st=MAIN_BODY;
           else *st=FUNC_BODY;
-          *is_f=false;
           break;
     case 21: // 21. <STAT_S> → <STAT> <STAT_N>
           PItem_Arr[0]->type=NONTERMINAL;
@@ -221,7 +220,7 @@ int get_rule(T_nonterms nonterm, T_ParserItem **PItem_Arr, T_State *st, bool *is
           PItem_Arr[1]->type=NONTERMINAL;
           PItem_Arr[1]->value.nonterm.type=STAT;
           PItem_Arr[2]->type=TERMINAL;
-          PItem_Arr[2]->value.term=OpKonec;
+          PItem_Arr[2]->value.term.type=OpKonec;
           break;
     case 24: // 24. <STAT> → <ASSIGN>
           PItem_Arr[0]->type=NONTERMINAL;
@@ -247,71 +246,75 @@ int get_rule(T_nonterms nonterm, T_ParserItem **PItem_Arr, T_State *st, bool *is
           PItem_Arr[0]->type=NONTERMINAL;
           PItem_Arr[0]->value.nonterm.type=EXPR;
           PItem_Arr[1]->type=TERMINAL;
-          PItem_Arr[1]->value.term=OpPrir;
+          PItem_Arr[1]->value.term.type=OpPrir;
           PItem_Arr[2]->type=TERMINAL;
-          PItem_Arr[2]->value.term=ID;
+          PItem_Arr[2]->value.term.type=ID;
           break;
     case 30: // 30. <WHILE> → while <EXPR> do <BODY>
           PItem_Arr[0]->type=NONTERMINAL;
           PItem_Arr[0]->value.nonterm.type=BODY;
           PItem_Arr[1]->type=TERMINAL;
-          PItem_Arr[1]->value.term=KwDo;
+          PItem_Arr[1]->value.term.type=KwDo;
           PItem_Arr[2]->type=NONTERMINAL;
           PItem_Arr[2]->value.nonterm.type=EXPR;
           PItem_Arr[3]->type=TERMINAL;
-          PItem_Arr[3]->value.term=KwWhile;
+          PItem_Arr[3]->value.term.type=KwWhile;
           break;
     case 31: // 31. <IFELSE> → if <EXPR> then <BODY> else <BODY>
           PItem_Arr[0]->type=NONTERMINAL;
           PItem_Arr[0]->value.nonterm.type=BODY;
           PItem_Arr[1]->type=TERMINAL;
-          PItem_Arr[1]->value.term=KwElse;
+          PItem_Arr[1]->value.term.type=KwElse;
           PItem_Arr[2]->type=NONTERMINAL;
           PItem_Arr[2]->value.nonterm.type=BODY;
           PItem_Arr[3]->type=TERMINAL;
-          PItem_Arr[3]->value.term=KwThen;
+          PItem_Arr[3]->value.term.type=KwThen;
           PItem_Arr[4]->type=NONTERMINAL;
           PItem_Arr[4]->value.nonterm.type=EXPR;
           PItem_Arr[5]->type=TERMINAL;
-          PItem_Arr[5]->value.term=KwIf;
+          PItem_Arr[5]->value.term.type=KwIf;
           break;
     case 32: // 32. <READ> → readln(id)
           PItem_Arr[0]->type=TERMINAL;
-          PItem_Arr[0]->value.term=OpPZat;
+          PItem_Arr[0]->value.term.type=OpPZat;
           PItem_Arr[1]->type=TERMINAL;
-          PItem_Arr[1]->value.term=ID;
+          PItem_Arr[1]->value.term.type=ID;
           PItem_Arr[2]->type=TERMINAL;
-          PItem_Arr[2]->value.term=OpLZat;
+          PItem_Arr[2]->value.term.type=OpLZat;
           PItem_Arr[3]->type=TERMINAL;
-          PItem_Arr[3]->value.term=KwReadln;
+          PItem_Arr[3]->value.term.type=KwReadln;
           break;
     case 33: // 33. <WRITE> → write(<TERM>)
           PItem_Arr[0]->type=TERMINAL;
-          PItem_Arr[0]->value.term=OpPZat;
+          PItem_Arr[0]->value.term.type=OpPZat;
           PItem_Arr[1]->type=NONTERMINAL;
           PItem_Arr[1]->value.nonterm.type=TERM;
           PItem_Arr[2]->type=TERMINAL;
-          PItem_Arr[2]->value.term=OpLZat;
+          PItem_Arr[2]->value.term.type=OpLZat;
           PItem_Arr[3]->type=TERMINAL;
-          PItem_Arr[3]->value.term=KwWrite;
+          PItem_Arr[3]->value.term.type=KwWrite;
           break;
     case 34: // 34. <TERM> → id <TERM_N>
           PItem_Arr[0]->type=NONTERMINAL;
           PItem_Arr[0]->value.nonterm.type=TERM_N;
           PItem_Arr[1]->type=TERMINAL;
-          PItem_Arr[1]->value.term=ID;
+          PItem_Arr[1]->value.term.type=ID;
           break;
     case 35: // 35. <TERM> → literal <TERM_N>
           PItem_Arr[0]->type=NONTERMINAL;
           PItem_Arr[0]->value.nonterm.type=TERM_N;
           PItem_Arr[1]->type=TERMINAL;
-          PItem_Arr[1]->value.term=DtInteger; // DtInteger v tomto pripade znamena literal, t.j. akykolvek datovy typ
+          PItem_Arr[1]->value.term.type=DtInteger; // DtInteger v tomto pripade znamena literal, t.j. akykolvek datovy typ
           break;
     case 37: // 37. <TERM_N> → , <TERM>
           PItem_Arr[0]->type=NONTERMINAL;
           PItem_Arr[0]->value.nonterm.type=TERM;
           PItem_Arr[1]->type=TERMINAL;
-          PItem_Arr[1]->value.term=OpCiarka;
+          PItem_Arr[1]->value.term.type=OpCiarka;
+          break;
+    case 38: // 28. <STAT> → <BODY>
+          PItem_Arr[0]->type=NONTERMINAL;
+          PItem_Arr[0]->value.nonterm.type=BODY;
           break;
     // epsilon pravidla
     case 12:
