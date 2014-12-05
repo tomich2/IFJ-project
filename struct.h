@@ -42,13 +42,11 @@ typedef struct Instruction
 	InstName Iname;
 	struct Variable *a;
 	struct Variable *b;
-	void *res;
+	char *res;
 }tInstruction;
 
 
 
-
-	/*************VALUEEEE********************/
 
 typedef struct
 {
@@ -57,15 +55,6 @@ typedef struct
 		char *s;
 		//string s;
 }VariableData;
-
-/*typedef enum
-{
-		VAR_Bool,
-		VAR_Int,
-		VAR_Real,
-		VAR_String,
-		VAR_Var
-}VariableType;*/
 
 
 
