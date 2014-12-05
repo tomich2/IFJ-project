@@ -4,5 +4,5 @@ var
 begin
   BADjoke  := 1;
   GOODjoke := 'one';
-  write(BADjoke - GOODjoke)
+  GOODjoke := BADjoke - GOODjoke
 end.
