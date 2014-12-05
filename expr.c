@@ -771,7 +771,8 @@ ERROR_MSG ExprSem(int rule, nont *op1, nont *op2, Tabs *STab)
 			return EVERYTHINGSOKAY;
 			break;
 		case 15://L->L,E
-			free(op1->index);
+			if(op1->index!=NULL) free(op1->index);
+		
 			op2->index=realloc(op2->index,(strlen(op2->index)+2));
 			printf("%s\n",(char *)op2->index);
 			switch(op1->d_type)
@@ -789,11 +790,12 @@ ERROR_MSG ExprSem(int rule, nont *op1, nont *op2, Tabs *STab)
 					return SEMANTIC_ERR;
 			}
 			printf("%s\n",(char *)op2->index);
-			if(op1->index!=NULL) free(op1->index);
+			
 			op1->index=op2->index;
 			return EVERYTHINGSOKAY;	
 		case 16://L->E,E
-			free(op1->index);
+			if(op1->index!=NULL) free(op1->index);
+			if(op2->index!=NULL) free(op2->index);
 			op1->index=(char *)malloc((sizeof(char)*2+1));
 			switch(op2->d_type)
 			{
@@ -824,7 +826,7 @@ ERROR_MSG ExprSem(int rule, nont *op1, nont *op2, Tabs *STab)
 					return SEMANTIC_ERR;
 			}
 			//printf("%s\n",(char *)op1->index);
-			if(op2->index!=NULL) free(op2->index);
+		
 			return EVERYTHINGSOKAY;	
 
 		case 17://E->term
