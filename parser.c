@@ -697,6 +697,10 @@ if(Ac->rpt_size==MAX_RPTYPES)
                       break;
                 case KwEnd:
                       Ac->begincnt--;
+                      if(Ac->begincnt==0)
+                      {
+                        // RETURN instrukcia
+                      }
                       if(*expt!=tERR)
                       {
                         cmp=htab_search(lsymtab,Ac->act_varID);
