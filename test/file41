@@ -1,3 +1,4 @@
+var x:string;
 begin
-  write('string' <> 2)
+  x := 'string' <> 2
 end.
