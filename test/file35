@@ -1,6 +1,6 @@
 var
   twin : integer;
-  twin : double;
+  twin : real;
 begin
 
 end.
