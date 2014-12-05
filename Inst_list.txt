@@ -5,7 +5,6 @@
 
 *******Adresy*******
 ---I_LABEL(name,NULL,NULL)-Pomenuje návestie na ktoré je možné skočíť
----I_GOTO(val,NULL,dest)-Podľa hodnoty(val(1/0)) vykona skok na ciel(dest)
 ---I_CALL(name,NULL,ret_adress)-Zavola funkciu s menom(name) a uloží návratovú adresu(ret_adress)
 ---I_RETURN(val,NULL,adress)-Navratovú hodnota(val) pre funkciu a  adresu (adress) na návrat
 
