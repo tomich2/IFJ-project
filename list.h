@@ -16,11 +16,6 @@
 #include "generator.h"
 
 
-#ifndef TVART
-#define TVART
-typedef enum{tINTEGER, tSTRING, tREAL, tBOOLEAN, VAR, tERR=-1}T_vartype;
-#endif
-
 typedef struct fitem{
         struct fitem *next;
         T_vartype dattype;
