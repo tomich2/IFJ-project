@@ -320,7 +320,7 @@ T_ParserItem *GetTerm(Stack *stack, bool handle)
 	}
 }
 
-ERROR_MSG ExprParse( htab_t *glob, htab_t *loc, T_vartype *dt)
+ERROR_MSG ExprParse( htab_t *glob, htab_t *loc, T_vartype *dt, tListOfInstr *InstL)
 {
   Stack stack;
   init(&stack, sizeof(T_ParserItem));
@@ -330,8 +330,10 @@ ERROR_MSG ExprParse( htab_t *glob, htab_t *loc, T_vartype *dt)
   Tabs STab;
   STab.glob=glob;
   STab.loc=loc;
+  STab.InstL=InstL;
+  STab.is_cmp=false;
+  STab.is_comm=false;
   STab.is_func=false;
-
   T_ParserItem in;
   T_ParserItem *top;
   T_ParserItem *tmp_top;
@@ -368,6 +370,7 @@ ERROR_MSG ExprParse( htab_t *glob, htab_t *loc, T_vartype *dt)
 			 if ((err=get_token())!=0) return err;
 	 		 
 			 tmp_top=GetTerm(&stack, 0);
+		if((converttooprs(token->identity,true)>=4) && (converttooprs(token->identity,true)<=9)) STab.is_cmp=true;
 		if((converttooprs(token->identity,true)==ELpar) && (converttooprs(tmp_top->value.term.type,true)==EId)) STab.is_func=true;
 
 			 if((converttooprs(token->identity,true)==EId) || (converttooprs(token->identity,true)==ETerm))
@@ -391,10 +394,13 @@ ERROR_MSG ExprParse( htab_t *glob, htab_t *loc, T_vartype *dt)
 			 in.type=TERMINAL;
 			 in.value.term.type=token->identity;
 			 push(&stack, &in , -1);
-			
+			if((converttooprs(token->identity,true)>=4) && (converttooprs(token->identity,true)<=9)) STab.is_cmp=true;
+			if((converttooprs(token->identity,true)==EComma) && (converttooprs(top->value.term.type,true)==ELpar)) STab.is_comm=true;
 			 if ((err=get_token())!=0) return err;
 			 
 			 tmp_top=GetTerm(&stack, 0);
+			
+			
 			if((converttooprs(token->identity,true)==ELpar) && (converttooprs(tmp_top->value.term.type,true)==EId)) STab.is_func=true;
 
 			 if((converttooprs(token->identity,true)==EId) || (converttooprs(token->identity,true)==ETerm))
@@ -418,6 +424,7 @@ ERROR_MSG ExprParse( htab_t *glob, htab_t *loc, T_vartype *dt)
 			
 			 if ((reduct=Reduction(&stack,&in,&STab))>0) 
 				{
+				 
 				  in.type=NONTERMINAL;
 			 	  in.value.nonterm.type=reduct;
 				  push(&stack, &in , -1);
@@ -439,7 +446,8 @@ ERROR_MSG ExprParse( htab_t *glob, htab_t *loc, T_vartype *dt)
 		}
 
 	}
-if(in.value.nonterm.index!=NULL) free(in.value.nonterm.index);
+if((strcmp(in.value.nonterm.index,TMPU)!=0) && (strcmp(in.value.nonterm.index,TMPU2)!=0) && (strcmp(in.value.nonterm.index,TMParam)!=0)) free(in.value.nonterm.index);
+//if(in.value.nonterm.index!=NULL) free(in.value.nonterm.index);
 *dt=in.value.nonterm.d_type;
 S_erase(&stack);
 return EVERYTHINGSOKAY;
@@ -484,7 +492,21 @@ ERROR_MSG ExprSem(int rule, nont *op1, nont *op2, Tabs *STab)
 	void *tmp=NULL;
 	bool vst=true;
 	T_vartype tp;
-	//if(STab->is_func) printf("som vo funkcii\n");	
+	int inst=-1;
+	char *res;
+	Variable *a,*b;
+	a=b=NULL;
+	if(STab->is_cmp) res=TMPU2;
+	else res=TMPU;
+	if(STab->is_func && !STab->is_comm)/* printf("prvy parameter %s \n", op1->index);*/res=TMParam;
+	if(STab->is_func && STab->is_comm) 
+	{
+		STab->is_func=false;
+		STab->is_comm=false;
+		if(STab->is_cmp) res=TMPU;
+		else res=TMPU2;	
+	}
+	
 	switch(rule)
 	{
 		case 1: //E->E+E
@@ -495,8 +517,8 @@ ERROR_MSG ExprSem(int rule, nont *op1, nont *op2, Tabs *STab)
 				else
 				{
 					fprintf(stderr,"nespravne typy operandov pri scitani\n");
-					if(op1->index!=NULL) free(op1->index);
-					if(op2->index!=NULL) free(op2->index);
+					if((strcmp(op1->index,TMPU)!=0) && (strcmp(op1->index,TMPU2)!=0)) free(op1->index);
+					if((strcmp(op2->index,TMPU)!=0) && (strcmp(op2->index,TMPU2)!=0)) free(op2->index);
 					return EXPRESSION_ERR;
 				}
 			}
@@ -507,8 +529,8 @@ ERROR_MSG ExprSem(int rule, nont *op1, nont *op2, Tabs *STab)
 				else 
 				{
 					fprintf(stderr,"nespravne typy operandov pri scitani\n");
-					if(op1->index!=NULL) free(op1->index);
-					if(op2->index!=NULL) free(op2->index);
+					if((strcmp(op1->index,TMPU)!=0) && (strcmp(op1->index,TMPU2)!=0)) free(op1->index);
+					if((strcmp(op2->index,TMPU)!=0) && (strcmp(op2->index,TMPU2)!=0)) free(op2->index);
 					return EXPRESSION_ERR;
 				}
 			}
@@ -516,32 +538,35 @@ ERROR_MSG ExprSem(int rule, nont *op1, nont *op2, Tabs *STab)
 			else
 			{
 				fprintf(stderr,"nespravne typy operandov pri scitani\n");
-				if(op1->index!=NULL) free(op1->index);
-				if(op2->index!=NULL) free(op2->index);
+				if((strcmp(op1->index,TMPU)!=0) && (strcmp(op1->index,TMPU2)!=0)) free(op1->index);
+				if((strcmp(op2->index,TMPU)!=0) && (strcmp(op2->index,TMPU2)!=0)) free(op2->index);
 				return EXPRESSION_ERR;
 			}
 			
-/*
-			Variable *a,*b;
+			inst=I_ADD;
+			
+			
 			if((tmp=htab_search(STab->loc,(char *) op1->index))==NULL) tmp=htab_search(STab->glob,(char *) op1->index);
 			if(tmp==NULL) MakeVariable(a,op1->d_type,op1->index);
-			else MakeVariable(a,VAR,op1->index);
+			else MakeVariable(a,tVAR,op1->index); //doriesit chybove stavy
 
 			if((tmp=htab_search(STab->loc,(char *) op2->index))==NULL) tmp=htab_search(STab->glob,(char *) op2->index);
 			if(tmp==NULL) MakeVariable(b,op2->d_type,op2->index);
-			else MakeVariable(b,VAR,op2->index);
+			else MakeVariable(b,tVAR,op2->index); //doriesit chybove stavy
 
-			generator(STab->InstL,I_ADD,a,b,"tmp");
+			generator(STab->InstL,inst,a,b,res);
 			
-			generator(STab->InstL,I_ADD,
-			// generate instruction - alloc new*/
+		printf("instrukcia %i vysledok do %s \n",inst,(char *)res);	
 			op1->d_type=tp;
-			if(op1->index!=NULL) free(op1->index);
-			if(op2->index!=NULL) free(op2->index);
-			op1->index=NULL;
+			if((strcmp(op1->index,TMPU)!=0) && (strcmp(op1->index,TMPU2)!=0)) free(op1->index);
+			if((strcmp(op2->index,TMPU)!=0) && (strcmp(op2->index,TMPU2)!=0)) free(op2->index);
+			op1->index=res;
 			return EVERYTHINGSOKAY;
 		case 2: //E->E-E
+			inst=I_SUB;
 		case 3: //E->E*E
+			;
+			if(inst<0) inst=I_MUL;
 			if(op1->d_type==tINTEGER) 
 			{
 				if(op2->d_type==tINTEGER) tp=tINTEGER;
@@ -549,8 +574,8 @@ ERROR_MSG ExprSem(int rule, nont *op1, nont *op2, Tabs *STab)
 				else
 				{
 					fprintf(stderr,"nespravne typy operandov pri odcitani alebo nasobeni\n");
-					if(op1->index!=NULL) free(op1->index);
-					if(op2->index!=NULL) free(op2->index);
+					if((strcmp(op1->index,TMPU)!=0) && (strcmp(op1->index,TMPU2)!=0)) free(op1->index);
+					if((strcmp(op2->index,TMPU)!=0) && (strcmp(op2->index,TMPU2)!=0)) free(op2->index);
 					return EXPRESSION_ERR;
 				}
 			}
@@ -561,24 +586,40 @@ ERROR_MSG ExprSem(int rule, nont *op1, nont *op2, Tabs *STab)
 				else 
 				{
 					fprintf(stderr,"nespravne typy operandov pri odcitani alebo nasobeni\n");
-					if(op1->index!=NULL) free(op1->index);
-					if(op2->index!=NULL) free(op2->index);
+					if((strcmp(op1->index,TMPU)!=0) && (strcmp(op1->index,TMPU2)!=0)) free(op1->index);
+					if((strcmp(op2->index,TMPU)!=0) && (strcmp(op2->index,TMPU2)!=0)) free(op2->index);
 					return EXPRESSION_ERR;
 				}
 			}
 			else
 			{
 				fprintf(stderr,"nespravne typy operandov pri odcitani alebo nasobeni\n");
-				if(op1->index!=NULL) free(op1->index);
-				if(op2->index!=NULL) free(op2->index);
+				if((strcmp(op1->index,TMPU)!=0) && (strcmp(op1->index,TMPU2)!=0)) free(op1->index);
+				if((strcmp(op2->index,TMPU)!=0) && (strcmp(op2->index,TMPU2)!=0)) free(op2->index);
 				return EXPRESSION_ERR;
 			}
+			
+			
+			
+			
+			if((tmp=htab_search(STab->loc,(char *) op1->index))==NULL) tmp=htab_search(STab->glob,(char *) op1->index);
+			if(tmp==NULL) MakeVariable(a,op1->d_type,op1->index);
+			else MakeVariable(a,tVAR,op1->index); //doriesit chybove stavy
+
+			if((tmp=htab_search(STab->loc,(char *) op2->index))==NULL) tmp=htab_search(STab->glob,(char *) op2->index);
+			if(tmp==NULL) MakeVariable(b,op2->d_type,op2->index);
+			else MakeVariable(b,tVAR,op2->index); //doriesit chybove stavy
+
+			generator(STab->InstL,inst,a,b,res);
+
 			op1->d_type=tp;
-			if(op1->index!=NULL) free(op1->index);
-			if(op2->index!=NULL) free(op2->index);
-			op1->index=NULL;
+			if((strcmp(op1->index,TMPU)!=0) && (strcmp(op1->index,TMPU2)!=0)) free(op1->index);
+			if((strcmp(op2->index,TMPU)!=0) && (strcmp(op2->index,TMPU2)!=0)) free(op2->index);
+			op1->index=res;
 			return EVERYTHINGSOKAY;
 		case 4: //E->E/E
+			;
+			if(inst<0) inst=I_DIV;
 			if(op1->d_type==tINTEGER) 
 			{
 				if(op2->d_type==tINTEGER) tp=tREAL;
@@ -586,8 +627,8 @@ ERROR_MSG ExprSem(int rule, nont *op1, nont *op2, Tabs *STab)
 				else
 				{
 					fprintf(stderr,"nespravne typy operandov pri deleni\n");
-					if(op1->index!=NULL) free(op1->index);
-					if(op2->index!=NULL) free(op2->index);
+					if((strcmp(op1->index,TMPU)!=0) && (strcmp(op1->index,TMPU2)!=0)) free(op1->index);
+					if((strcmp(op2->index,TMPU)!=0) && (strcmp(op2->index,TMPU2)!=0)) free(op2->index);
 					return EXPRESSION_ERR;
 				}
 			}
@@ -598,41 +639,74 @@ ERROR_MSG ExprSem(int rule, nont *op1, nont *op2, Tabs *STab)
 				else 
 				{
 					fprintf(stderr,"nespravne typy operandov pri deleni\n");
-					if(op1->index!=NULL) free(op1->index);
-					if(op2->index!=NULL) free(op2->index);
+					if((strcmp(op1->index,TMPU)!=0) && (strcmp(op1->index,TMPU2)!=0)) free(op1->index);
+					if((strcmp(op2->index,TMPU)!=0) && (strcmp(op2->index,TMPU2)!=0)) free(op2->index);
 					return EXPRESSION_ERR;
 				}
 			}
 			else
 			{
 				fprintf(stderr,"nespravne typy operandov pri deleni3\n");
-				if(op1->index!=NULL) free(op1->index);
-				if(op2->index!=NULL) free(op2->index);
+				if((strcmp(op1->index,TMPU)!=0) && (strcmp(op1->index,TMPU2)!=0)) free(op1->index);
+				if((strcmp(op2->index,TMPU)!=0) && (strcmp(op2->index,TMPU2)!=0)) free(op2->index);
 				return EXPRESSION_ERR;
 			}
+
+			
+			
+			if((tmp=htab_search(STab->loc,(char *) op1->index))==NULL) tmp=htab_search(STab->glob,(char *) op1->index);
+			if(tmp==NULL) MakeVariable(a,op1->d_type,op1->index);
+			else MakeVariable(a,tVAR,op1->index); //doriesit chybove stavy
+
+			if((tmp=htab_search(STab->loc,(char *) op2->index))==NULL) tmp=htab_search(STab->glob,(char *) op2->index);
+			if(tmp==NULL) MakeVariable(b,op2->d_type,op2->index);
+			else MakeVariable(b,tVAR,op2->index); //doriesit chybove stavy
+
+			generator(STab->InstL,inst,a,b,res);
+
 			op1->d_type=tp;
-			if(op1->index!=NULL) free(op1->index);
-			if(op2->index!=NULL) free(op2->index);
-			op1->index=NULL;
+			if((strcmp(op1->index,TMPU)!=0) && (strcmp(op1->index,TMPU2)!=0)) free(op1->index);
+			if((strcmp(op2->index,TMPU)!=0) && (strcmp(op2->index,TMPU2)!=0)) free(op2->index);
+			op1->index=res;
 			return EVERYTHINGSOKAY;
 		case 5://E->E=E
+			;
+			if(inst<0) inst=I_EQUAL_CMP;
 		case 6://E->E<E
+			;
+			if(inst<0) inst=I_LESS_CMP;
 		case 7://E->E>E
+			if(inst<0) inst=I_GR_CMP;
 		case 8://E->E<=E
+			if(inst<0) inst=I_LESS_EQUAL_CMP;
 		case 9://E->E>=E
+			if(inst<0) inst=I_GR_EQUAL_CMP;
 		case 10://E->E<>E
+			if(inst<0) inst=I_NOT_EQUAL_CMP;
 			if(op1->d_type == op2->d_type) tp=tBOOLEAN;
 			else 
 			{
 				fprintf(stderr,"nespravne typy operandov pri operaciach porovnania\n");
-				if(op1->index!=NULL) free(op1->index);
-				if(op2->index!=NULL) free(op2->index);
+				if((strcmp(op1->index,TMPU)!=0) && (strcmp(op1->index,TMPU2)!=0)) free(op1->index);
+				if((strcmp(op2->index,TMPU)!=0) && (strcmp(op2->index,TMPU2)!=0)) free(op2->index);
 				return EXPRESSION_ERR;
 			}
+			
+			
+			if((tmp=htab_search(STab->loc,(char *) op1->index))==NULL) tmp=htab_search(STab->glob,(char *) op1->index);
+			if(tmp==NULL) MakeVariable(a,op1->d_type,op1->index);
+			else MakeVariable(a,tVAR,op1->index); //doriesit chybove stavy
+
+			if((tmp=htab_search(STab->loc,(char *) op2->index))==NULL) tmp=htab_search(STab->glob,(char *) op2->index);
+			if(tmp==NULL) MakeVariable(b,op2->d_type,op2->index);
+			else MakeVariable(b,tVAR,op2->index); //doriesit chybove stavy
+
+			generator(STab->InstL,inst,a,b,TMPU);
+
 			op1->d_type=tp;
-			if(op1->index!=NULL) free(op1->index);
-			if(op2->index!=NULL) free(op2->index);
-			op1->index=NULL;
+			if((strcmp(op1->index,TMPU)!=0) && (strcmp(op1->index,TMPU2)!=0)) free(op1->index);
+			if((strcmp(op2->index,TMPU)!=0) && (strcmp(op2->index,TMPU2)!=0)) free(op2->index);
+			op1->index=res;
 			return EVERYTHINGSOKAY;
 		case 11: //E->(E)
 			return EVERYTHINGSOKAY;
@@ -641,21 +715,27 @@ ERROR_MSG ExprSem(int rule, nont *op1, nont *op2, Tabs *STab)
 			if(tmp==NULL)
 			{
 				fprintf(stderr,"funkcia %s nebola deklarovana\n",(char *) op1->index);
-				if(op1->index!=NULL) free(op1->index);
-				if(op2->index!=NULL) free(op2->index);
+				if((strcmp(op1->index,TMPU)!=0) && (strcmp(op1->index,TMPU2)!=0)) free(op1->index);
+				if((strcmp(op2->index,TMPU)!=0) && (strcmp(op2->index,TMPU2)!=0)) free(op2->index);
 				return SEMANTIC_ERR;
 			}
 			else 
 				if(((T_FuncData *) ((Hitem *) tmp)->data)->is_def==false)
 				{
 					fprintf(stderr,"funkcia %s nebola definovana\n",(char *) op1->index);
-					if(op1->index!=NULL) free(op1->index);
-					if(op2->index!=NULL) free(op2->index);
+					if((strcmp(op1->index,TMPU)!=0) && (strcmp(op1->index,TMPU2)!=0)) free(op1->index);
+					if((strcmp(op2->index,TMPU)!=0) && (strcmp(op2->index,TMPU2)!=0)) free(op2->index);
 					return SEMANTIC_ERR;
 				}
 			op1->d_type=get_type(((T_FuncData *) ((Hitem *) tmp)->data)->ret_par_types,0);
-			if(op1->index!=NULL) free(op1->index);
-			op1->index=NULL;
+			
+			
+			MakeVariable(a,tVAR,op1->index); //doriesit chybove stavy
+
+			generator(STab->InstL,I_CALL,a,NULL,res);
+
+			if((strcmp(op1->index,TMPU)!=0) && (strcmp(op1->index,TMPU2)!=0)) free(op1->index);
+			op1->index=res;
 			return EVERYTHINGSOKAY;	
 		
 		case 13://E->f(E)
@@ -663,9 +743,17 @@ ERROR_MSG ExprSem(int rule, nont *op1, nont *op2, Tabs *STab)
 			{
 				if((int) op1->d_type!=tSTRING) vst=false;
 				op1->d_type=tINTEGER;
-				if(op1->index!=NULL) free(op1->index);
-				if(op2->index!=NULL) free(op2->index);
-				op1->index=NULL;
+				if((strcmp(op1->index,TMPU)!=0) && (strcmp(op1->index,TMPU2)!=0)) free(op1->index);
+				if((strcmp(op2->index,TMPU)!=0) && (strcmp(op2->index,TMPU2)!=0)) free(op2->index);
+				op1->index=res;
+				
+				if((tmp=htab_search(STab->loc,(char *) op1->index))==NULL) tmp=htab_search(STab->glob,(char *) op1->index);
+				if(tmp==NULL) MakeVariable(a,op1->d_type,op1->index);
+				else MakeVariable(a,tVAR,op1->index); //doriesit chybove stavy
+
+				generator(STab->InstL,I_PUSH,a,NULL,NULL);
+
+				generator(STab->InstL,I_LENGTH,NULL,NULL,res);
 				return vst ? EVERYTHINGSOKAY:SEMANTIC_ERR;
 			}
 			
@@ -673,9 +761,17 @@ ERROR_MSG ExprSem(int rule, nont *op1, nont *op2, Tabs *STab)
 			{
 				if((int) op1->d_type!=tSTRING) vst=false;
 				op1->d_type=tSTRING;
-				if(op1->index!=NULL) free(op1->index);
-				if(op2->index!=NULL) free(op2->index);
-				op1->index=NULL;
+				if((strcmp(op1->index,TMPU)!=0) && (strcmp(op1->index,TMPU2)!=0)) free(op1->index);
+				if((strcmp(op2->index,TMPU)!=0) && (strcmp(op2->index,TMPU2)!=0)) free(op2->index);
+				op1->index=res;
+				
+				if((tmp=htab_search(STab->loc,(char *) op1->index))==NULL) tmp=htab_search(STab->glob,(char *) op1->index);
+				if(tmp==NULL) MakeVariable(a,op1->d_type,op1->index);
+				else MakeVariable(a,tVAR,op1->index); //doriesit chybove stavy
+
+				generator(STab->InstL,I_PUSH,a,NULL,NULL);
+
+				generator(STab->InstL,I_SORT,NULL,NULL,res);
 				return vst ? EVERYTHINGSOKAY:SEMANTIC_ERR;
 			}
 
@@ -683,30 +779,45 @@ ERROR_MSG ExprSem(int rule, nont *op1, nont *op2, Tabs *STab)
 			if(tmp==NULL)
 			{
 				fprintf(stderr,"funkcia %s nebola deklarovana\n",(char *) op2->index);
-				if(op1->index!=NULL) free(op1->index);
-				if(op2->index!=NULL) free(op2->index);
+				if((strcmp(op1->index,TMPU)!=0) && (strcmp(op1->index,TMPU2)!=0)) free(op1->index);
+				if((strcmp(op2->index,TMPU)!=0) && (strcmp(op2->index,TMPU2)!=0)) free(op2->index);
 				return SEMANTIC_ERR;
 			}
 			else 
 				if(((T_FuncData *) ((Hitem *) tmp)->data)->is_def==false)
 				{
 					fprintf(stderr,"funkcia %s nebola definovana\n",(char *) op2->index);
-					if(op1->index!=NULL) free(op1->index);
-					if(op2->index!=NULL) free(op2->index);
+					if((strcmp(op1->index,TMPU)!=0) && (strcmp(op1->index,TMPU2)!=0)) free(op1->index);
+					if((strcmp(op2->index,TMPU)!=0) && (strcmp(op2->index,TMPU2)!=0)) free(op2->index);
 					return SEMANTIC_ERR;
 				}
 			op2->d_type=get_type( ((T_FuncData *) ((Hitem *) tmp)->data)->ret_par_types,0);
 			if((int) op1->d_type!=get_type(((T_FuncData *) ((Hitem *) tmp)->data)->ret_par_types,1))
 			{
-				if(op1->index!=NULL) free(op1->index);
-				if(op2->index!=NULL) free(op2->index);
+				if((strcmp(op1->index,TMPU)!=0) && (strcmp(op1->index,TMPU2)!=0)) free(op1->index);
+				if((strcmp(op2->index,TMPU)!=0) && (strcmp(op2->index,TMPU2)!=0)) free(op2->index);
 				fprintf(stderr,"typy parametrov funkcie sa nezhoduju\n");
 				return SEMANTIC_ERR;
 			}
+			
 			op1->d_type=get_type(((T_FuncData *) ((Hitem *) tmp)->data)->ret_par_types,0);
-			if(op1->index!=NULL) free(op1->index);
-			if(op2->index!=NULL) free(op2->index);
-			op1->index=NULL;
+
+			
+			if((tmp=htab_search(STab->loc,(char *) op1->index))==NULL) tmp=htab_search(STab->glob,(char *) op1->index);
+			if(tmp==NULL) MakeVariable(a,op1->d_type,op1->index);
+			else MakeVariable(a,tVAR,op1->index); //doriesit chybove stavy
+
+			generator(STab->InstL,I_PUSH,a,NULL,NULL);
+
+			MakeVariable(a,tVAR,op2->index); //doriesit chybove stavy
+			
+
+			generator(STab->InstL,I_CALL,a,NULL,res);
+
+
+			if((strcmp(op1->index,TMPU)!=0) && (strcmp(op1->index,TMPU2)!=0) && (strcmp(op1->index,TMParam)!=0)) free(op1->index);
+			if((strcmp(op2->index,TMPU)!=0) && (strcmp(op2->index,TMPU2 )!=0) ) free(op2->index);
+			op1->index=res;
 			return EVERYTHINGSOKAY;	
 			break;
 		
@@ -717,9 +828,10 @@ ERROR_MSG ExprSem(int rule, nont *op1, nont *op2, Tabs *STab)
 			{
 				if(strcmp(op1->index,"ss")!=0) vst=false;
 				op1->d_type=tINTEGER;
-				if(op1->index!=NULL) free(op1->index);
-				if(op2->index!=NULL) free(op2->index);
-				op1->index=NULL;
+				if((strcmp(op1->index,TMPU)!=0) && (strcmp(op1->index,TMPU2)!=0)) free(op1->index);
+				if((strcmp(op1->index,TMPU)!=0) && (strcmp(op1->index,TMPU2)!=0)) free(op2->index);
+				op1->index=res;
+				generator(STab->InstL,I_FIND,NULL,NULL,res);
 				return vst ? EVERYTHINGSOKAY:SEMANTIC_ERR;
 			}
 			
@@ -727,25 +839,26 @@ ERROR_MSG ExprSem(int rule, nont *op1, nont *op2, Tabs *STab)
 			{
 				if(strcmp(op1->index,"sii")!=0) vst=false;
 				op1->d_type=tSTRING;
-				if(op1->index!=NULL) free(op1->index);
-				if(op2->index!=NULL) free(op2->index);
-				op1->index=NULL;
+				if((strcmp(op1->index,TMPU)!=0) && (strcmp(op1->index,TMPU2)!=0)) free(op1->index);
+				if((strcmp(op1->index,TMPU)!=0) && (strcmp(op1->index,TMPU2)!=0)) free(op2->index);
+				op1->index=res;
+				generator(STab->InstL,I_COPY,NULL,NULL,res);
 				return vst ? EVERYTHINGSOKAY:SEMANTIC_ERR;
 			}
 			tmp=htab_search(STab->glob,op2->index);
 			if(tmp==NULL)
 			{
 				fprintf(stderr,"funkcia %s nebola deklarovana\n",(char *) op2->index);
-				if(op1->index!=NULL) free(op1->index);
-				if(op2->index!=NULL) free(op2->index);
+				if((strcmp(op1->index,TMPU)!=0) && (strcmp(op1->index,TMPU2)!=0)) free(op1->index);
+				if((strcmp(op1->index,TMPU)!=0) && (strcmp(op1->index,TMPU2)!=0)) free(op2->index);
 				return SEMANTIC_ERR;
 			}
 			else 
 				if(((T_FuncData *) ((Hitem *) tmp)->data)->is_def==false)
 				{
 					fprintf(stderr,"funkcia %s nebola definovana\n",(char *) op2->index);
-					if(op1->index!=NULL) free(op1->index);
-					if(op2->index!=NULL) free(op2->index);
+					if((strcmp(op1->index,TMPU)!=0) && (strcmp(op1->index,TMPU2)!=0)) free(op1->index);
+					if((strcmp(op1->index,TMPU)!=0) && (strcmp(op1->index,TMPU2)!=0)) free(op2->index);
 					return SEMANTIC_ERR;
 				}
 			op2->d_type=get_type(((T_FuncData *) ((Hitem *) tmp)->data)->ret_par_types,0);
@@ -763,15 +876,20 @@ ERROR_MSG ExprSem(int rule, nont *op1, nont *op2, Tabs *STab)
 				return SEMANTIC_ERR;
 			}
 			free(str);
+			
+			MakeVariable(a,tVAR,op2->index); //doriesit chybove stavy
+			
+
+			generator(STab->InstL,I_CALL,a,NULL,res);
 
 			op1->d_type=get_type(((T_FuncData *) ((Hitem *) tmp)->data)->ret_par_types,0);
-			if(op1->index!=NULL) free(op1->index);
-			if(op2->index!=NULL) free(op2->index);
-			op1->index=NULL;
+			if((strcmp(op1->index,TMPU)!=0) && (strcmp(op1->index,TMPU2)!=0)) free(op1->index);
+			if((strcmp(op2->index,TMPU)!=0) && (strcmp(op2->index,TMPU2)!=0)) free(op2->index);
+			op1->index=res;
 			return EVERYTHINGSOKAY;
 			break;
 		case 15://L->L,E
-			if(op1->index!=NULL) free(op1->index);
+			if((strcmp(op1->index,TMPU)!=0) && (strcmp(op1->index,TMPU2)!=0) && (strcmp(op1->index,TMParam)!=0)) free(op1->index);
 		
 			op2->index=realloc(op2->index,(strlen(op2->index)+2));
 			printf("%s\n",(char *)op2->index);
@@ -790,12 +908,18 @@ ERROR_MSG ExprSem(int rule, nont *op1, nont *op2, Tabs *STab)
 					return SEMANTIC_ERR;
 			}
 			printf("%s\n",(char *)op2->index);
+						
 			
+			if((tmp=htab_search(STab->loc,(char *) op1->index))==NULL) tmp=htab_search(STab->glob,(char *) op1->index);
+			if(tmp==NULL) MakeVariable(a,op1->d_type,op1->index);
+			else MakeVariable(a,tVAR,op1->index); //doriesit chybove stavy
+			generator(STab->InstL,I_PUSH,a,NULL,NULL);
+
 			op1->index=op2->index;
 			return EVERYTHINGSOKAY;	
 		case 16://L->E,E
-			if(op1->index!=NULL) free(op1->index);
-			if(op2->index!=NULL) free(op2->index);
+			if((strcmp(op1->index,TMPU)!=0) && (strcmp(op1->index,TMPU2)!=0) && (strcmp(op1->index,TMParam)!=0)) free(op1->index);
+			if((strcmp(op2->index,TMPU)!=0) && (strcmp(op2->index,TMPU2)!=0)) free(op2->index);
 			op1->index=(char *)malloc((sizeof(char)*2+1));
 			switch(op2->d_type)
 			{
@@ -826,7 +950,13 @@ ERROR_MSG ExprSem(int rule, nont *op1, nont *op2, Tabs *STab)
 					return SEMANTIC_ERR;
 			}
 			//printf("%s\n",(char *)op1->index);
-		
+			
+			if((tmp=htab_search(STab->loc,(char *) op1->index))==NULL) tmp=htab_search(STab->glob,(char *) op1->index);
+			if(tmp==NULL) MakeVariable(a,op1->d_type,op1->index);
+			else MakeVariable(a,tVAR,op1->index); //doriesit chybove stavy
+
+			generator(STab->InstL,I_PUSH,a,NULL,NULL);
+
 			return EVERYTHINGSOKAY;	
 
 		case 17://E->term
@@ -839,22 +969,21 @@ ERROR_MSG ExprSem(int rule, nont *op1, nont *op2, Tabs *STab)
 					if(tmp==NULL)
 					{
 						fprintf(stderr,"premenna %s nebola deklarovana\n",(char *) op1->index);
-						if(op1->index!=NULL) free(op1->index);
+						if((strcmp(op1->index,TMPU)!=0) && (strcmp(op1->index,TMPU2)!=0)) free(op1->index);
 						return SEMANTIC_ERR;
 					}
 					else 
 						if(((T_VarData *) ((Hitem *) tmp)->data)->is_def==false)
 						{
 							fprintf(stderr,"premenna %s nebola definovana\n",(char *) op1->index);
-							if(op1->index!=NULL) free(op1->index);
+							if((strcmp(op1->index,TMPU)!=0) && (strcmp(op1->index,TMPU2)!=0)) free(op1->index);
 							return SEMANTIC_ERR;
 						}
-				//generate instruction
+				
 				op1->d_type=((T_VarData *) ((Hitem *) tmp)->data)->type;
 				return EVERYTHINGSOKAY;				
 				}
-				//generate instruction
-				//generate instruction
+				
 				op1->d_type=(op1->type)-16;	
 				return EVERYTHINGSOKAY;
 			}
@@ -862,6 +991,7 @@ ERROR_MSG ExprSem(int rule, nont *op1, nont *op2, Tabs *STab)
 			
 			
 	}
-	printf("semantika ok");
+
+  
   return EVERYTHINGSOKAY;
 }
