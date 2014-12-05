@@ -1,5 +1,5 @@
 var
-  bubble : double;
+  bubble : real;
 begin
   bubble := 69.7e--23
 end.
