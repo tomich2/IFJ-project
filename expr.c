@@ -56,6 +56,8 @@ oprs converttooprs(identita id, bool tab)
 	case OpNerovny:
 	    return EDiff;
 	case ID:
+	case KwSort:
+	case KwFind:
 	    return EId;
 	case DtInteger:
 	     if(!tab) return ETermInt;
@@ -335,7 +337,7 @@ ERROR_MSG ExprParse( htab_t *glob, htab_t *loc, T_vartype *dt)
   T_ParserItem *tmp_top;
 
   in.type=TERMINAL;
-  in.value.term.type=EEnd;
+  in.value.term.type=EndOfFile;
   push(&stack, &in, -1);
   
   if((converttooprs(token->identity,true)==EId) || (converttooprs(token->identity,true)==ETerm))
@@ -443,10 +445,44 @@ S_erase(&stack);
 return EVERYTHINGSOKAY;
 }
 
+ERROR_MSG MakeVariable(Variable *a, T_vartype type, void *data)
+{
+	a=malloc(sizeof(Variable));
+	if(a==NULL) return INTERN_INTERPRETATION_ERR;
+	a->type=type;
+	
+	switch(a->type)
+	{
+		case tBOOLEAN:  a->data.i=*(int *) data;
+				break;
+		case tINTEGER:  a->data.i=*(int *) data;
+				break;
+		case tREAL: a->data.r=*(double *) data;
+				break;
+		case tSTRING:
+		case tVAR:   
+				;
+				char *str=(char *) data;
+				a->data.s=malloc(strlen(str)+1);
+				if(a->data.s==NULL) 
+				{
+					free(a);
+					return INTERN_INTERPRETATION_ERR;
+				}
+				strcpy(a->data.s,str);
+				break;
+		default:
+			fprintf(stderr,"neznama chyba\n");
+			return SEMANTIC_ERR;
+	}
+	return EVERYTHINGSOKAY;
+}
+
 ERROR_MSG ExprSem(int rule, nont *op1, nont *op2, Tabs *STab)
 {	
 	//rule=rule+1;
 	void *tmp=NULL;
+	bool vst=true;
 	T_vartype tp;
 	//if(STab->is_func) printf("som vo funkcii\n");	
 	switch(rule)
@@ -486,7 +522,16 @@ ERROR_MSG ExprSem(int rule, nont *op1, nont *op2, Tabs *STab)
 			}
 			
 /*
-			Variable a,b;
+			Variable *a,*b;
+			if((tmp=htab_search(STab->loc,(char *) op1->index))==NULL) tmp=htab_search(STab->glob,(char *) op1->index);
+			if(tmp==NULL) MakeVariable(a,op1->d_type,op1->index);
+			else MakeVariable(a,VAR,op1->index);
+
+			if((tmp=htab_search(STab->loc,(char *) op2->index))==NULL) tmp=htab_search(STab->glob,(char *) op2->index);
+			if(tmp==NULL) MakeVariable(b,op2->d_type,op2->index);
+			else MakeVariable(b,VAR,op2->index);
+
+			generator(STab->InstL,I_ADD,a,b,"tmp");
 			
 			generator(STab->InstL,I_ADD,
 			// generate instruction - alloc new*/
@@ -614,7 +659,26 @@ ERROR_MSG ExprSem(int rule, nont *op1, nont *op2, Tabs *STab)
 			return EVERYTHINGSOKAY;	
 		
 		case 13://E->f(E)
+			if(strcmp(op2->index,"length")==0) 
+			{
+				if((int) op1->d_type!=tSTRING) vst=false;
+				op1->d_type=tINTEGER;
+				if(op1->index!=NULL) free(op1->index);
+				if(op2->index!=NULL) free(op2->index);
+				op1->index=NULL;
+				return vst ? EVERYTHINGSOKAY:SEMANTIC_ERR;
+			}
 			
+			if(strcmp(op2->index,"sort")==0) 
+			{
+				if((int) op1->d_type!=tSTRING) vst=false;
+				op1->d_type=tSTRING;
+				if(op1->index!=NULL) free(op1->index);
+				if(op2->index!=NULL) free(op2->index);
+				op1->index=NULL;
+				return vst ? EVERYTHINGSOKAY:SEMANTIC_ERR;
+			}
+
 			tmp=htab_search(STab->glob,op2->index);
 			if(tmp==NULL)
 			{
@@ -648,6 +712,26 @@ ERROR_MSG ExprSem(int rule, nont *op1, nont *op2, Tabs *STab)
 		
 
 		case 14://E->f(L)
+			
+			if(strcmp(op2->index,"find")==0) 
+			{
+				if(strcmp(op1->index,"ss")!=0) vst=false;
+				op1->d_type=tINTEGER;
+				if(op1->index!=NULL) free(op1->index);
+				if(op2->index!=NULL) free(op2->index);
+				op1->index=NULL;
+				return vst ? EVERYTHINGSOKAY:SEMANTIC_ERR;
+			}
+			
+			if(strcmp(op2->index,"copy")==0) 
+			{
+				if(strcmp(op1->index,"sii")!=0) vst=false;
+				op1->d_type=tSTRING;
+				if(op1->index!=NULL) free(op1->index);
+				if(op2->index!=NULL) free(op2->index);
+				op1->index=NULL;
+				return vst ? EVERYTHINGSOKAY:SEMANTIC_ERR;
+			}
 			tmp=htab_search(STab->glob,op2->index);
 			if(tmp==NULL)
 			{
@@ -705,6 +789,7 @@ ERROR_MSG ExprSem(int rule, nont *op1, nont *op2, Tabs *STab)
 					return SEMANTIC_ERR;
 			}
 			printf("%s\n",(char *)op2->index);
+			if(op1->index!=NULL) free(op1->index);
 			op1->index=op2->index;
 			return EVERYTHINGSOKAY;	
 		case 16://L->E,E
@@ -739,6 +824,7 @@ ERROR_MSG ExprSem(int rule, nont *op1, nont *op2, Tabs *STab)
 					return SEMANTIC_ERR;
 			}
 			//printf("%s\n",(char *)op1->index);
+			if(op2->index!=NULL) free(op2->index);
 			return EVERYTHINGSOKAY;	
 
 		case 17://E->term
