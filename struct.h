@@ -2,10 +2,6 @@
 #define _STRUCT_H
 
 #include <stdio.h>
-#include <stdlib.h>#ifndef _STRUCT_H
-#define _STRUCT_H
-
-#include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
