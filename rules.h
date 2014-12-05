@@ -26,4 +26,3 @@ int get_rule(T_nonterms nonterm, T_ParserItem **PItem_Arr, T_State *st, bool *is
 
 
 #endif
-
