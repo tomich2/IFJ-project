@@ -14,6 +14,7 @@ typedef enum
 	I_LABEL,
 	I_RETURN,
 	I_CALL,
+	I_GOTO,
 	/*ARITMETIKA*/
 	I_ADD,
 	I_SUB,
@@ -30,7 +31,15 @@ typedef enum
 
 I_ASSIGN,
 I_PRINT,
-I_READ
+I_READ,
+
+I_PUSH,
+I_POP,
+
+I_COPY,
+I_FIND,
+I_LENGTH,
+I_SORT
 //doplnit co treba
 
 }InstName;
@@ -42,11 +51,13 @@ typedef struct Instruction
 	InstName Iname;
 	struct Variable *a;
 	struct Variable *b;
-	char *res;
+	void *res;
 }tInstruction;
 
 
 
+
+	/*************VALUEEEE********************/
 
 typedef struct
 {
@@ -55,7 +66,6 @@ typedef struct
 		char *s;
 		//string s;
 }VariableData;
-
 
 
 typedef struct Variable{
