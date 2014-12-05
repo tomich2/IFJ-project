@@ -1,3 +1,0 @@
-begin
-  write('string' < 2)
-end.
