@@ -1,5 +1,5 @@
 var
-  NotSoString : double;
+  NotSoString : real;
 begin
   NotSoString := 'I am so string...'
 end.
