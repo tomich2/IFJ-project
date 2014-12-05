@@ -1,5 +1,5 @@
 var
-  NotSoInteger : double;
+  NotSoInteger : real;
 begin
   NotSoInteger := 56
 end.
