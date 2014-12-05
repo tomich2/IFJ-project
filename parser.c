@@ -163,7 +163,7 @@ i=0;
           return SYNTAX_ERR;
         }
       }
-      //printf("debug..token: %s state: %d\n", token->mem,state);
+      fprintf(stderr,"debug..token: %s state: %d\n", token->mem,state);
     free(token->mem);
     token->mem=NULL;
     expr_type=tERR;
