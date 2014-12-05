@@ -1,5 +1,5 @@
 var
-  BADjoke  : double;
+  BADjoke  : real;
   GOODjoke : string;
 begin
   BADjoke  := 1.0;
