@@ -587,7 +587,7 @@ ERROR_MSG get_token ()
                         parity++;
                         c=fgetc(fp);
 
-                        if (c==')' || c==',' || c==';' || c=='\n')
+                        if (c==')' || c==',' || c==';' || isspace(c)!=0)
                         {
                             end=true;
                             break;
