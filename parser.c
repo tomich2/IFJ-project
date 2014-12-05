@@ -45,8 +45,10 @@ ERROR_MSG top_down()
   Act->is_write=false;
   Act->is_readln=false;
   Act->is_ret_err=true;
+  Act->is_else=false;
   Act->rpt_size=2;
   Act->begincnt=0;
+  Act->ifbegcnt=0;
   Act->labIDcnt=1;
 
   size_t tmem_size;
@@ -59,6 +61,8 @@ ERROR_MSG top_down()
   labL_init(lablist);
   tListOfInstr *inslist=malloc(sizeof(*inslist));
   listInit(inslist);
+
+  const char TMPU[]="42TMP14ifj"; // 42TMP14ifj unikatna docasna premenna
 
   err=get_token();
   if(err!=EVERYTHINGSOKAY) // lexikalna chyba
@@ -147,7 +151,7 @@ i=0;
       {
         if(token->identity==PItem_top->value.term.type) // ak sa typ terminalu zhoduje so vstupom, odstrani sa terminal zo zasobniku a pokracuje sa na dalsi vstup
         {
-          err=semantic(&state,glob_sym_table,loc_sym_table,Act,&expr_type,tmem_size,vflist,flist,lablist,inslist);
+          err=semantic(&state,glob_sym_table,loc_sym_table,Act,&expr_type,tmem_size,vflist,flist,lablist,inslist,TMPU);
           if(err!=EVERYTHINGSOKAY)
           {
             free_all(PItems,p_stack,1,1,glob_sym_table,loc_sym_table,Act,vflist,lablist,inslist,flist,1);
@@ -185,7 +189,7 @@ i=0;
   return EVERYTHINGSOKAY;
 }
 
-ERROR_MSG semantic(T_State *st, htab_t *gsymtab, htab_t *lsymtab, T_Actual *Ac, T_vartype *expt, size_t tmems, t_varfunc_list *vflistp, t_func_list *flistp, t_lablist *lablistp, tListOfInstr *inslistp)
+ERROR_MSG semantic(T_State *st, htab_t *gsymtab, htab_t *lsymtab, T_Actual *Ac, T_vartype *expt, size_t tmems, t_varfunc_list *vflistp, t_func_list *flistp, t_lablist *lablistp, tListOfInstr *inslistp, const char *TMPU)
 {
 T_VarData *vdattmp=NULL;
 T_FuncData *fdattmp=NULL;
@@ -196,7 +200,6 @@ Hitem *cmp=NULL;
 ERROR_MSG err=EVERYTHINGSOKAY;
 char tmp[Ac->rpt_size];
 Variable *varA=NULL;
-Variable *varB=NULL;
 if(Ac->rpt_size==MAX_RPTYPES)
 {
   size_t s=sizeof(Ac->act_rptypes);
@@ -521,34 +524,63 @@ if(Ac->rpt_size==MAX_RPTYPES)
                       Ac->act_varID=realloc(Ac->act_varID,tmems);
                       if(Ac->act_varID==NULL)return INTERN_INTERPRETATION_ERR;
                       strcpy(Ac->act_varID,token->mem);
-                      cmp=(Hitem*)htab_search(lsymtab,token->mem);
+                      cmp=(Hitem*)htab_search(lsymtab,token->mem); // hlada sa identifikator, najprv v lokalnej tabulke
                       if(cmp==NULL)
                       {
                         cmp=(Hitem*)htab_search(gsymtab,token->mem);
-                        if(cmp==NULL)return SEMANTIC_ERR;
-                        else
+                        if(cmp==NULL)return SEMANTIC_ERR; // ak sa ID nenajde v tabulkach, je nedeklarovany
+                        else // identifikator sa nasiel v globalnej tabulkeakurát neviem, ako budem uvolňovať tie variable,
                         {
                           if(cmp->type==FUNCTION)
                           {
                             if(strcmp(cmp->key,Ac->act_funcID)!=0)return SEMANTIC_ERR;
                             fcmpd=cmp->data;
-                            if(Ac->is_write==true && fcmpd->is_ret==false)return SEMANTIC_ERR;
+                            if(Ac->is_write==true)
+                            {
+                              if(fcmpd->is_ret==false)return SEMANTIC_ERR;
+                              varA=malloc(sizeof(*varA));
+                              if(varA==NULL)return INTERN_INTERPRETATION_ERR;
+                              varA->data.s=malloc(strlen(Ac->act_varID)+1);
+                              if(varA->data.s==NULL)
+                              {
+                                free(varA);
+                                return INTERN_INTERPRETATION_ERR;
+                              }
+                              strcpy(varA->data.s,Ac->act_varID);
+                              varA->type=get_type(fcmpd->ret_par_types,0);
+                              generator(inslistp,I_PRINT,varA,NULL,NULL);
+                            }
                             else if(Ac->is_readln==true)
                             {
                               if(get_type(fcmpd->ret_par_types,0)==tBOOLEAN)return EXPRESSION_ERR;
                               fcmpd->is_ret=true;
                               Ac->is_ret_err=false;
+                              generator(inslistp,I_READ,NULL,NULL,Ac->act_varID); // instrukcia pre readln ******
                             }
                           }
                           else
                           {
                             vcmpd=cmp->data;
-                            if(Ac->is_write==true && vcmpd->is_def==false)return SEMANTIC_ERR;
+                            if(Ac->is_write==true )
+                            {
+                              if(vcmpd->is_def==false)return SEMANTIC_ERR;
+                              varA=malloc(sizeof(*varA));
+                              if(varA==NULL)return INTERN_INTERPRETATION_ERR;
+                              varA->data.s=malloc(strlen(Ac->act_varID)+1);
+                              if(varA->data.s==NULL)
+                              {
+                                free(varA);
+                                return INTERN_INTERPRETATION_ERR;
+                              }
+                              strcpy(varA->data.s,Ac->act_varID);
+                              varA->type=vcmpd->type;
+                              generator(inslistp,I_PRINT,varA,NULL,NULL);
+                            }
                             if(Ac->is_readln==true)
                             {
                               if(vcmpd->type==tBOOLEAN)return EXPRESSION_ERR;
                               vcmpd->is_def=true;
-                              Ac->is_ret_err=false;
+                              generator(inslistp,I_READ,NULL,NULL,Ac->act_varID); // instrukcia pre readln ******
                             }
                           }
                         }
@@ -567,6 +599,7 @@ if(Ac->rpt_size==MAX_RPTYPES)
                             free(varA);
                             return INTERN_INTERPRETATION_ERR;
                           }
+                          strcpy(varA->data.s,Ac->act_varID);
                           varA->type=vcmpd->type;
                           generator(inslistp,I_PRINT,varA,NULL,NULL);
                         }
@@ -587,7 +620,7 @@ if(Ac->rpt_size==MAX_RPTYPES)
                         free(varA);
                         return INTERN_INTERPRETATION_ERR;
                       }
-                      varA->data.s=TMPU;
+                      strcpy(varA->data.s,TMPU);
                       cmp=(Hitem*)htab_search(lsymtab,Ac->act_varID);
                       if(cmp==NULL)
                       {
@@ -691,7 +724,21 @@ if(Ac->rpt_size==MAX_RPTYPES)
                           if((vcmpd->type)!=*expt)return EXPRESSION_ERR;
                         }
                       }
+                      if(Ac->is_else==true)Ac->ifbegcnt--;
+                      if(Ac->ifbegcnt==0)
+                      {
+                        // LAB 2
+                      }
                       break;
+                case KwThen:
+                      // GOTO LAB1 generator(inslistp
+                      //generator(inslistp,I_GOTO,)
+                      break;
+                case KwElse:
+                      Ac->is_else=true;
+                      // GOTO LAB2
+                      // LAB1
+                      ins_adress=generator(inslistp,I_LABEL,NULL,NULL,NULL);
                 default: break;
               }
               break;
@@ -699,9 +746,9 @@ if(Ac->rpt_size==MAX_RPTYPES)
               if(Ac->was_func==true)
               {
                 htab_clear(lsymtab);
-                if(Ac->is_ret_err==true)return OTHER_SEM_ERR;
+                if(Ac->is_ret_err==true)return OTHER_SEM_ERR; // niektora funkcia nema priradenu navratovu hodnotu
                 t_list_item *item=vflistp->First;
-                while(item!=NULL)
+                while(item!=NULL) // kontrola, ci su vsetkz deklarovane funkcie aj definovane
                 {
                   if(item->type==FUNCTION)
                   {
@@ -727,14 +774,38 @@ if(Ac->rpt_size==MAX_RPTYPES)
                         else
                         {
                           vcmpd=cmp->data;
-                          if(Ac->is_write==true && vcmpd->is_def==false)return SEMANTIC_ERR;
+                          if(Ac->is_write==true)
+                          {
+                            if(vcmpd->is_def==false)return SEMANTIC_ERR;
+                            varA=malloc(sizeof(*varA));
+                            if(varA==NULL)return INTERN_INTERPRETATION_ERR;
+                            varA->data.s=malloc(strlen(Ac->act_varID)+1);
+                            if(varA->data.s==NULL)
+                            {
+                              free(varA);
+                              return INTERN_INTERPRETATION_ERR;
+                            }
+                            strcpy(varA->data.s,Ac->act_varID);
+                            varA->type=vcmpd->type;
+                            generator(inslistp,I_PRINT,varA,NULL,NULL);
+                          }
                           if(Ac->is_readln==true)
                           {
                             if(vcmpd->type==tBOOLEAN)return EXPRESSION_ERR;
                             vcmpd->is_def=true;
+                            generator(inslistp,I_READ,NULL,NULL,Ac->act_varID); // instrukcia pre readln ******
                           }
                         }
                       }
+                      break;
+                case KwBegin:
+                      if(Ac->begincnt==0)
+                      {
+                        ins_adress=generator(inslistp,I_LABEL,NULL,NULL,NULL);
+                        labL_insertlast(lablistp,ins_adress,Ac->labIDcnt);
+                        Ac->labIDcnt++;
+                      }
+                      Ac->begincnt++;
                       break;
                 case KwWrite:
                       Ac->is_write=true;
@@ -747,6 +818,16 @@ if(Ac->rpt_size==MAX_RPTYPES)
                       if(Ac->is_readln==true)Ac->is_readln=false;
                       break;
                 case OpPrir:
+                      varA=malloc(sizeof(*varA));
+                      if(varA==NULL)return INTERN_INTERPRETATION_ERR;
+                      varA->data.s=malloc(TMPLEN*sizeof(char));
+                      if(varA->data.s==NULL)
+                      {
+                        free(varA);
+                        return INTERN_INTERPRETATION_ERR;
+                      }
+                      strcpy(varA->data.s,TMPU);
+                      generator(inslistp,I_ASSIGN,varA,NULL,Ac->act_varID);
                       cmp=(Hitem*)htab_search(gsymtab,Ac->act_varID);
                       if(cmp->type==IDENTIFIER)
                       {
