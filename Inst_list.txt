@@ -26,7 +26,7 @@ I_NOT_EQUAL_CMP(val,val,NULL)- val=/=val a výsledok bude 1/0 formát v bool pre
 
 I_ASSIGN(val,NULL,meno)
 I_PRINT(val,NULL,NULL)
-I_READ(stdin,NULL,meno)---> zo stdinu
+I_READ(NULL,NULL,meno)---> zo stdinu
 
 .
 .
