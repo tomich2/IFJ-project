@@ -21,7 +21,7 @@ typedef struct tListOfInstr
 
 void listInit(tListOfInstr *L);
 void listFree(tListOfInstr *L);
-tListItem* generator(tListOfInstr *L, InstName name, Variable *a, Variable *b, void *s);
+tListItem* generator(tListOfInstr *L, InstName name, Variable *a, Variable *b, char *s);
 
 
 
