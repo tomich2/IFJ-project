@@ -20,6 +20,9 @@
 #define GTAB_SIZE 11
 #define MAX_RPTYPES 20
 #define TMPLEN 11 // dlzka unikatnej docasnej premennej
+#define TMPU "42TMP14ifj"
+#define TMPU2 "42TMP24ifj"
+#define TMParam "42TMPar2ifj"
 
 typedef enum{NONTERMINAL, TERMINAL, EMPTY=-1}ItemType;
 
@@ -76,7 +79,7 @@ typedef struct{
 
 
 ERROR_MSG top_down();
-ERROR_MSG semantic(T_State *st, htab_t *gsymtab, htab_t *lsymtab, T_Actual *Ac, T_vartype *expt, size_t tmems, t_varfunc_list *vflistp, t_func_list *flistp, t_lablist *lablistp, tListOfInstr *inslistp, const char *TMPU);
+ERROR_MSG semantic(T_State *st, htab_t *gsymtab, htab_t *lsymtab, T_Actual *Ac, T_vartype *expt, size_t tmems, t_varfunc_list *vflistp, t_func_list *flistp, t_lablist *lablistp, tListOfInstr *inslistp, const char *TMPUV);
 ERROR_MSG PItems_alloc(T_ParserItem ***Ptr);
 void PItems_free(T_ParserItem ***Ptr);
 void free_all(T_ParserItem **p, Stack st, int stack_erase, int token_mem_free, htab_t *gsymtab, htab_t *lsymtab, T_Actual *Ac, t_varfunc_list *vflistp, t_lablist *lablistp, tListOfInstr *inslistp, t_func_list *flistp, int l_dispose);
