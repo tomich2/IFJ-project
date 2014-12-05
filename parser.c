@@ -163,7 +163,7 @@ i=0;
           return SYNTAX_ERR;
         }
       }
-     // fprintf(stderr,"debug..token: %s state: %d\n", token->mem,state);
+    fprintf(stderr,"debug..token: %s state: %d\n", token->mem,state);
     free(token->mem);
     token->mem=NULL;
     expr_type=tERR;
@@ -397,6 +397,7 @@ if(Ac->rpt_size==MAX_RPTYPES)
                       cmp=htab_search(gsymtab,Ac->act_funcID);
                       fcmpd=cmp->data;
                       fcmpd->is_def=false;
+                      Ac->is_ret_err=false;
                       free(fdattmp->ret_par_types);
                       free(fdattmp);
                       return EVERYTHINGSOKAY;
@@ -657,6 +658,7 @@ if(Ac->rpt_size==MAX_RPTYPES)
                       {
                         ins_adress=generator(inslistp,I_LABEL,NULL,NULL,NULL);
                         labL_insertlast(lablistp,ins_adress,Ac->labIDcnt);
+                        Ac->labIDcnt++;
                       }
                       Ac->begincnt++;
                       break;
@@ -698,6 +700,17 @@ if(Ac->rpt_size==MAX_RPTYPES)
               {
                 htab_clear(lsymtab);
                 if(Ac->is_ret_err==true)return OTHER_SEM_ERR;
+                t_list_item *item=vflistp->First;
+                while(item!=NULL)
+                {
+                  if(item->type==FUNCTION)
+                  {
+                    cmp=htab_search(gsymtab,item->item_ID);
+                    fcmpd=cmp->data;
+                    if(fcmpd->is_def==false)return SEMANTIC_ERR;
+                  }
+                  item=item->next;
+                }
                 Ac->was_func=false;
               }
               switch(token->identity)
