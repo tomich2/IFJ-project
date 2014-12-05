@@ -25,11 +25,15 @@ void listFree(tListOfInstr *L)
     instr= L->first->Instr;
     if ((L->first->Instr->a)!=NULL)
     {
+		if(L->first->Instr->a->data.s != NULL)
+			free(L->first->Instr->a->data.s);
 		var = L->first->Instr->a;
 		free(var);
 	}
 	if ((L->first->Instr->b)!=NULL)
     {
+		if(L->first->Instr->b->data.s != NULL)
+			free(L->first->Instr->b->data.s);
 		var = L->first->Instr->b;
 		free(var);
 	}
@@ -40,11 +44,11 @@ void listFree(tListOfInstr *L)
   }
 }
 
-tListItem* generator(tListOfInstr *L, InstName name, Variable *a, Variable *b, void *s)
+tListItem* generator(tListOfInstr *L, InstName name, Variable *a, Variable *b, char *s)
 {
 	tInstruction *instr=malloc(sizeof(tInstruction));
-	if (instr==NULL)
-		Error(7);
+	//if (instr==NULL)
+	//	Error(7);
 	instr->Iname=name;
 	instr->a=a;
 	instr->b=b;
@@ -52,8 +56,8 @@ tListItem* generator(tListOfInstr *L, InstName name, Variable *a, Variable *b, v
 	
 	tListItem *newItem;
 	newItem = malloc(sizeof (tListItem));
-	if (newItem==NULL)
-		Error(7);
+//	if (newItem==NULL)
+	//	Error(7);
 	newItem->Instr = instr;
 	newItem->nextItem = NULL;
 	if (L->first == NULL)
