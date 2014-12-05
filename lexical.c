@@ -90,6 +90,7 @@ ERROR_MSG get_token ()
 
             case '0'...'9':                                                                     // je to cislo
             {
+                int bodka=0;
                 if (i==0)
                 {
                     token->mem=first_allocation ();
@@ -119,6 +120,7 @@ ERROR_MSG get_token ()
                 }
                 if (c=='.')
                 {
+                    bodka=1;
                     i++;
                     token->mem=string_implementation(c,i,token->mem);
                     if (token->mem==NULL)
@@ -237,6 +239,11 @@ ERROR_MSG get_token ()
                         free(token->mem);
                         return INTERN_INTERPRETATION_ERR;
                     }
+                    if (bodka==0)
+                    {
+                        token->identity=DtInteger;
+                        return EVERYTHINGSOKAY;
+                    }
                 }
                 else
                 {
@@ -246,7 +253,7 @@ ERROR_MSG get_token ()
                         free(token->mem);
                         return INTERN_INTERPRETATION_ERR;
                     }
-                    if ((strchr(token->mem,'.'))==NULL)
+                    if (bodka==0)
                     {
 
                         token->mem=string_implementation('\0',i+1,token->mem);
