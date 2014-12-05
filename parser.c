@@ -63,18 +63,18 @@ ERROR_MSG top_down()
   err=get_token();
   if(err!=EVERYTHINGSOKAY) // lexikalna chyba
   {
-    free_all(PItems,p_stack,0,0,glob_sym_table,loc_sym_table,Act,vflist,lablist,inslist,1);
+    free_all(PItems,p_stack,0,0,glob_sym_table,loc_sym_table,Act,vflist,lablist,inslist,flist,1);
     return err;
   }
   if(token->identity==EndOfFile) // syntakticka chyba=prazdny subor
   {
-    free_all(PItems,p_stack,0,1,glob_sym_table,loc_sym_table,Act,vflist,lablist,inslist,1);
+    free_all(PItems,p_stack,0,1,glob_sym_table,loc_sym_table,Act,vflist,lablist,inslist,flist,1);
     return SYNTAX_ERR;
   }
     tmem_size=strlen(token->mem)+1;
   if(get_rule(START,PItems,&state,&is_func)) // podla pravidla vykona expanziu a pravu stranu pravidla ulozi do PItems
   {
-    free_all(PItems,p_stack,0,1,glob_sym_table,loc_sym_table,Act,vflist,lablist,inslist,1); // ak je prvy token nespravny=syntakticka chyba
+    free_all(PItems,p_stack,0,1,glob_sym_table,loc_sym_table,Act,vflist,lablist,inslist,flist,1); // ak je prvy token nespravny=syntakticka chyba
     return SYNTAX_ERR;
   }
 
@@ -90,7 +90,7 @@ i=0;
   {
     if(token->identity==EndOfFile) // zdrojovy subor je nekompletny=syntakticka chyba
     {
-      free_all(PItems,p_stack,1,1,glob_sym_table,loc_sym_table,Act,vflist,lablist,inslist,1);
+      free_all(PItems,p_stack,1,1,glob_sym_table,loc_sym_table,Act,vflist,lablist,inslist,flist,1);
       return SYNTAX_ERR;
     }
     PItem_top=top(&p_stack);
@@ -102,7 +102,7 @@ i=0;
         err=ExprParse(glob_sym_table,loc_sym_table,&expr_type);
         if(err) // chybny vyraz=syntakticka chyba
         {
-          free_all(PItems,p_stack,1,1,glob_sym_table,loc_sym_table,Act,vflist,lablist,inslist,1);
+          free_all(PItems,p_stack,1,1,glob_sym_table,loc_sym_table,Act,vflist,lablist,inslist,flist,1);
           return err;
         }
         pop(&p_stack); //  expandovany neterminal sa odstrani zo zasobnika
@@ -112,7 +112,7 @@ i=0;
       {
         if(get_rule(PItem_top->value.nonterm.type,PItems,&state,&is_func)) // neexistuje pravidlo=syntakticka chyba
         {
-          free_all(PItems,p_stack,1,1,glob_sym_table,loc_sym_table,Act,vflist,lablist,inslist,1);
+          free_all(PItems,p_stack,1,1,glob_sym_table,loc_sym_table,Act,vflist,lablist,inslist,flist,1);
           return SYNTAX_ERR;
         }
         pop(&p_stack); //  expandovany neterminal sa odstrani zo zasobnika
@@ -139,7 +139,7 @@ i=0;
         }
         else // terminal nie je literal=syntakticka chyba
         {
-          free_all(PItems,p_stack,1,1,glob_sym_table,loc_sym_table,Act,vflist,lablist,inslist,1);
+          free_all(PItems,p_stack,1,1,glob_sym_table,loc_sym_table,Act,vflist,lablist,inslist,flist,1);
           return SYNTAX_ERR;
         }
       }
@@ -150,7 +150,7 @@ i=0;
           err=semantic(&state,glob_sym_table,loc_sym_table,Act,&expr_type,tmem_size,vflist,flist,lablist,inslist);
           if(err!=EVERYTHINGSOKAY)
           {
-            free_all(PItems,p_stack,1,1,glob_sym_table,loc_sym_table,Act,vflist,lablist,inslist,1);
+            free_all(PItems,p_stack,1,1,glob_sym_table,loc_sym_table,Act,vflist,lablist,inslist,flist,1);
             return err;
           }
           if(Act->begincnt==0 && state==FUNC_BODY)is_func=false;
@@ -159,18 +159,18 @@ i=0;
         }
         else // terminaly sa nezhoduju=syntakticka chyba
         {
-          free_all(PItems,p_stack,1,1,glob_sym_table,loc_sym_table,Act,vflist,lablist,inslist,1);
+          free_all(PItems,p_stack,1,1,glob_sym_table,loc_sym_table,Act,vflist,lablist,inslist,flist,1);
           return SYNTAX_ERR;
         }
       }
-      fprintf(stderr,"debug..token: %s state: %d\n", token->mem,state);
+     // fprintf(stderr,"debug..token: %s state: %d\n", token->mem,state);
     free(token->mem);
     token->mem=NULL;
     expr_type=tERR;
     err=get_token();
     if(err!=EVERYTHINGSOKAY)
     {
-      free_all(PItems,p_stack,1,0,glob_sym_table,loc_sym_table,Act,vflist,lablist,inslist,1);
+      free_all(PItems,p_stack,1,0,glob_sym_table,loc_sym_table,Act,vflist,lablist,inslist,flist,1);
       return err;
     }
     if(token->mem!=NULL)tmem_size=strlen(token->mem)+1;
@@ -178,10 +178,10 @@ i=0;
   }
   if(token->identity!=EndOfFile) // ak zdrojovy subor obsahuje nejake znaky po ukoncujucej bodke
   {
-   free_all(PItems,p_stack,0,1,glob_sym_table,loc_sym_table,Act,vflist,lablist,inslist,1);
+   free_all(PItems,p_stack,0,1,glob_sym_table,loc_sym_table,Act,vflist,lablist,inslist,flist,1);
    return SYNTAX_ERR;
   }
-  free_all(PItems,p_stack,0,0,glob_sym_table,loc_sym_table,Act,vflist,lablist,inslist,1);
+  free_all(PItems,p_stack,0,0,glob_sym_table,loc_sym_table,Act,vflist,lablist,inslist,flist,1);
   return EVERYTHINGSOKAY;
 }
 
@@ -793,7 +793,7 @@ void PItems_free(T_ParserItem ***Ptr)
   free(*Ptr);
 }
 
-void free_all(T_ParserItem **p, Stack st, int stack_erase, int token_mem_free, htab_t *gsymtab, htab_t *lsymtab, T_Actual *Ac, t_varfunc_list *vflistp, t_lablist *lablistp, tListOfInstr *inslistp, int l_dispose)
+void free_all(T_ParserItem **p, Stack st, int stack_erase, int token_mem_free, htab_t *gsymtab, htab_t *lsymtab, T_Actual *Ac, t_varfunc_list *vflistp, t_lablist *lablistp, tListOfInstr *inslistp, t_func_list *flistp, int l_dispose)
 {
   Hitem *cmp=NULL;
   T_FuncData *fcmpd=NULL;
@@ -829,6 +829,7 @@ void free_all(T_ParserItem **p, Stack st, int stack_erase, int token_mem_free, h
     free(lablistp);
     listFree(inslistp);
     free(inslistp);
+    free(flistp);
   }
 }
 
