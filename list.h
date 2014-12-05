@@ -18,7 +18,7 @@
 
 #ifndef TVART
 #define TVART
-typedef enum{tINTEGER, tSTRING, tREAL, tBOOLEAN, tERR=-1}T_vartype;
+typedef enum{tINTEGER, tSTRING, tREAL, tBOOLEAN, VAR, tERR=-1}T_vartype;
 #endif
 
 typedef struct fitem{
