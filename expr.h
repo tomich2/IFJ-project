@@ -7,17 +7,27 @@
 
 #include "stack.h"
 #include "parser.h"
-#include "error.h"
+#include "lexical.h"
+#include "expr.h"
 
 typedef enum prec { R /* Right > */, L /* Left < */, E /* Equal = */, Q /* Error */ } action;
 
 typedef enum Operator { EPlus, EMinus, EMulti, EDiv, EEqual,
 			ELess, EGreater, ELorEq, EGorEq, EDiff,
-			EId, ETerm,  EComma, ELpar, ERpar, EEnd} oprs;
+			EId, ETerm, EComma=12, ELpar=13, ERpar=14, EEnd=15, ETermInt=16,ETermString=17, ETermReal=18, ETermBool=19 } oprs;
 
-oprs converttooprs(identita id);
+typedef struct sym_tabs
+{
+	htab_t *glob;
+	htab_t *loc;
+	bool is_func;
+} Tabs;
+
+
+oprs converttooprs(identita id, bool tab);
 int GetRule(int a, int b);
 T_ParserItem *GetTerm(Stack *stack, bool hdl);
-int Reduction(Stack *stack);
-ERROR_MSG ExprParse();
+int Reduction(Stack *stack, T_ParserItem *in, Tabs *STab);
+ERROR_MSG ExprParse( htab_t *glob, htab_t *loc, T_vartype *dt);
+ERROR_MSG ExprSem(int rule, nont *op1, nont *op2, Tabs *STab);
 #endif
