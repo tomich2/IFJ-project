@@ -552,7 +552,7 @@ fi
 
 ./parser ./test/file47 > test0.outputs/file47.output 2>&1;
 value=$?;
-expected=3;
+expected=4;
 if [ $value = $expected ];
     then
         echo -e "Testing file47                     ${green}PASS${NC}";
@@ -562,7 +562,7 @@ fi
 
 ./parser ./test/file48 > test0.outputs/file48.output 2>&1;
 value=$?;
-expected=4;
+expected=3;
 if [ $value = $expected ];
     then
         echo -e "Testing file48                     ${green}PASS${NC}";
