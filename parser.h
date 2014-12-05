@@ -26,11 +26,6 @@ typedef enum{NONTERMINAL, TERMINAL, EMPTY=-1}ItemType;
 
 typedef enum{GLOBVAR_DEK, FUNC_ID, FUNC_PARAMS, FUNC_TYPE, LOCVAR_DEK, FUNC_BODY, MAIN_BODY}T_State;
 
-#ifndef TVART
-#define TVART
-typedef enum{tINTEGER, tSTRING, tREAL, tBOOLEAN, VAR, tERR=-1}T_vartype;
-#endif
-
 typedef struct non_term
 {
 	int type;
