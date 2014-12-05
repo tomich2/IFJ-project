@@ -62,7 +62,7 @@ ERROR_MSG top_down()
   tListOfInstr *inslist=malloc(sizeof(*inslist));
   listInit(inslist);
 
-  const char TMPU[]="42TMP14ifj"; // 42TMP14ifj unikatna docasna premenna
+  const char TMPUV[]=TMPU; //"42TMP14ifj"; // unikatna docasna premenna
 
   err=get_token();
   if(err!=EVERYTHINGSOKAY) // lexikalna chyba
@@ -103,7 +103,7 @@ i=0;
 
       if(PItem_top->value.nonterm.type==EXPR) // ak je na vrchole zasobnika neterminal EXPR(vyraz), spracuje ho precedencna analyza
       {
-        err=ExprParse(glob_sym_table,loc_sym_table,&expr_type);
+        err=ExprParse(glob_sym_table,loc_sym_table,&expr_type,inslist);
         if(err) // chybny vyraz=syntakticka chyba
         {
           free_all(PItems,p_stack,1,1,glob_sym_table,loc_sym_table,Act,vflist,lablist,inslist,flist,1);
@@ -151,7 +151,7 @@ i=0;
       {
         if(token->identity==PItem_top->value.term.type) // ak sa typ terminalu zhoduje so vstupom, odstrani sa terminal zo zasobniku a pokracuje sa na dalsi vstup
         {
-          err=semantic(&state,glob_sym_table,loc_sym_table,Act,&expr_type,tmem_size,vflist,flist,lablist,inslist,TMPU);
+          err=semantic(&state,glob_sym_table,loc_sym_table,Act,&expr_type,tmem_size,vflist,flist,lablist,inslist,TMPUV);
           if(err!=EVERYTHINGSOKAY)
           {
             free_all(PItems,p_stack,1,1,glob_sym_table,loc_sym_table,Act,vflist,lablist,inslist,flist,1);
@@ -189,7 +189,7 @@ i=0;
   return EVERYTHINGSOKAY;
 }
 
-ERROR_MSG semantic(T_State *st, htab_t *gsymtab, htab_t *lsymtab, T_Actual *Ac, T_vartype *expt, size_t tmems, t_varfunc_list *vflistp, t_func_list *flistp, t_lablist *lablistp, tListOfInstr *inslistp, const char *TMPU)
+ERROR_MSG semantic(T_State *st, htab_t *gsymtab, htab_t *lsymtab, T_Actual *Ac, T_vartype *expt, size_t tmems, t_varfunc_list *vflistp, t_func_list *flistp, t_lablist *lablistp, tListOfInstr *inslistp, const char *TMPUV)
 {
 T_VarData *vdattmp=NULL;
 T_FuncData *fdattmp=NULL;
@@ -620,7 +620,7 @@ if(Ac->rpt_size==MAX_RPTYPES)
                         free(varA);
                         return INTERN_INTERPRETATION_ERR;
                       }
-                      strcpy(varA->data.s,TMPU);
+                      strcpy(varA->data.s,TMPUV);
                       cmp=(Hitem*)htab_search(lsymtab,Ac->act_varID);
                       if(cmp==NULL)
                       {
@@ -830,7 +830,7 @@ if(Ac->rpt_size==MAX_RPTYPES)
                         free(varA);
                         return INTERN_INTERPRETATION_ERR;
                       }
-                      strcpy(varA->data.s,TMPU);
+                      strcpy(varA->data.s,TMPUV);
                       generator(inslistp,I_ASSIGN,varA,NULL,Ac->act_varID);
                       cmp=(Hitem*)htab_search(gsymtab,Ac->act_varID);
                       if(cmp->type==IDENTIFIER)
