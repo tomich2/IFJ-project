@@ -29,17 +29,16 @@ int main (int argc, char **argv)
         close_file();
         Error(99);
     }
-    if (LGar==NULL)
-    {
-       close_file();
-       Error(99);
-    }
     test=top_down();
     DisposeList(LGar);
     free(LGar);
     free(token);
     if(test==EVERYTHINGSOKAY)printf("Syntakticka analyza v poriadku.\n");
-    else Error(test);
+    else
+    {
+      close_file();
+      Error(test);
+    }
     close_file();
     return 0;
 }
