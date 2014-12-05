@@ -178,7 +178,7 @@ void *htab_search(htab_t *t,char *key)
 
  while(item!=NULL) 
 	{ //prechadzanie zoznamu na danom indexe tabulky
-	 if (strcmp(key,item->key)==0) return item->data; //ak najde odpovedajuci zaznam vrati ukazovatel nan
+	 if (strcmp(key,item->key)==0) return item; //ak najde odpovedajuci zaznam vrati ukazovatel nan
 	 item=item->next;
 	}
  return NULL;
