@@ -1,5 +1,5 @@
 var
-  where : double;
+  where : real;
 begin
   where := find('where', 'w')
 end.
