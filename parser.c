@@ -555,25 +555,26 @@ if(Ac->rpt_size==MAX_RPTYPES)
                       else
                       {
                         vcmpd=cmp->data;
-                        if(Ac->is_write==true && vcmpd->is_def==false)return SEMANTIC_ERR;
+                        if(Ac->is_write==true)
+                        {
+                          if(vcmpd->is_def==false)return SEMANTIC_ERR;
+                          varA=malloc(sizeof(*varA));
+                          if(varA==NULL)return INTERN_INTERPRETATION_ERR;
+                          varA->data.s=malloc(strlen(Ac->act_varID)+1);
+                          if(varA->data.s==NULL)
+                          {
+                            free(varA);
+                            return INTERN_INTERPRETATION_ERR;
+                          }
+                          varA->type=vcmpd->type;
+                          generator(inslistp,I_PRINT,varA,NULL,NULL);
+                        }
                         if(Ac->is_readln==true)
                         {
                           if(vcmpd->type==tBOOLEAN)return EXPRESSION_ERR;
                           vcmpd->is_def=true;
                           generator(inslistp,I_READ,NULL,NULL,Ac->act_varID); // instrukcia pre readln ******
                         }
-                      }
-                      if(Ac->is_write==true)
-                      {
-                        varA=malloc(sizeof(*varA));
-                        if(varA==NULL)return INTERN_INTERPRETATION_ERR;
-                        varA->data.s=malloc(strlen(Ac->act_varID)+1);
-                        if(varA->data.s==NULL)
-                        {
-                          free(varA);
-                          return INTERN_INTERPRETATION_ERR;
-                        }
-                        //generator(inslistp,I_PRINT,); // instrukcia pre write *****
                       }
                       break;
                 case OpPrir:
