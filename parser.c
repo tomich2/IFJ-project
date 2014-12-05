@@ -61,7 +61,7 @@ ERROR_MSG top_down()
   listInit(inslist);
 
   err=get_token();
-  if(err) // lexikalna chyba
+  if(err!=EVERYTHINGSOKAY) // lexikalna chyba
   {
     free_all(PItems,p_stack,0,0,glob_sym_table,loc_sym_table,Act,vflist,lablist,inslist,1);
     return err;
@@ -163,12 +163,12 @@ i=0;
           return SYNTAX_ERR;
         }
       }
-      printf("debug..token: %s state: %d\n", token->mem,state);
+      //printf("debug..token: %s state: %d\n", token->mem,state);
     free(token->mem);
     token->mem=NULL;
     expr_type=tERR;
     err=get_token();
-    if(err)
+    if(err!=EVERYTHINGSOKAY)
     {
       free_all(PItems,p_stack,1,0,glob_sym_table,loc_sym_table,Act,vflist,lablist,inslist,1);
       return err;
@@ -300,7 +300,7 @@ if(Ac->rpt_size==MAX_RPTYPES)
                       }
                       break;
                 case KwInteger:
-                      vdattmp->is_def=false;
+                      vdattmp->is_def=true;
                       vdattmp->type=tINTEGER;
                       err=htab_new(lsymtab,Ac->act_varID,IDENTIFIER,vdattmp,sizeof(*vdattmp));
                       if(err!=EVERYTHINGSOKAY)
@@ -313,7 +313,7 @@ if(Ac->rpt_size==MAX_RPTYPES)
                       strcat(Ac->act_rptypes,"i");
                       break;
                 case KwString:
-                      vdattmp->is_def=false;
+                      vdattmp->is_def=true;
                       vdattmp->type=tSTRING;
                       err=htab_new(lsymtab,Ac->act_varID,IDENTIFIER,vdattmp,sizeof(*vdattmp));
                       if(err!=EVERYTHINGSOKAY)
@@ -326,7 +326,7 @@ if(Ac->rpt_size==MAX_RPTYPES)
                       strcat(Ac->act_rptypes,"s");
                       break;
                 case KwReal:
-                      vdattmp->is_def=false;
+                      vdattmp->is_def=true;
                       vdattmp->type=tREAL;
                       err=htab_new(lsymtab,Ac->act_varID,IDENTIFIER,vdattmp,sizeof(*vdattmp));
                       if(err!=EVERYTHINGSOKAY)
@@ -339,7 +339,7 @@ if(Ac->rpt_size==MAX_RPTYPES)
                       strcat(Ac->act_rptypes,"r");
                       break;
                 case KwBoolean:
-                      vdattmp->is_def=false;
+                      vdattmp->is_def=true;
                       vdattmp->type=tBOOLEAN;
                       err=htab_new(lsymtab,Ac->act_varID,IDENTIFIER,vdattmp,sizeof(*vdattmp));
                       if(err!=EVERYTHINGSOKAY)
