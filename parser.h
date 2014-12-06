@@ -72,14 +72,17 @@ typedef struct{
         bool is_readln;
         bool is_ret_err;
         bool is_else;
-        int begincnt;
-        int ifbegcnt;
-        int labIDcnt;
+        bool is_while;
+        int begincnt; // urcuje, kedy konci funkcia alebo cely program
+        int ifbegcnt; // urcuje, kedy konci prikaz if
+        int whbegcnt; // urcuje, kedy konci prikaz while
+        int labIDcnt; // pocitadlo, podla ktoreho sa pomenovavaju navestia
         }T_Actual;
 
 
 ERROR_MSG top_down();
-ERROR_MSG semantic(T_State *st, htab_t *gsymtab, htab_t *lsymtab, T_Actual *Ac, T_vartype *expt, size_t tmems, t_varfunc_list *vflistp, t_func_list *flistp, t_lablist *lablistp, tListOfInstr *inslistp, const char *TMPUV, Stack *s_stack);
+ERROR_MSG semantic(T_State *st, htab_t *gsymtab, htab_t *lsymtab, T_Actual *Ac, T_vartype *expt, size_t tmems, t_varfunc_list *vflistp, t_func_list *flistp,
+t_lablist *lablistp, tListOfInstr *inslistp, const char *TMPUV, Stack *s_stack, Stack *ib_stack, Stack *wb_stack);
 ERROR_MSG PItems_alloc(T_ParserItem ***Ptr);
 void PItems_free(T_ParserItem ***Ptr);
 void free_all(T_ParserItem **p, Stack st, int stack_erase, int token_mem_free, htab_t *gsymtab, htab_t *lsymtab, T_Actual *Ac, t_varfunc_list *vflistp, t_lablist *lablistp, tListOfInstr *inslistp, t_func_list *flistp, int l_dispose);
