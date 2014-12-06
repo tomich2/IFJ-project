@@ -2,6 +2,7 @@
 #include "struct.h"
 #include "error.h"
 #include "frame.h"
+#include "parser.h"
 
 
 #include <stdint.h>
@@ -24,7 +25,24 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList)
 	bool bop1, bop2;
 	bop1=false;
 	bop2=false;
-	//bop3=false;
+	
+	/**************pomocne**************/
+	
+	struct FrameVariable *tmp1;
+	struct FrameVariable *tmp2;
+	struct FrameVariable *tmparam; 
+	struct FrameVariable *tmpjump; 
+	tmp1=malloc(sizeof(struct FrameVariable));
+	tmp2=malloc(sizeof(struct FrameVariable)); 
+	tmparam=malloc(sizeof(struct FrameVariable));
+	tmpjump=malloc(sizeof(struct FrameVariable)); 
+	tmp1->name=TMPU;
+	tmp2->name=TMPU2;
+	tmparam->name=TMParam;
+	tmpjump->name=TMPjump;
+	
+	/**************pomocne**************/
+	
 
 
 
@@ -946,6 +964,8 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList)
 }	//KONIEC WHILE(RUN)
 
 frameFree(GlobalFrame);
+free(tmp1);
+free(tmp2);
+free(tmparam);
+free(tmpjump);
 }  //KONIEC FUNKCIE INTERPRETATION LOOP
-
-
