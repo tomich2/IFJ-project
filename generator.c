@@ -25,15 +25,15 @@ void listFree(tListOfInstr *L)
     instr= L->first->Instr;
     if ((L->first->Instr->a)!=NULL)
     {
-		if(L->first->Instr->a->data.s != NULL)
-			free(L->first->Instr->a->data.s);
+	//	if(L->first->Instr->a->data.s != NULL)		//zakomentovane pre interpret, hadzalo errory
+	//		free(L->first->Instr->a->data.s);
 		var = L->first->Instr->a;
 		free(var);
 	}
 	if ((L->first->Instr->b)!=NULL)
     {
-		if(L->first->Instr->b->data.s != NULL)
-			free(L->first->Instr->b->data.s);
+	//	if(L->first->Instr->b->data.s != NULL)
+	//		free(L->first->Instr->b->data.s);
 		var = L->first->Instr->b;
 		free(var);
 	}
