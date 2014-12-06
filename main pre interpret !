@@ -1,0 +1,246 @@
+int main()
+{
+		tListOfInstr *instList;
+		instList=malloc(sizeof(struct tListOfInstr));
+		listInit(instList);
+		InstName name;
+		
+		
+		struct Variable *x[10],*y[10];
+		
+	
+		
+	//	char *s="prem1";
+		//char *s2="prem2";
+		/*char *s3="vole";
+		char *s4="zdar1";
+		char *s5="zdar2";*/
+		char *sf="funkcia1";
+		char *sf2="funkcia2";
+		
+		char *s6="prem3";
+		char *s7="prem4";
+		char *s8="prem5";
+		char *s9="prem6";
+		char *s10="prem7";
+		char *s11="prem8";
+		char *s12="prem9";
+		char *s13="prem10";
+			
+		x[0]=malloc(sizeof(struct Variable));
+		x[0]->data.i=42;
+		x[0]->type=tINTEGER;
+		//y[in]->data.i=69*in;
+		//y[in]->type=NULL;
+		
+		name=I_ASSIGN;
+		
+		generator(instList, name, x[0], NULL, s6);
+	
+		x[1]=malloc(sizeof(struct Variable));
+		x[1]->data.i=24;
+		x[1]->type=tINTEGER;
+		//y[in]->data.i=69*in;
+		//y[in]->type=NULL;
+		
+		name=I_ASSIGN;
+		
+		generator(instList, name, x[1], NULL, s7);
+	
+		x[2]=malloc(sizeof(struct Variable));
+		y[2]=malloc(sizeof(struct Variable));
+		x[2]->data.s=s6;
+		x[2]->type=tVAR;
+		y[2]->data.s=s7;
+		y[2]->type=tVAR;
+		
+		name=I_ADD;
+		
+		generator(instList, name, x[2], y[2], s8);
+		
+	/*	x[3]->data.s=s;
+		x[3]->type=tVAR;
+		y[3]->data.s=s3;
+		y[3]->type=tVAR;
+		
+		name=I_DIV;
+		
+		generator(instList, name, x[3], y[3], s7);
+	
+		x[4]->data.s=s;
+		x[4]->type=tVAR;
+		y[4]->data.s=s4;
+		y[4]->type=tVAR;
+		
+		name=I_GR_CMP;
+		
+		generator(instList, name, x[4], y[4], s8);
+	
+		x[5]->data.s=s;
+		x[5]->type=tVAR;
+		y[5]->data.s=s5;
+		y[5]->type=tVAR;
+		
+		name=I_LESS_EQUAL_CMP;
+		
+		generator(instList, name, x[1], y[2], s9);*/
+	
+		x[6]=malloc(sizeof(struct Variable));
+		x[6]->data.s=s8;
+		x[6]->type=tVAR;
+		
+		
+		name=I_PRINT;
+		
+		generator(instList, name, x[6], NULL, NULL);
+	
+	
+		
+		
+		t_varfunc_list *varList;
+		varList=malloc(sizeof(t_varfunc_list));
+		
+		t_list_item *miso;
+		miso=malloc(sizeof(struct item));
+		miso->flist=NULL;
+		miso->type=FUNCTION;
+		miso->dattype=tINTEGER;
+		miso->item_ID=sf;
+		miso->next=NULL;
+		
+		t_list_item *miso2;
+		miso2=malloc(sizeof(struct item));
+		miso2->flist=NULL;
+		miso2->type=FUNCTION;
+		miso2->dattype=tREAL;
+		miso2->item_ID=sf2;
+		miso2->next=NULL;
+	
+		t_list_item *miso5;
+		miso5=malloc(sizeof(struct item));
+		miso5->flist=NULL;
+		miso5->type=IDENTIFIER;
+		miso5->dattype=tINTEGER;
+		miso5->item_ID=s6;
+		miso5->next=NULL;
+	
+		t_list_item *miso6;
+		miso6=malloc(sizeof(struct item));
+		miso6->flist=NULL;
+		miso6->type=IDENTIFIER;
+		miso6->dattype=tINTEGER;
+		miso6->item_ID=s7;
+		miso6->next=NULL;
+	
+		t_list_item *miso7;
+		miso7=malloc(sizeof(struct item));
+		miso7->flist=NULL;
+		miso7->type=IDENTIFIER;
+		miso7->dattype=tINTEGER;
+		miso7->item_ID=s8;
+		miso7->next=NULL;
+	
+		t_list_item *miso8;
+		miso8=malloc(sizeof(struct item));
+		miso8->flist=NULL;
+		miso8->type=IDENTIFIER;
+		miso8->dattype=tINTEGER;
+		miso8->item_ID=s9;
+		miso8->next=NULL;
+	
+		t_list_item *miso9;
+		miso9=malloc(sizeof(struct item));
+		miso9->flist=NULL;
+		miso9->type=IDENTIFIER;
+		miso9->dattype=tINTEGER;
+		miso9->item_ID=s10;
+		miso9->next=NULL;
+	
+		t_list_item *miso10;
+		miso10=malloc(sizeof(struct item));
+		miso10->flist=NULL;
+		miso10->type=IDENTIFIER;
+		miso10->dattype=tINTEGER;
+		miso10->item_ID=s11;
+		miso10->next=NULL;
+	
+		t_list_item *miso11;
+		miso11=malloc(sizeof(struct item));
+		miso11->flist=NULL;
+		miso11->type=IDENTIFIER;
+		miso11->dattype=tINTEGER;
+		miso11->item_ID=s12;
+		miso11->next=NULL;
+	
+		t_list_item *miso12;
+		miso12=malloc(sizeof(struct item));
+		miso12->flist=NULL;
+		miso12->type=IDENTIFIER;
+		miso12->dattype=tINTEGER;
+		miso12->item_ID=s13;
+		miso12->next=NULL;
+	
+		
+		varList->First=miso;
+		varList->Last=miso12;
+		miso->next=miso2;
+		miso2->next=miso5;
+		miso5->next=miso6;
+		miso6->next=miso7;
+		miso7->next=miso8;
+		miso8->next=miso9;
+		miso9->next=miso10;
+		miso10->next=miso11;
+		miso11->next=miso12;
+		
+		
+		
+		/*t_func_list *P;
+		P=malloc(sizeof(t_func_list));
+		
+		t_flist_item *miso3;
+		miso3=malloc(sizeof(struct fitem));
+		miso3->is_param=false;
+		miso3->dattype=tINTEGER;
+		miso3->item_ID=s4;
+		miso3->next=NULL;
+		
+		t_flist_item *miso4;
+		miso4=malloc(sizeof(struct fitem));
+		miso4->is_param=true;
+		miso4->dattype=tINTEGER;
+		miso4->item_ID=s5;
+		miso4->next=NULL;
+		
+		P->First=miso3;
+		miso3->next=miso4;
+		miso2->flist=P;*/
+		
+		
+	
+		
+		
+	
+		interpretLoop(instList,varList);
+	
+		free(miso);
+		free(miso2);
+		//free(miso3);
+		//free(miso4);
+		//free(ivar);
+		//free(P);
+		free(miso5);
+		free(miso6);
+		free(miso7);
+		free(miso8);
+		free(miso9);
+		free(miso10);
+		free(miso11);
+		free(miso12);
+		
+		free(varList);
+		listFree(instList);
+		
+		free(instList);
+	return 0;
+}
