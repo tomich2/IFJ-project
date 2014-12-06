@@ -148,6 +148,7 @@ struct FrameVariable* findFrameDest(char *s, tListofVariables* globalFrame, tLis
 		globalFrame->active=globalFrame->first;
 		while(globalFrame->active != NULL)
 		{
+		//	printf("%s \n",globalFrame->active->name);		//zmazat
 			if(strcmp(s,globalFrame->active->name)==0)
 			{
 				return globalFrame->active;
@@ -155,6 +156,6 @@ struct FrameVariable* findFrameDest(char *s, tListofVariables* globalFrame, tLis
 			globalFrame->active=globalFrame->active->nextvar;
 		}
 	}
-	printf("premenna vo frame sa nenasla\n");
+	printf("premenna dest = %s sa nenasla vo frame\n",s);
 	return NULL;
 }
