@@ -159,42 +159,20 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList)
 
 			case I_ADD:
 			{
-
-				
-
-				
-				
 				if((op1->type)==tINTEGER)
 				{
 					if((op2->type)==tINTEGER)
 					{
-
-						
-		 			
 		 				op3->data.i=op1->data.i + op2->data.i;
-		 			
-		 				
-
-		 				
-		 			
-		 			
 					}
-
 					else if ((op2->type)==tREAL)
 					{
 						op3->data.r=op1->data.i + op2->data.r;
-
-						;
-
-						
-						
-		 				
 					}
 					else 
-						{	
-							Error(4);
-							
-						}
+					{	
+						Error(4);
+					}
 
 					break;
 				}
@@ -203,13 +181,7 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList)
 				{	
 					if((op2->type)==tINTEGER)
 					{
-
 						op3->data.r=op1->data.r + op2->data.i;
-		 			
-		 				
-
-		 				
-		 			
 		 			
 					}
 
