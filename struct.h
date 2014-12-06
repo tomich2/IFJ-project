@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
+#include <stdbool.h>
 
 typedef enum{tINTEGER, tSTRING, tREAL, tBOOLEAN, tVAR, tERR=-1}T_vartype;
 
@@ -64,6 +65,7 @@ typedef struct
 		int i;
 		double r;
 		char *s;
+		bool b;
 		//string s;
 }VariableData;
 
