@@ -28,6 +28,11 @@ typedef struct tListofVariables
 void frameInit(tListofVariables *F);
 void frameFree(tListofVariables *F);
 void frameInsert(tListofVariables *F, struct FrameVariable *var);
+tListofVariables* createGlobFrame(t_varfunc_list *L);
+tListofVariables* createFrame(char *item_ID, t_varfunc_list *L);
+struct FrameVariable* findFrameVar(struct Variable *a, tListofVariables* globalFrame, tListofVariables* localFrame);
+struct FrameVariable* findFrameDest(char *s, tListofVariables* globalFrame, tListofVariables* localFrame);
+
 
 
 
