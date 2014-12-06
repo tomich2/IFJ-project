@@ -63,6 +63,7 @@ typedef struct Instruction
 typedef struct
 {
 		int i;
+		int label;
 		double r;
 		char *s;
 		bool b;
