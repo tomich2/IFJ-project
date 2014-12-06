@@ -31,13 +31,19 @@ ERROR_MSG top_down()
   T_State state; // urcuje, ktora cast programu sa analyzuje(deklaracia premennych, definicia funkcie...)
   bool is_func;
 
-  Stack p_stack; // zasobnik
+  Stack p_stack; // zasobnik pre syntakticku analyzu
   init(&p_stack,sizeof(T_ParserItem));
+  Stack s_stack; // zasobnik pre navestia
+  init(&s_stack,sizeof(int*));
+  Stack ifbeg_stack; // zasobnik pre pocitadlo zlozenych prikazov vnutri prikazu if
+  init(&ifbeg_stack,sizeof(int*));
+  Stack whbeg_stack; // zasobnik pre pocitadlo zlozenych prikazov vnutri prikazu while
+  init(&whbeg_stack,sizeof(int*));
 
   htab_t *glob_sym_table=htab_init(GTAB_SIZE); // inicializacia globalnej tabulky symbolov
   htab_t *loc_sym_table=htab_init(GTAB_SIZE); // inicializacia lokalnej tabulky symbolov
 
-  T_Actual *Act=calloc(1,sizeof(*Act));
+  T_Actual *Act=calloc(1,sizeof(*Act)); // pomocna struktura pre semantiku
   Act->act_funcID=NULL;
   Act->act_varID=NULL;
   Act->act_rptypes=calloc(1,sizeof(char)*MAX_RPTYPES);
@@ -46,9 +52,11 @@ ERROR_MSG top_down()
   Act->is_readln=false;
   Act->is_ret_err=true;
   Act->is_else=false;
+  Act->is_while=false;
   Act->rpt_size=2;
   Act->begincnt=0;
   Act->ifbegcnt=0;
+  Act->whbegcnt=0;
   Act->labIDcnt=1;
 
   size_t tmem_size;
@@ -151,7 +159,7 @@ i=0;
       {
         if(token->identity==PItem_top->value.term.type) // ak sa typ terminalu zhoduje so vstupom, odstrani sa terminal zo zasobniku a pokracuje sa na dalsi vstup
         {
-          err=semantic(&state,glob_sym_table,loc_sym_table,Act,&expr_type,tmem_size,vflist,flist,lablist,inslist,TMPUV);
+          err=semantic(&state,glob_sym_table,loc_sym_table,Act,&expr_type,tmem_size,vflist,flist,lablist,inslist,TMPUV,&s_stack,&ifbeg_stack,&whbeg_stack);
           if(err!=EVERYTHINGSOKAY)
           {
             free_all(PItems,p_stack,1,1,glob_sym_table,loc_sym_table,Act,vflist,lablist,inslist,flist,1);
@@ -189,7 +197,8 @@ i=0;
   return EVERYTHINGSOKAY;
 }
 
-ERROR_MSG semantic(T_State *st, htab_t *gsymtab, htab_t *lsymtab, T_Actual *Ac, T_vartype *expt, size_t tmems, t_varfunc_list *vflistp, t_func_list *flistp, t_lablist *lablistp, tListOfInstr *inslistp, const char *TMPUV)
+ERROR_MSG semantic(T_State *st, htab_t *gsymtab, htab_t *lsymtab, T_Actual *Ac, T_vartype *expt, size_t tmems, t_varfunc_list *vflistp, t_func_list *flistp,
+t_lablist *lablistp, tListOfInstr *inslistp, const char *TMPUV, Stack *s_stack, Stack *ib_stack, Stack *wb_stack)
 {
 T_VarData *vdattmp=NULL;
 T_FuncData *fdattmp=NULL;
@@ -200,6 +209,7 @@ Hitem *cmp=NULL;
 ERROR_MSG err=EVERYTHINGSOKAY;
 char tmp[Ac->rpt_size];
 Variable *varA=NULL;
+Variable *varB=NULL;
 if(Ac->rpt_size==MAX_RPTYPES)
 {
   size_t s=sizeof(Ac->act_rptypes);
@@ -517,7 +527,9 @@ if(Ac->rpt_size==MAX_RPTYPES)
               free(vdattmp);
               break;
 
-    case FUNC_BODY:
+    case FUNC_BODY: ;
+              int lab;
+              int lab2;
               switch(token->identity)
               {
                 case ID:
@@ -529,7 +541,7 @@ if(Ac->rpt_size==MAX_RPTYPES)
                       {
                         cmp=(Hitem*)htab_search(gsymtab,token->mem);
                         if(cmp==NULL)return SEMANTIC_ERR; // ak sa ID nenajde v tabulkach, je nedeklarovany
-                        else // identifikator sa nasiel v globalnej tabulkeakurát neviem, ako budem uvolňovať tie variable,
+                        else // identifikator sa nasiel v globalnej tabulke
                         {
                           if(cmp->type==FUNCTION)
                           {
@@ -694,12 +706,14 @@ if(Ac->rpt_size==MAX_RPTYPES)
                         Ac->labIDcnt++;
                       }
                       Ac->begincnt++;
+                      if(Ac->is_else==true)Ac->ifbegcnt++;
+                      if(Ac->is_while==true)Ac->whbegcnt++;
                       break;
                 case KwEnd:
                       Ac->begincnt--;
                       if(Ac->begincnt==0)
                       {
-                        // RETURN instrukcia
+                        generator(inslistp,I_RETURN,NULL,NULL,NULL);
                       }
                       if(*expt!=tERR)
                       {
@@ -729,20 +743,111 @@ if(Ac->rpt_size==MAX_RPTYPES)
                         }
                       }
                       if(Ac->is_else==true)Ac->ifbegcnt--;
-                      if(Ac->ifbegcnt==0)
+                      if(Ac->is_while==true)Ac->whbegcnt--;
+                      if(Ac->ifbegcnt==0 && Ac->is_else==true) // koniec prikazu if
                       {
+                        Ac->is_else=false;
+                        Ac->ifbegcnt=*((int*)top(ib_stack));
+                        pop(ib_stack);
                         // LAB 2
+                        lab=*((int*)top(s_stack));
+                        pop(s_stack);
+                        ins_adress=generator(inslistp,I_LABEL,NULL,NULL,NULL);
+                        labL_insertlast(lablistp,ins_adress,lab);
+                      }
+                      if(Ac->whbegcnt==0 && Ac->is_while==true) // koniec prikazu while
+                      {
+                        Ac->is_while=false;
+                        Ac->whbegcnt=*((int*)top(wb_stack));
+                        pop(wb_stack);
+                        // uloz LAB2 zo zasobniku do lab2
+                        lab2=*((int*)top(s_stack));
+                        pop(s_stack);
+                        // uloz LAB1 zo zasobniku do lab
+                        lab=*((int*)top(s_stack));
+                        pop(s_stack);
+                        // GOTO LAB1 nepodmienene
+                        varA=malloc(sizeof(*varA));
+                        if(varA==NULL)return INTERN_INTERPRETATION_ERR;
+                        varA->type=tVAR;
+                        varA->data.label=lab;
+                        varA->data.s=NULL;
+                        generator(inslistp,I_GOTO,varA,NULL,NULL);
+                        // vygeneruj LAB2
+                        ins_adress=generator(inslistp,I_LABEL,NULL,NULL,NULL);
+                        labL_insertlast(lablistp,ins_adress,lab2);
                       }
                       break;
                 case KwThen:
-                      // GOTO LAB1 generator(inslistp
-                      //generator(inslistp,I_GOTO,)
+                      // GOTO LAB1 podmienene, uloz LAB1 na zasobnik
+                      varA=malloc(sizeof(*varA));
+                      if(varA==NULL)return INTERN_INTERPRETATION_ERR;
+                      varA->type=tVAR;
+                      varA->data.label=Ac->labIDcnt;
+                      varA->data.s=NULL;
+                      push(s_stack,&Ac->labIDcnt,-1);
+                      Ac->labIDcnt++;
+                      varB=malloc(sizeof(*varB));
+                      if(varB==NULL)return INTERN_INTERPRETATION_ERR;
+                      varB->data.s=malloc(TMPLEN*sizeof(char));
+                      if(varB->data.s==NULL)
+                      {
+                        free(varB);
+                        return INTERN_INTERPRETATION_ERR;
+                      }
+                      strcpy(varB->data.s,TMPUV);
+                      generator(inslistp,I_GOTO,varA,varB,NULL);
                       break;
                 case KwElse:
+                      push(ib_stack,&Ac->ifbegcnt,-1);
+                      Ac->ifbegcnt=0;
                       Ac->is_else=true;
-                      // GOTO LAB2
-                      // LAB1
+                      // uloz LAB1 zo zasobniku do lab
+                      lab=*((int*)top(s_stack));
+                      pop(s_stack);
+                      // GOTO LAB2 nepodmienene, uloz LAB2 na zasobnik
+                      varA=malloc(sizeof(*varA));
+                      if(varA==NULL)return INTERN_INTERPRETATION_ERR;
+                      varA->type=tVAR;
+                      varA->data.label=Ac->labIDcnt;
+                      varA->data.s=NULL;
+                      push(s_stack,&Ac->labIDcnt,-1);
+                      Ac->labIDcnt++;
+                      generator(inslistp,I_GOTO,varA,NULL,NULL);
+                      // vygeneruj LAB1
                       ins_adress=generator(inslistp,I_LABEL,NULL,NULL,NULL);
+                      labL_insertlast(lablistp,ins_adress,lab);
+                      break;
+                case KwWhile:
+                      Ac->is_while=true;
+                      // LAB 1, uloz LAB1 na zasobnik
+                      ins_adress=generator(inslistp,I_LABEL,NULL,NULL,NULL);
+                      labL_insertlast(lablistp,ins_adress,Ac->labIDcnt);
+                      push(s_stack,&Ac->labIDcnt,-1);
+                      Ac->labIDcnt++;
+                      break;
+                case KwDo:
+                      push(wb_stack,&Ac->whbegcnt,-1);
+                      Ac->whbegcnt=0;
+                      // GOTO LAB2 podmienene, uloz LAB2 na zasobnik
+                      varA=malloc(sizeof(*varA));
+                      if(varA==NULL)return INTERN_INTERPRETATION_ERR;
+                      varA->type=tVAR;
+                      varA->data.label=Ac->labIDcnt;
+                      varA->data.s=NULL;
+                      push(s_stack,&Ac->labIDcnt,-1);
+                      Ac->labIDcnt++;
+                      varB=malloc(sizeof(*varB));
+                      if(varB==NULL)return INTERN_INTERPRETATION_ERR;
+                      varB->data.s=malloc(TMPLEN*sizeof(char));
+                      if(varB->data.s==NULL)
+                      {
+                        free(varB);
+                        return INTERN_INTERPRETATION_ERR;
+                      }
+                      strcpy(varB->data.s,TMPUV);
+                      generator(inslistp,I_GOTO,varA,varB,NULL);
+                      break;
                 default: break;
               }
               break;
@@ -752,7 +857,7 @@ if(Ac->rpt_size==MAX_RPTYPES)
                 htab_clear(lsymtab);
                 if(Ac->is_ret_err==true)return OTHER_SEM_ERR; // niektora funkcia nema priradenu navratovu hodnotu
                 t_list_item *item=vflistp->First;
-                while(item!=NULL) // kontrola, ci su vsetkz deklarovane funkcie aj definovane
+                while(item!=NULL) // kontrola, ci su vsetky deklarovane funkcie aj definovane
                 {
                   if(item->type==FUNCTION)
                   {
