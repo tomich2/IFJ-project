@@ -101,23 +101,29 @@ tListofVariables* createFrame(char *item_ID, t_varfunc_list *L)
 
 struct FrameVariable* findFrameVar(struct Variable *a, tListofVariables* globalFrame, tListofVariables* localFrame)
 {
-	localFrame->active=localFrame->first;
-	while(localFrame->active != NULL)
+	if(localFrame != NULL)
 	{
-		if(strcmp(a->data.s,localFrame->active->name)==0)
+		localFrame->active=localFrame->first;
+		while(localFrame->active != NULL)
 		{
-			return localFrame->active;
+			if(strcmp(a->data.s,localFrame->active->name)==0)
+			{
+				return localFrame->active;
+			}
+			localFrame->active=localFrame->active->nextvar;
 		}
-		localFrame->active=localFrame->active->nextvar;
 	}
-	globalFrame->active=globalFrame->first;
-	while(globalFrame->active != NULL)
+	if(globalFrame != NULL)
 	{
-		if(strcmp(a->data.s,globalFrame->active->name)==0)
+		globalFrame->active=globalFrame->first;
+		while(globalFrame->active != NULL)
 		{
-			return globalFrame->active;
+			if(strcmp(a->data.s,globalFrame->active->name)==0)
+			{
+				return globalFrame->active;
+			}
+			globalFrame->active=globalFrame->active->nextvar;
 		}
-		globalFrame->active=globalFrame->active->nextvar;
 	}
 	printf("premenna vo frame sa nenasla\n");
 	return NULL;
@@ -125,23 +131,29 @@ struct FrameVariable* findFrameVar(struct Variable *a, tListofVariables* globalF
 
 struct FrameVariable* findFrameDest(char *s, tListofVariables* globalFrame, tListofVariables* localFrame)
 {
-	localFrame->active=localFrame->first;
-	while(localFrame->active != NULL)
+	if (localFrame != NULL)
 	{
-		if(strcmp(s,localFrame->active->name)==0)
+		localFrame->active=localFrame->first;
+		while(localFrame->active != NULL)
 		{
-			return localFrame->active;
+			if(strcmp(s,localFrame->active->name)==0)
+			{
+				return localFrame->active;
+			}
+			localFrame->active=localFrame->active->nextvar;
 		}
-		localFrame->active=localFrame->active->nextvar;
 	}
-	globalFrame->active=globalFrame->first;
-	while(globalFrame->active != NULL)
+	if (globalFrame != NULL)
 	{
-		if(strcmp(s,globalFrame->active->name)==0)
+		globalFrame->active=globalFrame->first;
+		while(globalFrame->active != NULL)
 		{
-			return globalFrame->active;
+			if(strcmp(s,globalFrame->active->name)==0)
+			{
+				return globalFrame->active;
+			}
+			globalFrame->active=globalFrame->active->nextvar;
 		}
-		globalFrame->active=globalFrame->active->nextvar;
 	}
 	printf("premenna vo frame sa nenasla\n");
 	return NULL;
