@@ -133,7 +133,7 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList)
 	else op2=NULL;
 
 	if(instr->res != NULL)
-		op3=findFrameDest(*((char**)instr->res), GlobalFrame, LocalFrame);
+		op3=findFrameDest(instr->res, GlobalFrame, LocalFrame);
 	else op3=NULL;
 
 		switch(instList->active->Instr->Iname)
@@ -919,32 +919,33 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList)
 
 			default:
 			break;
+			
+	}	//KONIEC SWITCHU
 
-		
-	run=false;
+
+	instList->active=instList->active->nextItem;
+	if (instList->active == NULL)
+		run=false;
+	else instr=instList->active->Instr;
+
+	if(bop1 == true )
+	{
+		free(op1);
+		bop1=false;
+	}
+
+
+	if(bop2 == true )
+	{
+		free(op2);
+		bop2=false;
 	}
 
 
 
-instList->active=instList->active->nextItem;
-instr=instList->active->Instr;
-if(bop1 == true )
-	free(op1);
+}	//KONIEC WHILE(RUN)
+
+frameFree(GlobalFrame);
+}  //KONIEC FUNKCIE INTERPRETATION LOOP
 
 
-if(bop2 == true )
-	free(op2);
-
-}
-
-
-free(GlobalFrame);
-}
-
-
-
-int main()
-{
-
-	return 0;
-}
