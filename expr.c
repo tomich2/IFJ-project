@@ -453,31 +453,32 @@ S_erase(&stack);
 return EVERYTHINGSOKAY;
 }
 
-ERROR_MSG MakeVariable(Variable *a, T_vartype type, void *data)
+ERROR_MSG MakeVariable(Variable **a, T_vartype type, void *data)
 {
-	a=malloc(sizeof(Variable));
-	if(a==NULL) return INTERN_INTERPRETATION_ERR;
-	a->type=type;
 	
-	switch(a->type)
+	*a=(Variable *) malloc(sizeof(Variable));
+	if(a==NULL) return INTERN_INTERPRETATION_ERR;
+	(*a)->type=type;
+	
+	switch((*a)->type)
 	{
-		case tBOOLEAN:  a->data.i=*(int *) data;
+		case tBOOLEAN:  (*a)->data.i=atoi((char *) data);
 				break;
-		case tINTEGER:  a->data.i=*(int *) data;
+		case tINTEGER:  (*a)->data.i=atoi((char *) data);
 				break;
-		case tREAL: a->data.r=*(double *) data;
+		case tREAL: (*a)->data.r=atof((char *) data);
 				break;
 		case tSTRING:
 		case tVAR:   
 				;
 				char *str=(char *) data;
-				a->data.s=malloc(strlen(str)+1);
-				if(a->data.s==NULL) 
+				(*a)->data.s=malloc(strlen(str)+1);
+				if((*a)->data.s==NULL) 
 				{
 					free(a);
 					return INTERN_INTERPRETATION_ERR;
 				}
-				strcpy(a->data.s,str);
+				strcpy((*a)->data.s,str);
 				break;
 		default:
 			fprintf(stderr,"neznama chyba\n");
@@ -547,12 +548,12 @@ ERROR_MSG ExprSem(int rule, nont *op1, nont *op2, Tabs *STab)
 			
 			
 			if((tmp=htab_search(STab->loc,(char *) op1->index))==NULL) tmp=htab_search(STab->glob,(char *) op1->index);
-			if(tmp==NULL) MakeVariable(a,op1->d_type,op1->index);
-			else MakeVariable(a,tVAR,op1->index); //doriesit chybove stavy
+			if(tmp==NULL) MakeVariable(&a,op1->d_type,op1->index);
+			else MakeVariable(&a,tVAR,op1->index); //doriesit chybove stavy
 
 			if((tmp=htab_search(STab->loc,(char *) op2->index))==NULL) tmp=htab_search(STab->glob,(char *) op2->index);
-			if(tmp==NULL) MakeVariable(b,op2->d_type,op2->index);
-			else MakeVariable(b,tVAR,op2->index); //doriesit chybove stavy
+			if(tmp==NULL) MakeVariable(&b,op2->d_type,op2->index);
+			else MakeVariable(&b,tVAR,op2->index); //doriesit chybove stavy
 
 			generator(STab->InstL,inst,a,b,res);
 			
@@ -603,12 +604,12 @@ ERROR_MSG ExprSem(int rule, nont *op1, nont *op2, Tabs *STab)
 			
 			
 			if((tmp=htab_search(STab->loc,(char *) op1->index))==NULL) tmp=htab_search(STab->glob,(char *) op1->index);
-			if(tmp==NULL) MakeVariable(a,op1->d_type,op1->index);
-			else MakeVariable(a,tVAR,op1->index); //doriesit chybove stavy
+			if(tmp==NULL) MakeVariable(&a,op1->d_type,op1->index);
+			else MakeVariable(&a,tVAR,op1->index); //doriesit chybove stavy
 
 			if((tmp=htab_search(STab->loc,(char *) op2->index))==NULL) tmp=htab_search(STab->glob,(char *) op2->index);
-			if(tmp==NULL) MakeVariable(b,op2->d_type,op2->index);
-			else MakeVariable(b,tVAR,op2->index); //doriesit chybove stavy
+			if(tmp==NULL) MakeVariable(&b,op2->d_type,op2->index);
+			else MakeVariable(&b,tVAR,op2->index); //doriesit chybove stavy
 
 			generator(STab->InstL,inst,a,b,res);
 
@@ -655,12 +656,12 @@ ERROR_MSG ExprSem(int rule, nont *op1, nont *op2, Tabs *STab)
 			
 			
 			if((tmp=htab_search(STab->loc,(char *) op1->index))==NULL) tmp=htab_search(STab->glob,(char *) op1->index);
-			if(tmp==NULL) MakeVariable(a,op1->d_type,op1->index);
-			else MakeVariable(a,tVAR,op1->index); //doriesit chybove stavy
+			if(tmp==NULL) MakeVariable(&a,op1->d_type,op1->index);
+			else MakeVariable(&a,tVAR,op1->index); //doriesit chybove stavy
 
 			if((tmp=htab_search(STab->loc,(char *) op2->index))==NULL) tmp=htab_search(STab->glob,(char *) op2->index);
-			if(tmp==NULL) MakeVariable(b,op2->d_type,op2->index);
-			else MakeVariable(b,tVAR,op2->index); //doriesit chybove stavy
+			if(tmp==NULL) MakeVariable(&b,op2->d_type,op2->index);
+			else MakeVariable(&b,tVAR,op2->index); //doriesit chybove stavy
 
 			generator(STab->InstL,inst,a,b,res);
 
@@ -694,12 +695,12 @@ ERROR_MSG ExprSem(int rule, nont *op1, nont *op2, Tabs *STab)
 			
 			
 			if((tmp=htab_search(STab->loc,(char *) op1->index))==NULL) tmp=htab_search(STab->glob,(char *) op1->index);
-			if(tmp==NULL) MakeVariable(a,op1->d_type,op1->index);
-			else MakeVariable(a,tVAR,op1->index); //doriesit chybove stavy
+			if(tmp==NULL) MakeVariable(&a,op1->d_type,op1->index);
+			else MakeVariable(&a,tVAR,op1->index); //doriesit chybove stavy
 
 			if((tmp=htab_search(STab->loc,(char *) op2->index))==NULL) tmp=htab_search(STab->glob,(char *) op2->index);
-			if(tmp==NULL) MakeVariable(b,op2->d_type,op2->index);
-			else MakeVariable(b,tVAR,op2->index); //doriesit chybove stavy
+			if(tmp==NULL) MakeVariable(&b,op2->d_type,op2->index);
+			else MakeVariable(&b,tVAR,op2->index); //doriesit chybove stavy
 
 			generator(STab->InstL,inst,a,b,TMPU);
 
@@ -730,7 +731,7 @@ ERROR_MSG ExprSem(int rule, nont *op1, nont *op2, Tabs *STab)
 			op1->d_type=get_type(((T_FuncData *) ((Hitem *) tmp)->data)->ret_par_types,0);
 			
 			
-			MakeVariable(a,tVAR,op1->index); //doriesit chybove stavy
+			MakeVariable(&a,tVAR,op1->index); //doriesit chybove stavy
 
 			generator(STab->InstL,I_CALL,a,NULL,res);
 
@@ -748,8 +749,8 @@ ERROR_MSG ExprSem(int rule, nont *op1, nont *op2, Tabs *STab)
 				op1->index=res;
 				
 				if((tmp=htab_search(STab->loc,(char *) op1->index))==NULL) tmp=htab_search(STab->glob,(char *) op1->index);
-				if(tmp==NULL) MakeVariable(a,op1->d_type,op1->index);
-				else MakeVariable(a,tVAR,op1->index); //doriesit chybove stavy
+				if(tmp==NULL) MakeVariable(&a,op1->d_type,op1->index);
+				else MakeVariable(&a,tVAR,op1->index); //doriesit chybove stavy
 
 				generator(STab->InstL,I_PUSH,a,NULL,NULL);
 
@@ -766,8 +767,8 @@ ERROR_MSG ExprSem(int rule, nont *op1, nont *op2, Tabs *STab)
 				op1->index=res;
 				
 				if((tmp=htab_search(STab->loc,(char *) op1->index))==NULL) tmp=htab_search(STab->glob,(char *) op1->index);
-				if(tmp==NULL) MakeVariable(a,op1->d_type,op1->index);
-				else MakeVariable(a,tVAR,op1->index); //doriesit chybove stavy
+				if(tmp==NULL) MakeVariable(&a,op1->d_type,op1->index);
+				else MakeVariable(&a,tVAR,op1->index); //doriesit chybove stavy
 
 				generator(STab->InstL,I_PUSH,a,NULL,NULL);
 
@@ -804,12 +805,12 @@ ERROR_MSG ExprSem(int rule, nont *op1, nont *op2, Tabs *STab)
 
 			
 			if((tmp=htab_search(STab->loc,(char *) op1->index))==NULL) tmp=htab_search(STab->glob,(char *) op1->index);
-			if(tmp==NULL) MakeVariable(a,op1->d_type,op1->index);
-			else MakeVariable(a,tVAR,op1->index); //doriesit chybove stavy
+			if(tmp==NULL) MakeVariable(&a,op1->d_type,op1->index);
+			else MakeVariable(&a,tVAR,op1->index); //doriesit chybove stavy
 
 			generator(STab->InstL,I_PUSH,a,NULL,NULL);
 
-			MakeVariable(a,tVAR,op2->index); //doriesit chybove stavy
+			MakeVariable(&a,tVAR,op2->index); //doriesit chybove stavy
 			
 
 			generator(STab->InstL,I_CALL,a,NULL,res);
@@ -877,7 +878,7 @@ ERROR_MSG ExprSem(int rule, nont *op1, nont *op2, Tabs *STab)
 			}
 			free(str);
 			
-			MakeVariable(a,tVAR,op2->index); //doriesit chybove stavy
+			MakeVariable(&a,tVAR,op2->index); //doriesit chybove stavy
 			
 
 			generator(STab->InstL,I_CALL,a,NULL,res);
@@ -911,8 +912,8 @@ ERROR_MSG ExprSem(int rule, nont *op1, nont *op2, Tabs *STab)
 						
 			
 			if((tmp=htab_search(STab->loc,(char *) op1->index))==NULL) tmp=htab_search(STab->glob,(char *) op1->index);
-			if(tmp==NULL) MakeVariable(a,op1->d_type,op1->index);
-			else MakeVariable(a,tVAR,op1->index); //doriesit chybove stavy
+			if(tmp==NULL) MakeVariable(&a,op1->d_type,op1->index);
+			else MakeVariable(&a,tVAR,op1->index); //doriesit chybove stavy
 			generator(STab->InstL,I_PUSH,a,NULL,NULL);
 
 			op1->index=op2->index;
@@ -952,8 +953,8 @@ ERROR_MSG ExprSem(int rule, nont *op1, nont *op2, Tabs *STab)
 			//printf("%s\n",(char *)op1->index);
 			
 			if((tmp=htab_search(STab->loc,(char *) op1->index))==NULL) tmp=htab_search(STab->glob,(char *) op1->index);
-			if(tmp==NULL) MakeVariable(a,op1->d_type,op1->index);
-			else MakeVariable(a,tVAR,op1->index); //doriesit chybove stavy
+			if(tmp==NULL) MakeVariable(&a,op1->d_type,op1->index);
+			else MakeVariable(&a,tVAR,op1->index); //doriesit chybove stavy
 
 			generator(STab->InstL,I_PUSH,a,NULL,NULL);
 
