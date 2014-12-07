@@ -19,6 +19,7 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList)
 {
 	bool run =true;
 	bool div0=false;
+	int len;
 	struct FrameVariable *op1,*op2,*op3;
 	tInstruction *instr;
 	tListofVariables *LocalFrame=NULL;
@@ -97,7 +98,7 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList)
 					}
 					case tSTRING:
 					{				
-						strcpy(op1->data.s,instr->a->data.s);
+						op1->data.s=instr->a->data.s;
 						break;
 					}	
 						default:
@@ -150,7 +151,7 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList)
 				
 				case tSTRING:
 				{
-					strcpy(op2->data.s,instr->b->data.s);
+					op2->data.s=instr->b->data.s;
 					break;
 				}
 				
@@ -620,7 +621,20 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList)
 					if((op3 == tmp1) || (op3 == tmp2) || (op3 == tmparam)) 
 					op3->type=tBOOLEAN;
 				}
-				//string
+				else if(op1->type==tSTRING)
+				{	
+					if (instr->a->type==tVAR)
+					{
+						len=strlen(op1->data.s);
+						if(op3->data.s != NULL)
+							free(op3->data.s);
+						op3->data.s=malloc(len*sizeof(char));
+						strcpy(op3->data.s,op1->data.s);
+					}
+					else op3->data.s=op1->data.s;
+					if((op3 == tmp1) || (op3 == tmp2) || (op3 == tmparam)) 
+					op3->type=tSTRING;
+				}
 				break;
 			}	
 
