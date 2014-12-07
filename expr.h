@@ -33,5 +33,5 @@ T_ParserItem *GetTerm(Stack *stack, bool hdl);
 int Reduction(Stack *stack, T_ParserItem *in, Tabs *STab);
 ERROR_MSG ExprParse( htab_t *glob, htab_t *loc, T_vartype *dt, tListOfInstr *InstL);
 ERROR_MSG ExprSem(int rule, nont *op1, nont *op2, Tabs *STab);
-ERROR_MSG MakeVariable(Variable *a, T_vartype type, void *data);
+ERROR_MSG MakeVariable(Variable **a, T_vartype type, void *data);
 #endif
