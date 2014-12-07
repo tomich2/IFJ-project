@@ -557,7 +557,7 @@ ERROR_MSG ExprSem(int rule, nont *op1, nont *op2, Tabs *STab)
 
 			generator(STab->InstL,inst,a,b,res);
 			
-		printf("instrukcia %i vysledok do %s \n",inst,(char *)res);	
+		
 			op1->d_type=tp;
 			if((strcmp(op1->index,TMPU)!=0) && (strcmp(op1->index,TMPU2)!=0)) free(op1->index);
 			if((strcmp(op2->index,TMPU)!=0) && (strcmp(op2->index,TMPU2)!=0)) free(op2->index);
@@ -893,7 +893,7 @@ ERROR_MSG ExprSem(int rule, nont *op1, nont *op2, Tabs *STab)
 			if((strcmp(op1->index,TMPU)!=0) && (strcmp(op1->index,TMPU2)!=0) && (strcmp(op1->index,TMParam)!=0)) free(op1->index);
 		
 			op2->index=realloc(op2->index,(strlen(op2->index)+2));
-			printf("%s\n",(char *)op2->index);
+		
 			switch(op1->d_type)
 			{
 				case tBOOLEAN: strcat(op2->index, "b");
@@ -908,7 +908,7 @@ ERROR_MSG ExprSem(int rule, nont *op1, nont *op2, Tabs *STab)
 					fprintf(stderr,"neznama chyba\n");
 					return SEMANTIC_ERR;
 			}
-			printf("%s\n",(char *)op2->index);
+		
 						
 			
 			if((tmp=htab_search(STab->loc,(char *) op1->index))==NULL) tmp=htab_search(STab->glob,(char *) op1->index);
