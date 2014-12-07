@@ -1,9 +1,8 @@
 #ifndef INTERPRET_H
 #define INTERPRET_H
 
-void interpretLoop();
+#include "list.h"
 
-
-
+void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList);
 
 #endif
