@@ -60,7 +60,15 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList)
 	{
 		if(instr->a->type==tVAR)
 		{
-			op1=findFrameVar(instr->a, GlobalFrame, LocalFrame);
+			if(strcmp(instr->a->data.s, tmp1->name)==0) op1=tmp1;
+				
+			else if(strcmp(instr->a->data.s, tmp2->name)==0) op1=tmp2;
+					
+				 else if(strcmp(instr->a->data.s, tmparam->name)==0) op1=tmparam;
+						
+					 else if(strcmp(instr->a->data.s, tmpjump->name)==0) op1=tmpjump;
+					 
+						  else op1=findFrameVar(instr->a, GlobalFrame, LocalFrame);
 		}
 		else	
 			{
@@ -98,16 +106,21 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList)
 				}
 			}
 	}
-
 	else op1=NULL;
 
 	if(instr->b != NULL)
 	{
-	
 		if(instr->b->type==tVAR)
 		{
-
-			op2=findFrameVar(instr->b, GlobalFrame, LocalFrame);
+			if(strcmp(instr->b->data.s, tmp1->name)==0) op2=tmp1;
+				
+			else if(strcmp(instr->b->data.s, tmp2->name)==0) op2=tmp2;
+					
+				 else if(strcmp(instr->b->data.s, tmparam->name)==0) op2=tmparam;
+						
+					 else if(strcmp(instr->b->data.s, tmpjump->name)==0) op2=tmpjump;
+					 
+						  else op2=findFrameVar(instr->b, GlobalFrame, LocalFrame);
 		}
 		else
 		{
@@ -151,7 +164,17 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList)
 	else op2=NULL;
 
 	if(instr->res != NULL)
-		op3=findFrameDest(instr->res, GlobalFrame, LocalFrame);
+	{
+		if(strcmp(instr->res, tmp1->name)==0) op3=tmp1;
+				
+		else if(strcmp(instr->res, tmp2->name)==0) op3=tmp2;
+					
+			 else if(strcmp(instr->res, tmparam->name)==0) op3=tmparam;
+						
+				  else if(strcmp(instr->res, tmpjump->name)==0) op3=tmpjump;
+				
+					   else op3=findFrameDest(instr->res, GlobalFrame, LocalFrame);
+	}				   
 	else op3=NULL;
 
 		switch(instList->active->Instr->Iname)
@@ -159,20 +182,42 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList)
 
 			case I_ADD:
 			{
+
+				
+
+				
+				
 				if((op1->type)==tINTEGER)
 				{
 					if((op2->type)==tINTEGER)
 					{
+
+						
+		 			
 		 				op3->data.i=op1->data.i + op2->data.i;
+		 			
+		 				
+
+		 				
+		 			
+		 			
 					}
+
 					else if ((op2->type)==tREAL)
 					{
 						op3->data.r=op1->data.i + op2->data.r;
+
+						;
+
+						
+						
+		 				
 					}
 					else 
-					{	
-						Error(4);
-					}
+						{	
+							Error(4);
+							
+						}
 
 					break;
 				}
@@ -181,7 +226,13 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList)
 				{	
 					if((op2->type)==tINTEGER)
 					{
+
 						op3->data.r=op1->data.r + op2->data.i;
+		 			
+		 				
+
+		 				
+		 			
 		 			
 					}
 
