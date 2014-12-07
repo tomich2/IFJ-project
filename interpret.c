@@ -595,28 +595,30 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList)
 				break;			
 			}
 
-			case I_ASSIGN:
+		case I_ASSIGN:
 			{
 				
 				if((op1->type)==tINTEGER)
 				{	
 					op3->data.i=op1->data.i;
+					if((op3 == tmp1) || (op3 == tmp2) || (op3 == tmparam))
 					op3->type=tINTEGER;
 
 				}
 				else if((op1->type)==tREAL)
 				{	
 					op3->data.r=op1->data.r;
+					if((op3 == tmp1) || (op3 == tmp2) || (op3 == tmparam))
 					op3->type=tREAL;
 				}
 				else if((op1->type)==tBOOLEAN)
 				{	
 					op3->data.b=op1->data.b;
+					if((op3 == tmp1) || (op3 == tmp2) || (op3 == tmparam)) 
 					op3->type=tBOOLEAN;
 				}
 				//string
 				break;	
-			}
 
 			case I_PRINT:
 			{
