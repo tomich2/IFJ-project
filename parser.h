@@ -16,6 +16,7 @@
 #include "lexical.h"
 #include "list.h"
 #include "generator.h"
+#include "interpret.h"
 
 #define GTAB_SIZE 11
 #define MAX_RPTYPES 20
