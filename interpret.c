@@ -601,14 +601,18 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList)
 				if((op1->type)==tINTEGER)
 				{	
 					op3->data.i=op1->data.i;
+					op3->type=tINTEGER;
+
 				}
 				else if((op1->type)==tREAL)
 				{	
 					op3->data.r=op1->data.r;
+					op3->type=tREAL;
 				}
 				else if((op1->type)==tBOOLEAN)
 				{	
 					op3->data.b=op1->data.b;
+					op3->type=tBOOLEAN;
 				}
 				//string
 				break;	
