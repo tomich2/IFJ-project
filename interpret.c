@@ -183,17 +183,23 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList)
 
 			case I_ADD:
 			{
-	
+				
+
 				if((op1->type)==tINTEGER)
 				{
 					if((op2->type)==tINTEGER)
 					{
-		 				op3->data.i=op1->data.i + op2->data.i;		 					 			
+		 				op3->data.i=op1->data.i + op2->data.i;
+		 				if((op3 == tmp1) || (op3 == tmp2) || (op3 == tmparam))
+						op3->type=tINTEGER;
+
 					}
 
 					else if ((op2->type)==tREAL)
 					{
-						op3->data.r=op1->data.i + op2->data.r;							 				
+						op3->data.r=op1->data.i + op2->data.r;
+						if((op3 == tmp1) || (op3 == tmp2) || (op3 == tmparam))
+						op3->type=tREAL;							 				
 					}
 					else 
 						{	
@@ -208,12 +214,16 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList)
 				{	
 					if((op2->type)==tINTEGER)
 					{
-						op3->data.r=op1->data.r + op2->data.i;						 			
+						op3->data.r=op1->data.r + op2->data.i;
+						if((op3 == tmp1) || (op3 == tmp2) || (op3 == tmparam))
+						op3->type=tREAL;						 			
 					}
 
 					else if ((op2->type)==tREAL)
 					{	
-						op3->data.r=op1->data.r + op2->data.r;		 				
+						op3->data.r=op1->data.r + op2->data.r;	
+						if((op3 == tmp1) || (op3 == tmp2) || (op3 == tmparam))
+						op3->type=tREAL;	 				
 					}
 					else 
 						{	
@@ -237,12 +247,16 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList)
 				{
 					if((op2->type)==tINTEGER)
 					{
-						op3->data.i=op1->data.i - op2->data.i;		 			
+						op3->data.i=op1->data.i - op2->data.i;	
+						if((op3 == tmp1) || (op3 == tmp2) || (op3 == tmparam))
+						op3->type=tINTEGER;	 			
 					}
 					
 					else if ((op2->type)==tREAL)
 					{
 						op3->data.r=op1->data.i - op2->data.r;
+						if((op3 == tmp1) || (op3 == tmp2) || (op3 == tmparam))
+						op3->type=tREAL;
 					}
 					else 
 						{	
@@ -258,11 +272,15 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList)
 					if((op2->type)==tINTEGER)
 					{
 						op3->data.r=op1->data.r - op2->data.i;
+						if((op3 == tmp1) || (op3 == tmp2) || (op3 == tmparam))
+						op3->type=tREAL;
 					}
 
 					else if ((op2->type)==tREAL)
 					{	
-						op3->data.r=op1->data.r - op2->data.r;		 				
+						op3->data.r=op1->data.r - op2->data.r;
+						if((op3 == tmp1) || (op3 == tmp2) || (op3 == tmparam))
+						op3->type=tREAL;		 				
 					}
 					else 
 						{	
@@ -287,12 +305,16 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList)
 				{
 					if((op2->type)==tINTEGER)
 					{
-						op3->data.i=op1->data.i * op2->data.i; 			
+						op3->data.i=op1->data.i * op2->data.i;
+						if((op3 == tmp1) || (op3 == tmp2) || (op3 == tmparam))
+						op3->type=tINTEGER; 			
 					}
 
 					else if ((op2->type)==tREAL)
 					{
-						op3->data.r=op1->data.i * op2->data.r;	
+						op3->data.r=op1->data.i * op2->data.r;
+						if((op3 == tmp1) || (op3 == tmp2) || (op3 == tmparam))
+						op3->type=tREAL;	
 					}
 					else 
 						{	
@@ -307,12 +329,16 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList)
 				{	
 					if((op2->type)==tINTEGER)
 					{
-						op3->data.r=op1->data.r * op2->data.i; 			
+						op3->data.r=op1->data.r * op2->data.i;
+						if((op3 == tmp1) || (op3 == tmp2) || (op3 == tmparam))
+						op3->type=tREAL; 			
 					}
 
 					else if ((op2->type)==tREAL)
 					{	
-						op3->data.r=op1->data.r * op2->data.r;		
+						op3->data.r=op1->data.r * op2->data.r;
+						if((op3 == tmp1) || (op3 == tmp2) || (op3 == tmparam))
+						op3->type=tREAL;		
 					}
 					else 
 						{	
@@ -344,12 +370,16 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList)
 							
 					if((op1->type)==tINTEGER)
 					{	
-						op3->data.r=(double)op1->data.i / (double)op2->data.i;		 				
+						op3->data.r=(double)op1->data.i / (double)op2->data.i;
+						if((op3 == tmp1) || (op3 == tmp2) || (op3 == tmparam))
+						op3->type=tREAL;		 				
 					}
 				
 					else if ((op1->type)==tREAL)
 					{							
 						op3->data.r=op1->data.r / (double)op2->data.i;	
+						if((op3 == tmp1) || (op3 == tmp2) || (op3 == tmparam))
+						op3->type=tREAL;
 					}
 				
 					else 
@@ -371,12 +401,16 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList)
 						
 					if((op1->type)==tINTEGER)
 					{
-						op3->data.r=(double)op1->data.i / op2->data.r;		 				
+						op3->data.r=(double)op1->data.i / op2->data.r;	
+						if((op3 == tmp1) || (op3 == tmp2) || (op3 == tmparam))
+						op3->type=tREAL;	 				
 					}
 				
 					else if ((op1->type)==tREAL)
 					{	
 						op3->data.r=op1->data.r / op2->data.r;	
+						if((op3 == tmp1) || (op3 == tmp2) || (op3 == tmparam))
+						op3->type=tREAL;
 					}
 
 					break;
@@ -400,27 +434,37 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList)
 					{
 						case tBOOLEAN:
 							op3->data.b=op1->data.b == op2->data.b;
+							if((op3 == tmp1) || (op3 == tmp2) || (op3 == tmparam))
+							op3->type=tBOOLEAN;	
 		 					break;
 
 		 				case tINTEGER:
-							op3->data.b=op1->data.i == op2->data.i;		
+							op3->data.b=op1->data.i == op2->data.i;
+							if((op3 == tmp1) || (op3 == tmp2) || (op3 == tmparam))
+							op3->type=tBOOLEAN;			
 			 				break;
 
 		 				case tREAL:
 							op3->data.b=op1->data.r == op2->data.r;
+							if((op3 == tmp1) || (op3 == tmp2) || (op3 == tmparam))
+							op3->type=tBOOLEAN;	
 			 				break;
 
 		 				// case tSTRING
 
 		 				default:
 			 				op3->data.b=false;
+			 				if((op3 == tmp1) || (op3 == tmp2) || (op3 == tmparam))
+							op3->type=tBOOLEAN;	
 			 				break;
 					}
 					
 				}
 
 				else{
-						op3->data.b=false; 				
+						op3->data.b=false;
+						if((op3 == tmp1) || (op3 == tmp2) || (op3 == tmparam))
+							op3->type=tBOOLEAN;	 				
  	   				}
 				
 				break;
@@ -433,27 +477,37 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList)
 					switch (op1->type)
 					{
 						case tBOOLEAN:
-							op3->data.b=op1->data.b != op2->data.b;	 				
+							op3->data.b=op1->data.b != op2->data.b;	
+							if((op3 == tmp1) || (op3 == tmp2) || (op3 == tmparam))
+							op3->type=tBOOLEAN;	 				
 		 					break;
 
 		 				case tINTEGER:
 							op3->data.b=op1->data.i != op2->data.i;
+							if((op3 == tmp1) || (op3 == tmp2) || (op3 == tmparam))
+							op3->type=tBOOLEAN;	
 		 					break;
 
 		 				case tREAL:
-							op3->data.b=op1->data.r != op2->data.r;		 				
+							op3->data.b=op1->data.r != op2->data.r;	
+							if((op3 == tmp1) || (op3 == tmp2) || (op3 == tmparam))
+							op3->type=tBOOLEAN;		 				
 		 					break;
 
 		 				// case tSTRING
 
 		 				default:
 		 					op3->data.b=false;
+		 					if((op3 == tmp1) || (op3 == tmp2) || (op3 == tmparam))
+							op3->type=tBOOLEAN;	
 		 					break;
 					}					
 				}
 
 				else{
 						op3->data.b=true;
+						if((op3 == tmp1) || (op3 == tmp2) || (op3 == tmparam))
+							op3->type=tBOOLEAN;	
 	   				}
 				
 				break;			
@@ -466,21 +520,29 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList)
 					switch (op1->type)
 					{
 						case tBOOLEAN:
-							op3->data.b=op1->data.b < op2->data.b;			
+							op3->data.b=op1->data.b < op2->data.b;	
+							if((op3 == tmp1) || (op3 == tmp2) || (op3 == tmparam))
+							op3->type=tBOOLEAN;			
 			 				break;
 
 		 				case tINTEGER:
 							op3->data.b=op1->data.i < op2->data.i;
+							if((op3 == tmp1) || (op3 == tmp2) || (op3 == tmparam))
+							op3->type=tBOOLEAN;	
 		 	 				break;
 
 		 				case tREAL:
 							op3->data.b=op1->data.r < op2->data.r;
+							if((op3 == tmp1) || (op3 == tmp2) || (op3 == tmparam))
+							op3->type=tBOOLEAN;	
 			 				break;
 
 		 				// case tSTRING
 
 		 				default:
 		 					op3->data.b=false;
+		 					if((op3 == tmp1) || (op3 == tmp2) || (op3 == tmparam))
+							op3->type=tBOOLEAN;	
 		 					break;
 					}					
 				}
@@ -502,21 +564,29 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList)
 					switch (op1->type)
 					{
 						case tBOOLEAN:
-							op3->data.b=op1->data.b > op2->data.b;				 				
+							op3->data.b=op1->data.b > op2->data.b;
+							if((op3 == tmp1) || (op3 == tmp2) || (op3 == tmparam))
+							op3->type=tBOOLEAN;					 				
 		 					break;
 
 		 				case tINTEGER:
 							op3->data.b=op1->data.i > op2->data.i;
+							if((op3 == tmp1) || (op3 == tmp2) || (op3 == tmparam))
+							op3->type=tINTEGER;	
 			 				break;
 
 		 				case tREAL:
 							op3->data.b=op1->data.r > op2->data.r;
+							if((op3 == tmp1) || (op3 == tmp2) || (op3 == tmparam))
+							op3->type=tREAL;	
 			 				break;
 
 		 				// case tSTRING
 
 		 				default:
 		 					op3->data.b=false;
+		 					if((op3 == tmp1) || (op3 == tmp2) || (op3 == tmparam))
+							op3->type=tBOOLEAN;	
 		 					break;
 					}					
 				}
@@ -537,21 +607,29 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList)
 					switch (op1->type)
 					{
 						case tBOOLEAN:
-							op3->data.b=op1->data.b <= op2->data.b; 				
+							op3->data.b=op1->data.b <= op2->data.b; 
+							if((op3 == tmp1) || (op3 == tmp2) || (op3 == tmparam))
+							op3->type=tBOOLEAN;					
 		 					break;
 
 		 				case tINTEGER:
 							op3->data.b=op1->data.i <= op2->data.i;
+							if((op3 == tmp1) || (op3 == tmp2) || (op3 == tmparam))
+							op3->type=tINTEGER;	
 		 					break;
 
 		 				case tREAL:
-							op3->data.b=op1->data.r <= op2->data.r;	 				
+							op3->data.b=op1->data.r <= op2->data.r;
+							if((op3 == tmp1) || (op3 == tmp2) || (op3 == tmparam))
+							op3->type=tREAL;		 				
 			 				break;
 
 		 				// case tSTRING
 
 		 				default:
 		 					op3->data.b=false;
+		 					if((op3 == tmp1) || (op3 == tmp2) || (op3 == tmparam))
+							op3->type=tBOOLEAN;	
 		 					break;
 					}					
 				}
@@ -573,20 +651,28 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList)
 					{
 						case tBOOLEAN:
 							op3->data.b=op1->data.b >= op2->data.b;
+							if((op3 == tmp1) || (op3 == tmp2) || (op3 == tmparam))
+							op3->type=tBOOLEAN;	
  			 				break;
 
 		 				case tINTEGER:
 							op3->data.b=op1->data.i >= op2->data.i;
+							if((op3 == tmp1) || (op3 == tmp2) || (op3 == tmparam))
+							op3->type=tINTEGER;	
 		 	 				break;
 
 		 				case tREAL:
-							op3->data.b=op1->data.r >= op2->data.r;	 				
+							op3->data.b=op1->data.r >= op2->data.r;
+							if((op3 == tmp1) || (op3 == tmp2) || (op3 == tmparam))
+							op3->type=tINTEGER;		 				
 		 					break;
 
 		 				// case tSTRING
 
 		 				default:
 		 					op3->data.b=false;
+		 					if((op3 == tmp1) || (op3 == tmp2) || (op3 == tmparam))
+							op3->type=tBOOLEAN;	
 		 					break;
 					}					
 				}
@@ -599,7 +685,7 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList)
 				break;			
 			}
 
-		case I_ASSIGN:
+			case I_ASSIGN:
 			{
 				
 				if((op1->type)==tINTEGER)
@@ -642,8 +728,7 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList)
 			{
 				if((op1->type)==tINTEGER)
 				{	
-					printf("%d",op1->data.i);
-					
+					printf("%d",op1->data.i);	
 					break;
 
 				}
