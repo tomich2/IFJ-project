@@ -631,6 +631,27 @@ if(Ac->rpt_size==MAX_RPTYPES)
                       }
                       break;
                 case OpPrir:
+                      cmp=(Hitem*)htab_search(lsymtab,Ac->act_varID);
+                      if(cmp==NULL)
+                      {
+                        cmp=(Hitem*)htab_search(gsymtab,Ac->act_varID);
+                        if(cmp->type==IDENTIFIER)
+                        {
+                          vcmpd=cmp->data;
+                          vcmpd->is_def=true;
+                        }
+                        else if(cmp->type==FUNCTION)
+                        {
+                          fcmpd=cmp->data;
+                          fcmpd->is_ret=true;
+                          Ac->is_ret_err=false;
+                        }
+                      }
+                      else
+                      {
+                        vcmpd=cmp->data;
+                        vcmpd->is_def=true;
+                      }
                       varA=malloc(sizeof(*varA));
                       if(varA==NULL)return INTERN_INTERPRETATION_ERR;
                       varA->data.s=malloc(TMPLEN*sizeof(char));
@@ -640,30 +661,7 @@ if(Ac->rpt_size==MAX_RPTYPES)
                         return INTERN_INTERPRETATION_ERR;
                       }
                       strcpy(varA->data.s,TMPUV);
-                      cmp=(Hitem*)htab_search(lsymtab,Ac->act_varID);
-                      if(cmp==NULL)
-                      {
-                        cmp=(Hitem*)htab_search(gsymtab,Ac->act_varID);
-                        if(cmp->type==IDENTIFIER)
-                        {
-                          vcmpd=cmp->data;
-                          vcmpd->is_def=true;
-                          varA->type=tVAR;
-                        }
-                        else if(cmp->type==FUNCTION)
-                        {
-                          fcmpd=cmp->data;
-                          fcmpd->is_ret=true;
-                          Ac->is_ret_err=false;
-                          varA->type=tVAR;
-                        }
-                      }
-                      else
-                      {
-                        vcmpd=cmp->data;
-                        vcmpd->is_def=true;
-                        varA->type=tVAR;
-                      }
+                      varA->type=tVAR;
                       generator(inslistp,I_ASSIGN,varA,NULL,Ac->act_varID);
                       break;
                 case KwWrite:
@@ -803,6 +801,7 @@ if(Ac->rpt_size==MAX_RPTYPES)
                         return INTERN_INTERPRETATION_ERR;
                       }
                       strcpy(varB->data.s,TMPUV);
+                      varB->type=tVAR;
                       generator(inslistp,I_GOTO,varA,varB,NULL);
                       break;
                 case KwElse:
@@ -853,6 +852,7 @@ if(Ac->rpt_size==MAX_RPTYPES)
                         return INTERN_INTERPRETATION_ERR;
                       }
                       strcpy(varB->data.s,TMPUV);
+                      varB->type=tVAR;
                       generator(inslistp,I_GOTO,varA,varB,NULL);
                       break;
                 case DtInteger:
@@ -993,6 +993,7 @@ if(Ac->rpt_size==MAX_RPTYPES)
                         return INTERN_INTERPRETATION_ERR;
                       }
                       strcpy(varA->data.s,TMPUV);
+                      varA->type=tVAR;
                       generator(inslistp,I_ASSIGN,varA,NULL,Ac->act_varID);
                       cmp=(Hitem*)htab_search(gsymtab,Ac->act_varID);
                       if(cmp->type==IDENTIFIER)
@@ -1070,6 +1071,7 @@ if(Ac->rpt_size==MAX_RPTYPES)
                         return INTERN_INTERPRETATION_ERR;
                       }
                       strcpy(varB->data.s,TMPUV);
+                      varB->type=tVAR;
                       generator(inslistp,I_GOTO,varA,varB,NULL);
                       break;
                 case KwElse:
@@ -1120,6 +1122,7 @@ if(Ac->rpt_size==MAX_RPTYPES)
                         return INTERN_INTERPRETATION_ERR;
                       }
                       strcpy(varB->data.s,TMPUV);
+                      varB->type=tVAR;
                       generator(inslistp,I_GOTO,varA,varB,NULL);
                       break;
                 case DtInteger:
