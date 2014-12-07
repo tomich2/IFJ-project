@@ -559,7 +559,7 @@ if(Ac->rpt_size==MAX_RPTYPES)
                                 return INTERN_INTERPRETATION_ERR;
                               }
                               strcpy(varA->data.s,Ac->act_varID);
-                              varA->type=get_type(fcmpd->ret_par_types,0);
+                              varA->type=tVAR;
                               generator(inslistp,I_PRINT,varA,NULL,NULL);
                             }
                             else if(Ac->is_readln==true)
@@ -585,7 +585,7 @@ if(Ac->rpt_size==MAX_RPTYPES)
                                 return INTERN_INTERPRETATION_ERR;
                               }
                               strcpy(varA->data.s,Ac->act_varID);
-                              varA->type=vcmpd->type;
+                              varA->type=tVAR;
                               generator(inslistp,I_PRINT,varA,NULL,NULL);
                             }
                             if(Ac->is_readln==true)
@@ -612,7 +612,7 @@ if(Ac->rpt_size==MAX_RPTYPES)
                             return INTERN_INTERPRETATION_ERR;
                           }
                           strcpy(varA->data.s,Ac->act_varID);
-                          varA->type=vcmpd->type;
+                          varA->type=tVAR;
                           generator(inslistp,I_PRINT,varA,NULL,NULL);
                         }
                         if(Ac->is_readln==true)
@@ -641,21 +641,21 @@ if(Ac->rpt_size==MAX_RPTYPES)
                         {
                           vcmpd=cmp->data;
                           vcmpd->is_def=true;
-                          varA->type=vcmpd->type;
+                          varA->type=tVAR;
                         }
                         else if(cmp->type==FUNCTION)
                         {
                           fcmpd=cmp->data;
                           fcmpd->is_ret=true;
                           Ac->is_ret_err=false;
-                          varA->type=get_type(fcmpd->ret_par_types,0);
+                          varA->type=tVAR;
                         }
                       }
                       else
                       {
                         vcmpd=cmp->data;
                         vcmpd->is_def=true;
-                        varA->type=vcmpd->type;
+                        varA->type=tVAR;
                       }
                       generator(inslistp,I_ASSIGN,varA,NULL,Ac->act_varID);
                       break;
@@ -848,6 +848,24 @@ if(Ac->rpt_size==MAX_RPTYPES)
                       strcpy(varB->data.s,TMPUV);
                       generator(inslistp,I_GOTO,varA,varB,NULL);
                       break;
+                case DtInteger:
+                  case DtString:
+                    case DtReal:
+                      if(Ac->is_write==true)
+                      {
+                        varA=malloc(sizeof(*varA));
+                        if(varA==NULL)return INTERN_INTERPRETATION_ERR;
+                        varA->data.s=malloc(strlen(token->mem)+1);
+                        if(varA->data.s==NULL)
+                        {
+                          free(varA);
+                          return INTERN_INTERPRETATION_ERR;
+                        }
+                        strcpy(varA->data.s,token->mem);
+                        varA->type=tVAR;
+                        generator(inslistp,I_PRINT,varA,NULL,NULL);
+                      }
+                      break;
                 default: break;
               }
               break;
@@ -895,7 +913,7 @@ if(Ac->rpt_size==MAX_RPTYPES)
                               return INTERN_INTERPRETATION_ERR;
                             }
                             strcpy(varA->data.s,Ac->act_varID);
-                            varA->type=vcmpd->type;
+                            varA->type=tVAR;
                             generator(inslistp,I_PRINT,varA,NULL,NULL);
                           }
                           if(Ac->is_readln==true)
@@ -915,6 +933,8 @@ if(Ac->rpt_size==MAX_RPTYPES)
                         Ac->labIDcnt++;
                       }
                       Ac->begincnt++;
+                      if(Ac->is_else==true)Ac->ifbegcnt++;
+                      if(Ac->is_while==true)Ac->whbegcnt++;
                       break;
                 case KwWrite:
                       Ac->is_write=true;
@@ -958,6 +978,129 @@ if(Ac->rpt_size==MAX_RPTYPES)
                         cmp=(Hitem*)htab_search(gsymtab,Ac->act_varID);
                         vcmpd=cmp->data;
                         if(vcmpd->type!=*expt)return EXPRESSION_ERR;
+                      }
+                      if(Ac->is_else==true)Ac->ifbegcnt--;
+                      if(Ac->is_while==true)Ac->whbegcnt--;
+                      if(Ac->ifbegcnt==0 && Ac->is_else==true) // koniec prikazu if
+                      {
+                        Ac->is_else=false;
+                        Ac->ifbegcnt=*((int*)top(ib_stack));
+                        pop(ib_stack);
+                        // LAB 2
+                        lab=*((int*)top(s_stack));
+                        pop(s_stack);
+                        ins_adress=generator(inslistp,I_LABEL,NULL,NULL,NULL);
+                        labL_insertlast(lablistp,ins_adress,lab);
+                      }
+                      if(Ac->whbegcnt==0 && Ac->is_while==true) // koniec prikazu while
+                      {
+                        Ac->is_while=false;
+                        Ac->whbegcnt=*((int*)top(wb_stack));
+                        pop(wb_stack);
+                        // uloz LAB2 zo zasobniku do lab2
+                        lab2=*((int*)top(s_stack));
+                        pop(s_stack);
+                        // uloz LAB1 zo zasobniku do lab
+                        lab=*((int*)top(s_stack));
+                        pop(s_stack);
+                        // GOTO LAB1 nepodmienene
+                        varA=malloc(sizeof(*varA));
+                        if(varA==NULL)return INTERN_INTERPRETATION_ERR;
+                        varA->type=tVAR;
+                        varA->data.label=lab;
+                        varA->data.s=NULL;
+                        generator(inslistp,I_GOTO,varA,NULL,NULL);
+                        // vygeneruj LAB2
+                        ins_adress=generator(inslistp,I_LABEL,NULL,NULL,NULL);
+                        labL_insertlast(lablistp,ins_adress,lab2);
+                      }
+                      break;
+                case KwThen:
+                      // GOTO LAB1 podmienene, uloz LAB1 na zasobnik
+                      varA=malloc(sizeof(*varA));
+                      if(varA==NULL)return INTERN_INTERPRETATION_ERR;
+                      varA->type=tVAR;
+                      varA->data.label=Ac->labIDcnt;
+                      varA->data.s=NULL;
+                      push(s_stack,&Ac->labIDcnt,-1);
+                      Ac->labIDcnt++;
+                      varB=malloc(sizeof(*varB));
+                      if(varB==NULL)return INTERN_INTERPRETATION_ERR;
+                      varB->data.s=malloc(TMPLEN*sizeof(char));
+                      if(varB->data.s==NULL)
+                      {
+                        free(varB);
+                        return INTERN_INTERPRETATION_ERR;
+                      }
+                      strcpy(varB->data.s,TMPUV);
+                      generator(inslistp,I_GOTO,varA,varB,NULL);
+                      break;
+                case KwElse:
+                      push(ib_stack,&Ac->ifbegcnt,-1);
+                      Ac->ifbegcnt=0;
+                      Ac->is_else=true;
+                      // uloz LAB1 zo zasobniku do lab
+                      lab=*((int*)top(s_stack));
+                      pop(s_stack);
+                      // GOTO LAB2 nepodmienene, uloz LAB2 na zasobnik
+                      varA=malloc(sizeof(*varA));
+                      if(varA==NULL)return INTERN_INTERPRETATION_ERR;
+                      varA->type=tVAR;
+                      varA->data.label=Ac->labIDcnt;
+                      varA->data.s=NULL;
+                      push(s_stack,&Ac->labIDcnt,-1);
+                      Ac->labIDcnt++;
+                      generator(inslistp,I_GOTO,varA,NULL,NULL);
+                      // vygeneruj LAB1
+                      ins_adress=generator(inslistp,I_LABEL,NULL,NULL,NULL);
+                      labL_insertlast(lablistp,ins_adress,lab);
+                      break;
+                case KwWhile:
+                      Ac->is_while=true;
+                      // LAB 1, uloz LAB1 na zasobnik
+                      ins_adress=generator(inslistp,I_LABEL,NULL,NULL,NULL);
+                      labL_insertlast(lablistp,ins_adress,Ac->labIDcnt);
+                      push(s_stack,&Ac->labIDcnt,-1);
+                      Ac->labIDcnt++;
+                      break;
+                case KwDo:
+                      push(wb_stack,&Ac->whbegcnt,-1);
+                      Ac->whbegcnt=0;
+                      // GOTO LAB2 podmienene, uloz LAB2 na zasobnik
+                      varA=malloc(sizeof(*varA));
+                      if(varA==NULL)return INTERN_INTERPRETATION_ERR;
+                      varA->type=tVAR;
+                      varA->data.label=Ac->labIDcnt;
+                      varA->data.s=NULL;
+                      push(s_stack,&Ac->labIDcnt,-1);
+                      Ac->labIDcnt++;
+                      varB=malloc(sizeof(*varB));
+                      if(varB==NULL)return INTERN_INTERPRETATION_ERR;
+                      varB->data.s=malloc(TMPLEN*sizeof(char));
+                      if(varB->data.s==NULL)
+                      {
+                        free(varB);
+                        return INTERN_INTERPRETATION_ERR;
+                      }
+                      strcpy(varB->data.s,TMPUV);
+                      generator(inslistp,I_GOTO,varA,varB,NULL);
+                      break;
+                case DtInteger:
+                  case DtString:
+                    case DtReal:
+                      if(Ac->is_write==true)
+                      {
+                        varA=malloc(sizeof(*varA));
+                        if(varA==NULL)return INTERN_INTERPRETATION_ERR;
+                        varA->data.s=malloc(strlen(token->mem)+1);
+                        if(varA->data.s==NULL)
+                        {
+                          free(varA);
+                          return INTERN_INTERPRETATION_ERR;
+                        }
+                        strcpy(varA->data.s,token->mem);
+                        varA->type=tVAR;
+                        generator(inslistp,I_PRINT,varA,NULL,NULL);
                       }
                       break;
                 default: break;
