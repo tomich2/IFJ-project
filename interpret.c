@@ -18,6 +18,7 @@
 void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList)
 {
 	bool run =true;
+	bool div0=false;
 	struct FrameVariable *op1,*op2,*op3;
 	tInstruction *instr;
 	tListofVariables *LocalFrame=NULL;
@@ -31,14 +32,15 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList)
 	struct FrameVariable *tmp1;
 	struct FrameVariable *tmp2;
 	struct FrameVariable *tmparam; 
+	
 	tmp1=malloc(sizeof(struct FrameVariable));
 	tmp2=malloc(sizeof(struct FrameVariable)); 
 	tmparam=malloc(sizeof(struct FrameVariable));
-	
+ 
 	tmp1->name=TMPU;
 	tmp2->name=TMPU2;
 	tmparam->name=TMParam;
-	
+
 	
 	/**************pomocne**************/
 	
@@ -55,20 +57,17 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList)
 	while(run)
 	{
 
-
-
 	if(instr->a != NULL)
 	{
 		if(instr->a->type==tVAR)
 		{
 			if(strcmp(instr->a->data.s, tmp1->name)==0) op1=tmp1;
-				
+			
 			else if(strcmp(instr->a->data.s, tmp2->name)==0) op1=tmp2;
 					
 				 else if(strcmp(instr->a->data.s, tmparam->name)==0) op1=tmparam;
-						
-					 
-						  else op1=findFrameVar(instr->a, GlobalFrame, LocalFrame);
+					
+					 else op1=findFrameVar(instr->a, GlobalFrame, LocalFrame);
 		}
 		else	
 			{
@@ -104,6 +103,7 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList)
 						default:
 						break;
 				}
+				
 			}
 	}
 	else op1=NULL;
@@ -115,11 +115,10 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList)
 			if(strcmp(instr->b->data.s, tmp1->name)==0) op2=tmp1;
 				
 			else if(strcmp(instr->b->data.s, tmp2->name)==0) op2=tmp2;
-					
+			
 				 else if(strcmp(instr->b->data.s, tmparam->name)==0) op2=tmparam;
-						
-										 
-						  else op2=findFrameVar(instr->b, GlobalFrame, LocalFrame);
+	
+					  else op2=findFrameVar(instr->b, GlobalFrame, LocalFrame);
 		}
 		else
 		{
@@ -158,6 +157,7 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList)
 				default:
 				break;
 			}
+			
 		}
 	}
 	else op2=NULL;
@@ -165,16 +165,18 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList)
 	if(instr->res != NULL)
 	{
 		if(strcmp(instr->res, tmp1->name)==0) op3=tmp1;
-				
+			
 		else if(strcmp(instr->res, tmp2->name)==0) op3=tmp2;
 					
 			 else if(strcmp(instr->res, tmparam->name)==0) op3=tmparam;
-						
 				
-					   else op3=findFrameDest(instr->res, GlobalFrame, LocalFrame);
+				  else op3=findFrameDest(instr->res, GlobalFrame, LocalFrame);
+					
 	}				   
 	else op3=NULL;
-
+	
+	/*************************************************SWITCH*****************************************************************/
+	
 		switch(instList->active->Instr->Iname)
 		{
 
@@ -334,7 +336,8 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList)
 				{
 					if (op2->data.i == 0)
 					{
-						Error(8);
+						div0=true;
+						run=false;
 						break;
 					}
 							
@@ -618,14 +621,15 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList)
 					op3->type=tBOOLEAN;
 				}
 				//string
-				break;	
-			}
-			
+				break;
+			}	
+
 			case I_PRINT:
 			{
 				if((op1->type)==tINTEGER)
 				{	
-					printf("%d",op1->data.i );
+					printf("%d",op1->data.i);
+					
 					break;
 
 				}
@@ -725,9 +729,10 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList)
 		free(op2);
 		bop2=false;
 	}
-
-
-
+	
+	
+	
+	
 }	//KONIEC WHILE(RUN)
 
 frameFree(GlobalFrame);
@@ -735,4 +740,7 @@ free(tmp1);
 free(tmp2);
 free(tmparam);
 
+if(div0==true)
+	Error(8);
+	
 }  //KONIEC FUNKCIE INTERPRETATION LOOP
