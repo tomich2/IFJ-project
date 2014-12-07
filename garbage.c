@@ -22,6 +22,12 @@ void InitList (TGarbage *L)
 
 void InsertFirst (TGarbage * L, char * Elem)
 {
+    TGarbagePtr uk=L->First;
+    while (uk!=NULL)
+    {
+        if (uk->data==Elem) return;
+        uk = uk->ptr;
+    }
     TGarbagePtr p=L->First;
     L->First=malloc(sizeof(struct TGarbage));
     if (L->First==NULL)
