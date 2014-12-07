@@ -619,7 +619,8 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList)
 				}
 				//string
 				break;	
-
+			}
+			
 			case I_PRINT:
 			{
 				if((op1->type)==tINTEGER)
