@@ -146,6 +146,12 @@ i=0;
       {
         if(token->identity==DtInteger || token->identity==DtReal || token->identity==DtString || token->identity==ID)
         {
+          err=semantic(&state,glob_sym_table,loc_sym_table,Act,&expr_type,tmem_size,vflist,flist,lablist,inslist,TMPUV,&s_stack,&ifbeg_stack,&whbeg_stack);
+          if(err!=EVERYTHINGSOKAY)
+          {
+            free_all(PItems,p_stack,1,1,glob_sym_table,loc_sym_table,Act,vflist,lablist,inslist,flist,1);
+            return err;
+          }
           pop(&p_stack);
           PItem_top=NULL;
         }
@@ -175,7 +181,7 @@ i=0;
           return SYNTAX_ERR;
         }
       }
-    fprintf(stderr,"debug..token: %s state: %d\n", token->mem,state);
+    //fprintf(stderr,"debug..token: %s state: %d\n", token->mem,state);
     free(token->mem);
     token->mem=NULL;
     expr_type=tERR;
@@ -193,7 +199,8 @@ i=0;
    free_all(PItems,p_stack,0,1,glob_sym_table,loc_sym_table,Act,vflist,lablist,inslist,flist,1);
    return SYNTAX_ERR;
   }
-  free_all(PItems,p_stack,0,0,glob_sym_table,loc_sym_table,Act,vflist,lablist,inslist,flist,1);
+  free_all(PItems,p_stack,0,0,glob_sym_table,loc_sym_table,Act,vflist,lablist,inslist,flist,0);
+  interpretLoop(inslist,vflist);
   return EVERYTHINGSOKAY;
 }
 
@@ -849,8 +856,6 @@ if(Ac->rpt_size==MAX_RPTYPES)
                       generator(inslistp,I_GOTO,varA,varB,NULL);
                       break;
                 case DtInteger:
-                  case DtString:
-                    case DtReal:
                       if(Ac->is_write==true)
                       {
                         varA=malloc(sizeof(*varA));
@@ -862,7 +867,39 @@ if(Ac->rpt_size==MAX_RPTYPES)
                           return INTERN_INTERPRETATION_ERR;
                         }
                         strcpy(varA->data.s,token->mem);
-                        varA->type=tVAR;
+                        varA->type=tINTEGER;
+                        generator(inslistp,I_PRINT,varA,NULL,NULL);
+                      }
+                      break;
+                case DtReal:
+                      if(Ac->is_write==true)
+                      {
+                        varA=malloc(sizeof(*varA));
+                        if(varA==NULL)return INTERN_INTERPRETATION_ERR;
+                        varA->data.s=malloc(strlen(token->mem)+1);
+                        if(varA->data.s==NULL)
+                        {
+                          free(varA);
+                          return INTERN_INTERPRETATION_ERR;
+                        }
+                        strcpy(varA->data.s,token->mem);
+                        varA->type=tREAL;
+                        generator(inslistp,I_PRINT,varA,NULL,NULL);
+                      }
+                      break;
+                case DtString:
+                      if(Ac->is_write==true)
+                      {
+                        varA=malloc(sizeof(*varA));
+                        if(varA==NULL)return INTERN_INTERPRETATION_ERR;
+                        varA->data.s=malloc(strlen(token->mem)+1);
+                        if(varA->data.s==NULL)
+                        {
+                          free(varA);
+                          return INTERN_INTERPRETATION_ERR;
+                        }
+                        strcpy(varA->data.s,token->mem);
+                        varA->type=tSTRING;
                         generator(inslistp,I_PRINT,varA,NULL,NULL);
                       }
                       break;
@@ -1086,8 +1123,6 @@ if(Ac->rpt_size==MAX_RPTYPES)
                       generator(inslistp,I_GOTO,varA,varB,NULL);
                       break;
                 case DtInteger:
-                  case DtString:
-                    case DtReal:
                       if(Ac->is_write==true)
                       {
                         varA=malloc(sizeof(*varA));
@@ -1099,7 +1134,39 @@ if(Ac->rpt_size==MAX_RPTYPES)
                           return INTERN_INTERPRETATION_ERR;
                         }
                         strcpy(varA->data.s,token->mem);
-                        varA->type=tVAR;
+                        varA->type=tINTEGER;
+                        generator(inslistp,I_PRINT,varA,NULL,NULL);
+                      }
+                      break;
+                case DtReal:
+                      if(Ac->is_write==true)
+                      {
+                        varA=malloc(sizeof(*varA));
+                        if(varA==NULL)return INTERN_INTERPRETATION_ERR;
+                        varA->data.s=malloc(strlen(token->mem)+1);
+                        if(varA->data.s==NULL)
+                        {
+                          free(varA);
+                          return INTERN_INTERPRETATION_ERR;
+                        }
+                        strcpy(varA->data.s,token->mem);
+                        varA->type=tREAL;
+                        generator(inslistp,I_PRINT,varA,NULL,NULL);
+                      }
+                      break;
+                case DtString:
+                      if(Ac->is_write==true)
+                      {
+                        varA=malloc(sizeof(*varA));
+                        if(varA==NULL)return INTERN_INTERPRETATION_ERR;
+                        varA->data.s=malloc(strlen(token->mem)+1);
+                        if(varA->data.s==NULL)
+                        {
+                          free(varA);
+                          return INTERN_INTERPRETATION_ERR;
+                        }
+                        strcpy(varA->data.s,token->mem);
+                        varA->type=tSTRING;
                         generator(inslistp,I_PRINT,varA,NULL,NULL);
                       }
                       break;
