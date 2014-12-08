@@ -1,0 +1,6 @@
+var
+  a: boolean;
+
+begin
+  a := 'test' > 4;
+end.
