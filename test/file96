@@ -1,0 +1,11 @@
+var
+  a: integer;
+
+function pes(a: real): integer;
+begin
+  pes := 1
+end;
+
+begin
+  a := pes(4);
+end.
