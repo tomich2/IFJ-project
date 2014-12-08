@@ -1,0 +1,6 @@
+var
+  a: boolean;
+
+begin
+  a := 4 <> 4.0;
+end.
