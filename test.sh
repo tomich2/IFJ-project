@@ -641,6 +641,277 @@ if [ $value = $expected ];
         echo -e "Testing file55                     ${red}FAIL, return code $value, expected $expected${NC}";
 fi
 
+./parser ./test/file56 > test0.outputs/file56.output 2>&1;
+value=$?;
+expected=2;
+if [ $value = $expected ];
+    then
+        echo -e "Testing file56                     ${green}PASS${NC}";
+    else
+        echo -e "Testing file56                     ${red}FAIL, return code $value, expected $expected${NC}";
+fi
+
+./parser ./test/file57 > test0.outputs/file57.output 2>&1;
+value=$?;
+expected=2;
+if [ $value = $expected ];
+    then
+        echo -e "Testing file57                     ${green}PASS${NC}";
+    else
+        echo -e "Testing file57                     ${red}FAIL, return code $value, expected $expected${NC}";
+fi
+
+./parser ./test/file58 > test0.outputs/file58.output 2>&1;
+value=$?;
+expected=2;
+if [ $value = $expected ];
+    then
+        echo -e "Testing file58                     ${green}PASS${NC}";
+    else
+        echo -e "Testing file58                     ${red}FAIL, return code $value, expected $expected${NC}";
+fi
+
+
+./parser ./test/file59 > test0.outputs/file59.output 2>&1;
+value=$?;
+expected=2;
+if [ $value = $expected ];
+    then
+        echo -e "Testing file59                     ${green}PASS${NC}";
+    else
+        echo -e "Testing file59                     ${red}FAIL, return code $value, expected $expected${NC}";
+fi
+
+./parser ./test/file60 > test0.outputs/file60.output 2>&1;
+value=$?;
+expected=2;
+if [ $value = $expected ];
+    then
+        echo -e "Testing file60                     ${green}PASS${NC}";
+    else
+        echo -e "Testing file60                     ${red}FAIL, return code $value, expected $expected${NC}";
+fi
+
+./parser ./test/file61 > test0.outputs/file61.output 2>&1;
+value=$?;
+expected=2;
+if [ $value = $expected ];
+    then
+        echo -e "Testing file61                     ${green}PASS${NC}";
+    else
+        echo -e "Testing file61                     ${red}FAIL, return code $value, expected $expected${NC}";
+fi
+
+./parser ./test/file62 > test0.outputs/file62.output 2>&1;
+value=$?;
+expected=2;
+if [ $value = $expected ];
+    then
+        echo -e "Testing file62                     ${green}PASS${NC}";
+    else
+        echo -e "Testing file62                     ${red}FAIL, return code $value, expected $expected${NC}";
+fi
+
+
+./parser ./test/file63 > test0.outputs/file63.output 2>&1;
+value=$?;
+expected=2;
+if [ $value = $expected ];
+    then
+        echo -e "Testing file63                     ${green}PASS${NC}";
+    else
+        echo -e "Testing file63                     ${red}FAIL, return code $value, expected $expected${NC}";
+fi
+
+./parser ./test/file64 > test0.outputs/file64.output 2>&1;
+value=$?;
+expected=2;
+if [ $value = $expected ];
+    then
+        echo -e "Testing file64                     ${green}PASS${NC}";
+    else
+        echo -e "Testing file64                     ${red}FAIL, return code $value, expected $expected${NC}";
+fi
+
+./parser ./test/file65 > test0.outputs/file65.output 2>&1;
+value=$?;
+expected=2;
+if [ $value = $expected ];
+    then
+        echo -e "Testing file65                     ${green}PASS${NC}";
+    else
+        echo -e "Testing file65                     ${red}FAIL, return code $value, expected $expected${NC}";
+fi
+
+
+./parser ./test/file66 > test0.outputs/file66.output 2>&1;
+value=$?;
+expected=2;
+if [ $value = $expected ];
+    then
+        echo -e "Testing file66                     ${green}PASS${NC}";
+    else
+        echo -e "Testing file66                     ${red}FAIL, return code $value, expected $expected${NC}";
+fi
+
+./parser ./test/file67 > test0.outputs/file67.output 2>&1;
+value=$?;
+expected=2;
+if [ $value = $expected ];
+    then
+        echo -e "Testing file67                     ${green}PASS${NC}";
+    else
+        echo -e "Testing file67                     ${red}FAIL, return code $value, expected $expected${NC}";
+fi
+
+./parser ./test/file68 > test0.outputs/file68.output 2>&1;
+value=$?;
+expected=2;
+if [ $value = $expected ];
+    then
+        echo -e "Testing file68                     ${green}PASS${NC}";
+    else
+        echo -e "Testing file68                     ${red}FAIL, return code $value, expected $expected${NC}";
+fi
+
+./parser ./test/file69 > test0.outputs/file69.output 2>&1;
+value=$?;
+expected=2;
+if [ $value = $expected ];
+    then
+        echo -e "Testing file69                     ${green}PASS${NC}";
+    else
+        echo -e "Testing file69                     ${red}FAIL, return code $value, expected $expected${NC}";
+fi
+
+./parser ./test/file70 > test0.outputs/file70.output 2>&1;
+value=$?;
+expected=2;
+if [ $value = $expected ];
+    then
+        echo -e "Testing file70                     ${green}PASS${NC}";
+    else
+        echo -e "Testing file70                     ${red}FAIL, return code $value, expected $expected${NC}";
+fi
+
+./parser ./test/file71 > test0.outputs/file71.output 2>&1;
+value=$?;
+expected=2;
+if [ $value = $expected ];
+    then
+        echo -e "Testing file71                     ${green}PASS${NC}";
+    else
+        echo -e "Testing file71                     ${red}FAIL, return code $value, expected $expected${NC}";
+fi
+
+./parser ./test/file72 > test0.outputs/file72.output 2>&1;
+value=$?;
+expected=2;
+if [ $value = $expected ];
+    then
+        echo -e "Testing file72                     ${green}PASS${NC}";
+    else
+        echo -e "Testing file72                     ${red}FAIL, return code $value, expected $expected${NC}";
+fi
+
+./parser ./test/file73 > test0.outputs/file73.output 2>&1;
+value=$?;
+expected=2;
+if [ $value = $expected ];
+    then
+        echo -e "Testing file73                     ${green}PASS${NC}";
+    else
+        echo -e "Testing file73                     ${red}FAIL, return code $value, expected $expected${NC}";
+fi
+
+./parser ./test/file74 > test0.outputs/file74.output 2>&1;
+value=$?;
+expected=2;
+if [ $value = $expected ];
+    then
+        echo -e "Testing file74                     ${green}PASS${NC}";
+    else
+        echo -e "Testing file74                     ${red}FAIL, return code $value, expected $expected${NC}";
+fi
+
+./parser ./test/file75 > test0.outputs/file75.output 2>&1;
+value=$?;
+expected=2;
+if [ $value = $expected ];
+    then
+        echo -e "Testing file75                     ${green}PASS${NC}";
+    else
+        echo -e "Testing file75                     ${red}FAIL, return code $value, expected $expected${NC}";
+fi
+
+./parser ./test/file76 > test0.outputs/file76.output 2>&1;
+value=$?;
+expected=2;
+if [ $value = $expected ];
+    then
+        echo -e "Testing file76                     ${green}PASS${NC}";
+    else
+        echo -e "Testing file76                     ${red}FAIL, return code $value, expected $expected${NC}";
+fi
+
+
+./parser ./test/file77 > test0.outputs/file77.output 2>&1;
+value=$?;
+expected=2;
+if [ $value = $expected ];
+    then
+        echo -e "Testing file77                     ${green}PASS${NC}";
+    else
+        echo -e "Testing file77                     ${red}FAIL, return code $value, expected $expected${NC}";
+fi
+
+./parser ./test/file78 > test0.outputs/file78.output 2>&1;
+value=$?;
+expected=2;
+if [ $value = $expected ];
+    then
+        echo -e "Testing file78                     ${green}PASS${NC}";
+    else
+        echo -e "Testing file78                     ${red}FAIL, return code $value, expected $expected${NC}";
+fi
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 exit 0;
