@@ -1,0 +1,9 @@
+{------------------- Detekcia syntaktickych chyb -----------------------------}
+{-------------------------- EXIT_CODE 2 --------------------------------------}
+{ Telo if podmienky neobsahuje ziadny prikaz                                  }
+
+begin
+	if false then;
+
+	write(false)
+end.
