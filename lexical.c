@@ -55,6 +55,11 @@ ERROR_MSG get_token ()
                     }
                     c=fgetc(fp);
                 }
+                if (c==EOF)
+                {
+                    token->identity=EndOfFile;
+                    return EVERYTHINGSOKAY;
+                }
             }
         }
 
