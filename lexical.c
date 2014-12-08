@@ -31,13 +31,33 @@ ERROR_MSG get_token ()
         }
         if (c=='{')                                                                             //preskakovanie komentarov
         {
-            while ((c=fgetc(fp))!='}' && (c!=EOF));
+            do
+            {
+            c=fgetc(fp);
+            }
+            while (c!='}' && c!=EOF);
             if (c==EOF)
             {
                 return LEXICAL_ERR;
             }
+            else
+            {
+                c=fgetc(fp);
+                while ((isspace(c)!=0 && c!=EOF) || (c=='{'))
+                {
+                    if (c=='{')
+                    {
+                        c=fgetc(fp);
+                        while (c!='}' && c!=EOF)
+                        {
+                            c=fgetc(fp);
+                        }
+                    }
+                    c=fgetc(fp);
+                }
+            }
         }
-        if (c=='}') c=fgetc(fp);
+
         if (isspace(c)!=0)                                                                      // preskoc medzery
         {
             while (isspace(c)!=0 && c!=EOF) c=fgetc(fp);
