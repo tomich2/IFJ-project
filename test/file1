@@ -7,5 +7,5 @@ Begin
  Num1 := 2;
  Write('Input number 2:'#10'');
  Num2 := 2;
- Sum := Num1 + Num2;  
+ Sum := Num1 + Num2
 End.
