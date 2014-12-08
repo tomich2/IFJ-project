@@ -775,7 +775,7 @@ if(Ac->rpt_size==MAX_RPTYPES)
                         varA=malloc(sizeof(*varA));
                         if(varA==NULL)return INTERN_INTERPRETATION_ERR;
                         varA->type=tVAR;
-                        varA->data.label=lab;
+                        varA->data.i=lab;
                         varA->data.s=NULL;
                         generator(inslistp,I_GOTO,varA,NULL,NULL);
                         // vygeneruj LAB2
@@ -788,7 +788,7 @@ if(Ac->rpt_size==MAX_RPTYPES)
                       varA=malloc(sizeof(*varA));
                       if(varA==NULL)return INTERN_INTERPRETATION_ERR;
                       varA->type=tVAR;
-                      varA->data.label=Ac->labIDcnt;
+                      varA->data.i=Ac->labIDcnt;
                       varA->data.s=NULL;
                       push(s_stack,&Ac->labIDcnt,-1);
                       Ac->labIDcnt++;
@@ -815,7 +815,7 @@ if(Ac->rpt_size==MAX_RPTYPES)
                       varA=malloc(sizeof(*varA));
                       if(varA==NULL)return INTERN_INTERPRETATION_ERR;
                       varA->type=tVAR;
-                      varA->data.label=Ac->labIDcnt;
+                      varA->data.i=Ac->labIDcnt;
                       varA->data.s=NULL;
                       push(s_stack,&Ac->labIDcnt,-1);
                       Ac->labIDcnt++;
@@ -839,7 +839,7 @@ if(Ac->rpt_size==MAX_RPTYPES)
                       varA=malloc(sizeof(*varA));
                       if(varA==NULL)return INTERN_INTERPRETATION_ERR;
                       varA->type=tVAR;
-                      varA->data.label=Ac->labIDcnt;
+                      varA->data.i=Ac->labIDcnt;
                       varA->data.s=NULL;
                       push(s_stack,&Ac->labIDcnt,-1);
                       Ac->labIDcnt++;
@@ -1045,7 +1045,7 @@ if(Ac->rpt_size==MAX_RPTYPES)
                         varA=malloc(sizeof(*varA));
                         if(varA==NULL)return INTERN_INTERPRETATION_ERR;
                         varA->type=tVAR;
-                        varA->data.label=lab;
+                        varA->data.i=lab;
                         varA->data.s=NULL;
                         generator(inslistp,I_GOTO,varA,NULL,NULL);
                         // vygeneruj LAB2
@@ -1058,7 +1058,7 @@ if(Ac->rpt_size==MAX_RPTYPES)
                       varA=malloc(sizeof(*varA));
                       if(varA==NULL)return INTERN_INTERPRETATION_ERR;
                       varA->type=tVAR;
-                      varA->data.label=Ac->labIDcnt;
+                      varA->data.i=Ac->labIDcnt;
                       varA->data.s=NULL;
                       push(s_stack,&Ac->labIDcnt,-1);
                       Ac->labIDcnt++;
@@ -1085,7 +1085,7 @@ if(Ac->rpt_size==MAX_RPTYPES)
                       varA=malloc(sizeof(*varA));
                       if(varA==NULL)return INTERN_INTERPRETATION_ERR;
                       varA->type=tVAR;
-                      varA->data.label=Ac->labIDcnt;
+                      varA->data.i=Ac->labIDcnt;
                       varA->data.s=NULL;
                       push(s_stack,&Ac->labIDcnt,-1);
                       Ac->labIDcnt++;
@@ -1109,7 +1109,7 @@ if(Ac->rpt_size==MAX_RPTYPES)
                       varA=malloc(sizeof(*varA));
                       if(varA==NULL)return INTERN_INTERPRETATION_ERR;
                       varA->type=tVAR;
-                      varA->data.label=Ac->labIDcnt;
+                      varA->data.i=Ac->labIDcnt;
                       varA->data.s=NULL;
                       push(s_stack,&Ac->labIDcnt,-1);
                       Ac->labIDcnt++;
