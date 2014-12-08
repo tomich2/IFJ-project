@@ -15,7 +15,7 @@
 #define mallConst 10
 
 
-void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList)
+void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lablist)
 {
 	bool run =true;
 	bool div0=false;
@@ -27,6 +27,7 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList)
 	bool bop1, bop2;
 	bop1=false;
 	bop2=false;
+	
 	
 	/**************pomocne**************/
 	
@@ -83,7 +84,7 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList)
 					{
 						op1->data.i=instr->a->data.i;
 						break;
-					}	
+					}		
 
 					case tREAL:
 					{
@@ -743,10 +744,23 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList)
 					break;
 				}
 				else if((op1->type)==tSTRING)
-				{	
-					printf("%s",op1->data.s);
-					break;
-				}
+                   {      
+                      if(strcmp(op1->data.s,"\n") == 0)
+                      printf("\\n");
+                                               
+                      else if(strcmp(op1->data.s,"\r") == 0)
+                      printf("\\r");
+ 
+                      else if(strcmp(op1->data.s,"\t") == 0)
+                      printf("\\t");
+ 
+                      else if(strcmp(op1->data.s,"\0") == 0)
+                      printf("\\0");
+ 
+                      else printf("%s",op1->data.s);
+                                               
+                                       
+                  }
 				
 				break;	
 			}
@@ -804,7 +818,37 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList)
 
 				break;
 			}
-
+			
+			
+			case I_LABEL:
+			{
+				break;
+			}
+			
+			
+			case I_GOTO:
+			{
+				if(op2 != NULL)
+				{
+					if(op2->type==tBOOLEAN)
+					{
+						if(op2->data.b==false)
+						{
+							break;
+						}
+					}
+					else break;
+				}
+				lablist->Active=lablist->First;
+				while(lablist->Active != NULL)
+				{
+					if(op1->data.i==lablist->Active->lab_ID)
+						instList->active=lablist->Active->ins_ptr;
+					lablist->Active=lablist->Active->next;
+				}
+				break;
+			}
+			
 			default:
 			break;
 			
