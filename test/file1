@@ -3,10 +3,9 @@ Var
     Num2:integer;
     Sum: integer;
 Begin 
- Write('Input number 1:'); 
+ Write('Input number 1:'#10''); 
  Num1 := 2;
- Write('Input number 2:');
+ Write('Input number 2:'#10'');
  Num2 := 2;
  Sum := Num1 + Num2;  
- Write(Sum)
 End.
