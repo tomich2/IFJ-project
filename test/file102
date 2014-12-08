@@ -1,0 +1,11 @@
+var
+  a: integer;
+
+function pes(a: real; b: string; c: integer; d: boolean): integer;
+begin
+  pes := 1
+end;
+
+begin
+  a := pes(3.14, 'great string')
+end.
