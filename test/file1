@@ -4,9 +4,9 @@ Var
     Sum: integer;
 Begin 
  Write('Input number 1:'); 
- Readln(Num1);
+ Num1 := 2;
  Write('Input number 2:');
- Readln(Num2);
+ Num2 := 2;
  Sum := Num1 + Num2;  
  Write(Sum)
 End.
