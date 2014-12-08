@@ -79,12 +79,16 @@ ERROR_MSG top_down()
     free_all(PItems,p_stack,0,0,glob_sym_table,loc_sym_table,Act,vflist,lablist,inslist,flist);
     return err;
   }
+  if(token->mem!=NULL)
+  {
+    if(token->identity!=DtString)strtoupper(&token->mem);
+    tmem_size=strlen(token->mem)+1;
+  }
   if(token->identity==EndOfFile) // syntakticka chyba=prazdny subor
   {
     free_all(PItems,p_stack,0,1,glob_sym_table,loc_sym_table,Act,vflist,lablist,inslist,flist);
     return SYNTAX_ERR;
   }
-    tmem_size=strlen(token->mem)+1;
   if(get_rule(START,PItems,&state,&is_func)) // podla pravidla vykona expanziu a pravu stranu pravidla ulozi do PItems
   {
     free_all(PItems,p_stack,0,1,glob_sym_table,loc_sym_table,Act,vflist,lablist,inslist,flist); // ak je prvy token nespravny=syntakticka chyba
