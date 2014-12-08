@@ -1,0 +1,6 @@
+var
+  a: string;
+
+begin
+  a := 'string' + 4;
+end.
