@@ -1,0 +1,11 @@
+var
+  a: integer;
+
+function pes(a: boolean): integer;
+begin
+  pes := 1
+end;
+
+begin
+  a := pes(1);
+end.
