@@ -7,6 +7,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <ctype.h>
 #include "parser.h"
 #include "rules.h"
 #include "stack.h"
@@ -229,6 +230,12 @@ if(Ac->rpt_size==MAX_RPTYPES)
               switch(token->identity)
               {
                 case ID:
+                      token->mem=strtoupper(token->mem);
+                      if(strcmp(token->mem,"COPY")==0 || strcmp(token->mem,"LENGTH")==0)
+                      {
+                        free(vdattmp);
+                        return SEMANTIC_ERR;
+                      }
                       Ac->act_varID=realloc(Ac->act_varID,tmems);
                       if(Ac->act_varID==NULL)
                       {
@@ -281,6 +288,10 @@ if(Ac->rpt_size==MAX_RPTYPES)
                       }
                       if(varfuncL_insertlast(vflistp,NULL,IDENTIFIER,Ac->act_varID,tBOOLEAN)!=0)return INTERN_INTERPRETATION_ERR;
                       break;
+                case KwFind:
+                  case KwSort:
+                      free(vdattmp);
+                      return SEMANTIC_ERR;
                 default: break;
               }
               free(vdattmp);
@@ -288,6 +299,9 @@ if(Ac->rpt_size==MAX_RPTYPES)
 
     case FUNC_ID:
               if(token->identity==OpLZat || token->identity==KwFunction)break;
+              if(token->identity==KwSort || token->identity==KwFind)return SEMANTIC_ERR;
+              token->mem=strtoupper(token->mem);
+              if(strcmp(token->mem,"COPY")==0 || strcmp(token->mem,"LENGTH")==0)return SEMANTIC_ERR;
               if(Ac->was_func==true)
               {
                 Ac->is_ret_err=true;
@@ -312,6 +326,11 @@ if(Ac->rpt_size==MAX_RPTYPES)
                 case ID:
                       Ac->act_varID=realloc(Ac->act_varID,tmems);
                       if(Ac->act_varID==NULL)return INTERN_INTERPRETATION_ERR;
+                      if(strcmp(token->mem,"COPY")==0 || strcmp(token->mem,"LENGTH")==0)
+                      {
+                        free(vdattmp);
+                        return SEMANTIC_ERR;
+                      }
                       strcpy(Ac->act_varID,token->mem);
                       if(strcmp(Ac->act_funcID,Ac->act_varID)==0)
                       {
@@ -371,6 +390,10 @@ if(Ac->rpt_size==MAX_RPTYPES)
                       Ac->rpt_size++;
                       strcat(Ac->act_rptypes,"b");
                       break;
+                case KwFind:
+                  case KwSort:
+                      free(vdattmp);
+                      return SEMANTIC_ERR;
                 default: break;
               }
               free(vdattmp);
@@ -478,6 +501,11 @@ if(Ac->rpt_size==MAX_RPTYPES)
                         free(vdattmp);
                         return INTERN_INTERPRETATION_ERR;
                       }
+                      if(strcmp(token->mem,"COPY")==0 || strcmp(token->mem,"LENGTH")==0)
+                      {
+                        free(vdattmp);
+                        return SEMANTIC_ERR;
+                      }
                       strcpy(Ac->act_varID,token->mem);
                       if(strcmp(Ac->act_funcID,Ac->act_varID)==0)
                       {
@@ -529,6 +557,10 @@ if(Ac->rpt_size==MAX_RPTYPES)
                       }
                       if(funcL_insertfirst(flistp,Ac->act_varID,tBOOLEAN,false)!=0)return INTERN_INTERPRETATION_ERR;
                       break;
+                case KwFind:
+                  case KwSort:
+                      free(vdattmp);
+                      return SEMANTIC_ERR;
                 default: break;
               }
               free(vdattmp);
@@ -652,17 +684,6 @@ if(Ac->rpt_size==MAX_RPTYPES)
                         vcmpd=cmp->data;
                         vcmpd->is_def=true;
                       }
-                      varA=malloc(sizeof(*varA));
-                      if(varA==NULL)return INTERN_INTERPRETATION_ERR;
-                      varA->data.s=malloc(TMPLEN*sizeof(char));
-                      if(varA->data.s==NULL)
-                      {
-                        free(varA);
-                        return INTERN_INTERPRETATION_ERR;
-                      }
-                      strcpy(varA->data.s,TMPUV);
-                      varA->type=tVAR;
-                      generator(inslistp,I_ASSIGN,varA,NULL,Ac->act_varID);
                       break;
                 case KwWrite:
                       Ac->is_write=true;
@@ -701,6 +722,17 @@ if(Ac->rpt_size==MAX_RPTYPES)
                           vcmpd=cmp->data;
                           if((vcmpd->type)!=*expt)return EXPRESSION_ERR;
                         }
+                        varA=malloc(sizeof(*varA));
+                        if(varA==NULL)return INTERN_INTERPRETATION_ERR;
+                        varA->data.s=malloc(TMPLEN*sizeof(char));
+                        if(varA->data.s==NULL)
+                        {
+                          free(varA);
+                          return INTERN_INTERPRETATION_ERR;
+                        }
+                        strcpy(varA->data.s,TMPUV);
+                        varA->type=tVAR;
+                        generator(inslistp,I_ASSIGN,varA,NULL,Ac->act_varID);
                       }
                       break;
                 case KwBegin:
@@ -746,6 +778,17 @@ if(Ac->rpt_size==MAX_RPTYPES)
                           vcmpd=cmp->data;
                           if((vcmpd->type)!=*expt)return EXPRESSION_ERR;
                         }
+                        varA=malloc(sizeof(*varA));
+                        if(varA==NULL)return INTERN_INTERPRETATION_ERR;
+                        varA->data.s=malloc(TMPLEN*sizeof(char));
+                        if(varA->data.s==NULL)
+                        {
+                          free(varA);
+                          return INTERN_INTERPRETATION_ERR;
+                        }
+                        strcpy(varA->data.s,TMPUV);
+                        varA->type=tVAR;
+                        generator(inslistp,I_ASSIGN,varA,NULL,Ac->act_varID);
                       }
                       if(Ac->is_else==true)Ac->ifbegcnt--;
                       if(Ac->is_while==true)Ac->whbegcnt--;
@@ -774,7 +817,7 @@ if(Ac->rpt_size==MAX_RPTYPES)
                         // GOTO LAB1 nepodmienene
                         varA=malloc(sizeof(*varA));
                         if(varA==NULL)return INTERN_INTERPRETATION_ERR;
-                        varA->type=tVAR;
+                        varA->type=tINTEGER;
                         varA->data.i=lab;
                         varA->data.s=NULL;
                         generator(inslistp,I_GOTO,varA,NULL,NULL);
@@ -787,7 +830,7 @@ if(Ac->rpt_size==MAX_RPTYPES)
                       // GOTO LAB1 podmienene, uloz LAB1 na zasobnik
                       varA=malloc(sizeof(*varA));
                       if(varA==NULL)return INTERN_INTERPRETATION_ERR;
-                      varA->type=tVAR;
+                      varA->type=tINTEGER;
                       varA->data.i=Ac->labIDcnt;
                       varA->data.s=NULL;
                       push(s_stack,&Ac->labIDcnt,-1);
@@ -814,7 +857,7 @@ if(Ac->rpt_size==MAX_RPTYPES)
                       // GOTO LAB2 nepodmienene, uloz LAB2 na zasobnik
                       varA=malloc(sizeof(*varA));
                       if(varA==NULL)return INTERN_INTERPRETATION_ERR;
-                      varA->type=tVAR;
+                      varA->type=tINTEGER;
                       varA->data.i=Ac->labIDcnt;
                       varA->data.s=NULL;
                       push(s_stack,&Ac->labIDcnt,-1);
@@ -838,7 +881,7 @@ if(Ac->rpt_size==MAX_RPTYPES)
                       // GOTO LAB2 podmienene, uloz LAB2 na zasobnik
                       varA=malloc(sizeof(*varA));
                       if(varA==NULL)return INTERN_INTERPRETATION_ERR;
-                      varA->type=tVAR;
+                      varA->type=tINTEGER;
                       varA->data.i=Ac->labIDcnt;
                       varA->data.s=NULL;
                       push(s_stack,&Ac->labIDcnt,-1);
@@ -984,17 +1027,6 @@ if(Ac->rpt_size==MAX_RPTYPES)
                       if(Ac->is_readln==true)Ac->is_readln=false;
                       break;
                 case OpPrir:
-                      varA=malloc(sizeof(*varA));
-                      if(varA==NULL)return INTERN_INTERPRETATION_ERR;
-                      varA->data.s=malloc(TMPLEN*sizeof(char));
-                      if(varA->data.s==NULL)
-                      {
-                        free(varA);
-                        return INTERN_INTERPRETATION_ERR;
-                      }
-                      strcpy(varA->data.s,TMPUV);
-                      varA->type=tVAR;
-                      generator(inslistp,I_ASSIGN,varA,NULL,Ac->act_varID);
                       cmp=(Hitem*)htab_search(gsymtab,Ac->act_varID);
                       if(cmp->type==IDENTIFIER)
                       {
@@ -1008,6 +1040,17 @@ if(Ac->rpt_size==MAX_RPTYPES)
                         cmp=(Hitem*)htab_search(gsymtab,Ac->act_varID);
                         vcmpd=cmp->data;
                         if(vcmpd->type!=*expt)return EXPRESSION_ERR;
+                        varA=malloc(sizeof(*varA));
+                        if(varA==NULL)return INTERN_INTERPRETATION_ERR;
+                        varA->data.s=malloc(TMPLEN*sizeof(char));
+                        if(varA->data.s==NULL)
+                        {
+                          free(varA);
+                          return INTERN_INTERPRETATION_ERR;
+                        }
+                        strcpy(varA->data.s,TMPUV);
+                        varA->type=tVAR;
+                        generator(inslistp,I_ASSIGN,varA,NULL,Ac->act_varID);
                       }
                       break;
                 case KwEnd:
@@ -1016,6 +1059,17 @@ if(Ac->rpt_size==MAX_RPTYPES)
                         cmp=(Hitem*)htab_search(gsymtab,Ac->act_varID);
                         vcmpd=cmp->data;
                         if(vcmpd->type!=*expt)return EXPRESSION_ERR;
+                        varA=malloc(sizeof(*varA));
+                        if(varA==NULL)return INTERN_INTERPRETATION_ERR;
+                        varA->data.s=malloc(TMPLEN*sizeof(char));
+                        if(varA->data.s==NULL)
+                        {
+                          free(varA);
+                          return INTERN_INTERPRETATION_ERR;
+                        }
+                        strcpy(varA->data.s,TMPUV);
+                        varA->type=tVAR;
+                        generator(inslistp,I_ASSIGN,varA,NULL,Ac->act_varID);
                       }
                       if(Ac->is_else==true)Ac->ifbegcnt--;
                       if(Ac->is_while==true)Ac->whbegcnt--;
@@ -1044,7 +1098,7 @@ if(Ac->rpt_size==MAX_RPTYPES)
                         // GOTO LAB1 nepodmienene
                         varA=malloc(sizeof(*varA));
                         if(varA==NULL)return INTERN_INTERPRETATION_ERR;
-                        varA->type=tVAR;
+                        varA->type=tINTEGER;
                         varA->data.i=lab;
                         varA->data.s=NULL;
                         generator(inslistp,I_GOTO,varA,NULL,NULL);
@@ -1057,7 +1111,7 @@ if(Ac->rpt_size==MAX_RPTYPES)
                       // GOTO LAB1 podmienene, uloz LAB1 na zasobnik
                       varA=malloc(sizeof(*varA));
                       if(varA==NULL)return INTERN_INTERPRETATION_ERR;
-                      varA->type=tVAR;
+                      varA->type=tINTEGER;
                       varA->data.i=Ac->labIDcnt;
                       varA->data.s=NULL;
                       push(s_stack,&Ac->labIDcnt,-1);
@@ -1084,7 +1138,7 @@ if(Ac->rpt_size==MAX_RPTYPES)
                       // GOTO LAB2 nepodmienene, uloz LAB2 na zasobnik
                       varA=malloc(sizeof(*varA));
                       if(varA==NULL)return INTERN_INTERPRETATION_ERR;
-                      varA->type=tVAR;
+                      varA->type=tINTEGER;
                       varA->data.i=Ac->labIDcnt;
                       varA->data.s=NULL;
                       push(s_stack,&Ac->labIDcnt,-1);
@@ -1108,7 +1162,7 @@ if(Ac->rpt_size==MAX_RPTYPES)
                       // GOTO LAB2 podmienene, uloz LAB2 na zasobnik
                       varA=malloc(sizeof(*varA));
                       if(varA==NULL)return INTERN_INTERPRETATION_ERR;
-                      varA->type=tVAR;
+                      varA->type=tINTEGER;
                       varA->data.i=Ac->labIDcnt;
                       varA->data.s=NULL;
                       push(s_stack,&Ac->labIDcnt,-1);
@@ -1267,4 +1321,16 @@ int get_type(char *str,int pos)
           return -1;
   }
   return -1;
+}
+
+char *strtoupper(char *string)
+{
+  int len=strlen(string);
+  char *newstr=malloc(len+1);
+  for(int i=0;i<=len;i++)
+  {
+    newstr[i]=toupper(string[i]);
+  }
+  free(string);
+  return newstr;
 }
