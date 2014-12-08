@@ -5,6 +5,7 @@ begin
    while  a < 20  do
    begin
       write('value of a: ', a);
+      write('#10');
       a := a + 1
    end
 end.
