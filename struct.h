@@ -52,7 +52,7 @@ typedef struct Instruction
 	InstName Iname;
 	struct Variable *a;
 	struct Variable *b;
-	void *res;
+	char *res;
 }tInstruction;
 
 
@@ -63,7 +63,7 @@ typedef struct Instruction
 typedef struct
 {
 		int i;
-		int label;
+	//	int label;	ziadny label tu nebude
 		double r;
 		char *s;
 		bool b;
