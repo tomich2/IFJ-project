@@ -1,0 +1,13 @@
+{------------------- Detekcia syntaktickych chyb -----------------------------}
+{-------------------------- EXIT_CODE 2 --------------------------------------}
+{ Dva if prikazy nie su oddelene bodkociarkou                                 }
+
+begin
+	if true then
+		begin
+		end
+	
+	if false then
+		begin
+		end
+end.
