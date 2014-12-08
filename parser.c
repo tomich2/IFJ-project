@@ -182,7 +182,7 @@ i=0;
           return SYNTAX_ERR;
         }
       }
-    //fprintf(stderr,"debug..token: %s state: %d\n", token->mem,state);
+    fprintf(stderr,"debug..token: %s state: %d\n", token->mem,state);
     free(token->mem);
     token->mem=NULL;
     expr_type=tERR;
@@ -192,7 +192,11 @@ i=0;
       free_all(PItems,p_stack,1,0,glob_sym_table,loc_sym_table,Act,vflist,lablist,inslist,flist);
       return err;
     }
-    if(token->mem!=NULL)tmem_size=strlen(token->mem)+1;
+    if(token->mem!=NULL)
+    {
+      if(token->identity!=DtString)strtoupper(&token->mem);
+      tmem_size=strlen(token->mem)+1;
+    }
     }
   }
   if(token->identity!=EndOfFile) // ak zdrojovy subor obsahuje nejake znaky po ukoncujucej bodke
@@ -200,7 +204,7 @@ i=0;
    free_all(PItems,p_stack,0,1,glob_sym_table,loc_sym_table,Act,vflist,lablist,inslist,flist);
    return SYNTAX_ERR;
   }
-  interpretLoop(inslist,vflist);
+  interpretLoop(inslist,vflist,lablist);
   free_all(PItems,p_stack,0,0,glob_sym_table,loc_sym_table,Act,vflist,lablist,inslist,flist);
   return EVERYTHINGSOKAY;
 }
@@ -230,7 +234,6 @@ if(Ac->rpt_size==MAX_RPTYPES)
               switch(token->identity)
               {
                 case ID:
-                      token->mem=strtoupper(token->mem);
                       if(strcmp(token->mem,"COPY")==0 || strcmp(token->mem,"LENGTH")==0)
                       {
                         free(vdattmp);
@@ -300,7 +303,6 @@ if(Ac->rpt_size==MAX_RPTYPES)
     case FUNC_ID:
               if(token->identity==OpLZat || token->identity==KwFunction)break;
               if(token->identity==KwSort || token->identity==KwFind)return SEMANTIC_ERR;
-              token->mem=strtoupper(token->mem);
               if(strcmp(token->mem,"COPY")==0 || strcmp(token->mem,"LENGTH")==0)return SEMANTIC_ERR;
               if(Ac->was_func==true)
               {
@@ -1323,14 +1325,11 @@ int get_type(char *str,int pos)
   return -1;
 }
 
-char *strtoupper(char *string)
+void strtoupper(char **string)
 {
-  int len=strlen(string);
-  char *newstr=malloc(len+1);
+  int len=strlen(*string);
   for(int i=0;i<=len;i++)
   {
-    newstr[i]=toupper(string[i]);
+    *((*string)+i)=toupper(*((*string)+i));
   }
-  free(string);
-  return newstr;
 }
