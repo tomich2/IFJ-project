@@ -368,7 +368,7 @@ ERROR_MSG ExprParse( htab_t *glob, htab_t *loc, T_vartype *dt, tListOfInstr *Ins
 			 in.value.term.type=token->identity;
 			 push(&stack, &in , -1);
 			 if ((err=get_token())!=0) return err;
-	 		 
+	 		 strtoupper(&token->mem);
 			 tmp_top=GetTerm(&stack, 0);
 		if((converttooprs(token->identity,true)>=4) && (converttooprs(token->identity,true)<=9)) STab.is_cmp=true;
 		if((converttooprs(token->identity,true)==ELpar) && (converttooprs(tmp_top->value.term.type,true)==EId)) STab.is_func=true;
@@ -397,7 +397,7 @@ ERROR_MSG ExprParse( htab_t *glob, htab_t *loc, T_vartype *dt, tListOfInstr *Ins
 			if((converttooprs(token->identity,true)>=4) && (converttooprs(token->identity,true)<=9)) STab.is_cmp=true;
 			if((converttooprs(token->identity,true)==EComma) && (converttooprs(top->value.term.type,true)==ELpar)) STab.is_comm=true;
 			 if ((err=get_token())!=0) return err;
-			 
+			 strtoupper(&token->mem);
 			 tmp_top=GetTerm(&stack, 0);
 			
 			
