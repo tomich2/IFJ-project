@@ -818,7 +818,7 @@ ERROR_MSG ExprSem(int rule, nont *op1, nont *op2, Tabs *STab)
 				if((strcmp(op1->index,TMPU)!=0) && (strcmp(op1->index,TMPU2)!=0)) free(op1->index);
 				if((strcmp(op2->index,TMPU)!=0) && (strcmp(op2->index,TMPU2)!=0)) free(op2->index);
 				fprintf(stderr,"typy parametrov funkcie sa nezhoduju\n");
-				return SEMANTIC_ERR;
+				return EXPRESSION_ERR;
 			}
 			
 			op1->d_type=get_type(((T_FuncData *) ((Hitem *) tmp)->data)->ret_par_types,0);
@@ -894,7 +894,7 @@ ERROR_MSG ExprSem(int rule, nont *op1, nont *op2, Tabs *STab)
 			{	
 				free(str);
 				fprintf(stderr,"typy parametrov funkcie sa nezhoduju\n");
-				return SEMANTIC_ERR;
+				return EXPRESSION_ERR;
 			}
 			free(str);
 			
