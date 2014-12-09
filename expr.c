@@ -337,6 +337,8 @@ ERROR_MSG ExprParse( htab_t *glob, htab_t *loc, T_vartype *dt, tListOfInstr *Ins
   T_ParserItem in;
   T_ParserItem *top;
   T_ParserItem *tmp_top;
+  Variable *a;
+  void *tmp=NULL;
 
   in.type=TERMINAL;
   in.value.term.type=EndOfFile;
@@ -446,7 +448,11 @@ ERROR_MSG ExprParse( htab_t *glob, htab_t *loc, T_vartype *dt, tListOfInstr *Ins
 		}
 
 	}
-MakeVariable(&a,in.value.nonterm.d_type,in.value.nonterm.index);
+
+if((tmp=htab_search(STab.loc,(char *) in.value.nonterm.index))==NULL) tmp=htab_search(STab.glob,(char *) in.value.nonterm.index);
+if(tmp==NULL) MakeVariable(&a,in.value.nonterm.d_type,in.value.nonterm.index);
+else MakeVariable(&a,tVAR,in.value.nonterm.index); //doriesit chybove stavy
+
 generator(STab.InstL,I_ASSIGN,a,NULL,TMPU);
 if((strcmp(in.value.nonterm.index,TMPU)!=0) && (strcmp(in.value.nonterm.index,TMPU2)!=0) && (strcmp(in.value.nonterm.index,TMParam)!=0)) free(in.value.nonterm.index);
 //if(in.value.nonterm.index!=NULL) free(in.value.nonterm.index);
