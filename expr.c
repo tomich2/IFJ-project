@@ -339,6 +339,7 @@ ERROR_MSG ExprParse( htab_t *glob, htab_t *loc, T_vartype *dt, tListOfInstr *Ins
   T_ParserItem *tmp_top;
   Variable *a;
   void *tmp=NULL;
+  bool is_exp=false;
 
   in.type=TERMINAL;
   in.value.term.type=EndOfFile;
@@ -423,7 +424,7 @@ ERROR_MSG ExprParse( htab_t *glob, htab_t *loc, T_vartype *dt, tListOfInstr *Ins
 			 top=GetTerm(&stack, 0);
 			 break;
 		 case R:
-			
+			is_exp=true;
 			 if ((reduct=Reduction(&stack,&in,&STab))>0) 
 				{
 				 
@@ -448,16 +449,18 @@ ERROR_MSG ExprParse( htab_t *glob, htab_t *loc, T_vartype *dt, tListOfInstr *Ins
 		}
 
 	}
-
-if((tmp=htab_search(STab.loc,(char *) in.value.nonterm.index))==NULL) tmp=htab_search(STab.glob,(char *) in.value.nonterm.index);
-if(tmp==NULL)
+if(is_exp)
 {
-	MakeVariable(&a,in.value.nonterm.d_type,in.value.nonterm.index);
-	generator(STab.InstL,I_ASSIGN,a,NULL,TMPU);
+	if((tmp=htab_search(STab.loc,(char *) in.value.nonterm.index))==NULL) tmp=htab_search(STab.glob,(char *) in.value.nonterm.index);
+	if(tmp==NULL)
+	{
+		MakeVariable(&a,in.value.nonterm.d_type,in.value.nonterm.index);
+		generator(STab.InstL,I_ASSIGN,a,NULL,TMPU);
+	}
+	if((strcmp(in.value.nonterm.index,TMPU)!=0) && (strcmp(in.value.nonterm.index,TMPU2)!=0) && (strcmp(in.value.nonterm.index,TMParam)!=0)) free(in.value.nonterm.index);
+	//if(in.value.nonterm.index!=NULL) free(in.value.nonterm.index);
+	*dt=in.value.nonterm.d_type;
 }
-if((strcmp(in.value.nonterm.index,TMPU)!=0) && (strcmp(in.value.nonterm.index,TMPU2)!=0) && (strcmp(in.value.nonterm.index,TMParam)!=0)) free(in.value.nonterm.index);
-//if(in.value.nonterm.index!=NULL) free(in.value.nonterm.index);
-*dt=in.value.nonterm.d_type;
 S_erase(&stack);
 return EVERYTHINGSOKAY;
 }
@@ -764,7 +767,7 @@ ERROR_MSG ExprSem(int rule, nont *op1, nont *op2, Tabs *STab)
 				generator(STab->InstL,I_PUSH,a,NULL,NULL);
 
 				generator(STab->InstL,I_LENGTH,NULL,NULL,res);
-				return vst ? EVERYTHINGSOKAY:SEMANTIC_ERR;
+				return vst ? EVERYTHINGSOKAY:EXPRESSION_ERR;
 			}
 			
 			if(strcmp(op2->index,"SORT")==0) 
@@ -782,7 +785,7 @@ ERROR_MSG ExprSem(int rule, nont *op1, nont *op2, Tabs *STab)
 				generator(STab->InstL,I_PUSH,a,NULL,NULL);
 
 				generator(STab->InstL,I_SORT,NULL,NULL,res);
-				return vst ? EVERYTHINGSOKAY:SEMANTIC_ERR;
+				return vst ? EVERYTHINGSOKAY:EXPRESSION_ERR;
 			}
 
 			tmp=htab_search(STab->glob,op2->index);
@@ -842,7 +845,7 @@ ERROR_MSG ExprSem(int rule, nont *op1, nont *op2, Tabs *STab)
 				if((strcmp(op1->index,TMPU)!=0) && (strcmp(op1->index,TMPU2)!=0)) free(op2->index);
 				op1->index=res;
 				generator(STab->InstL,I_FIND,NULL,NULL,res);
-				return vst ? EVERYTHINGSOKAY:SEMANTIC_ERR;
+				return vst ? EVERYTHINGSOKAY:EXPRESSION_ERR;
 			}
 			
 			if(strcmp(op2->index,"COPY")==0) 
@@ -853,7 +856,7 @@ ERROR_MSG ExprSem(int rule, nont *op1, nont *op2, Tabs *STab)
 				if((strcmp(op1->index,TMPU)!=0) && (strcmp(op1->index,TMPU2)!=0)) free(op2->index);
 				op1->index=res;
 				generator(STab->InstL,I_COPY,NULL,NULL,res);
-				return vst ? EVERYTHINGSOKAY:SEMANTIC_ERR;
+				return vst ? EVERYTHINGSOKAY:EXPRESSION_ERR;
 			}
 			tmp=htab_search(STab->glob,op2->index);
 			if(tmp==NULL)
