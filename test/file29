@@ -1,5 +1,5 @@
 var
   _string : string;
 begin
-  _string := 'So bad...'#32''
+  _string := 'So bad...'#-32''
 end.
