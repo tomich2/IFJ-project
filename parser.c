@@ -44,6 +44,10 @@ ERROR_MSG top_down()
   htab_t *glob_sym_table=htab_init(GTAB_SIZE); // inicializacia globalnej tabulky symbolov
   htab_t *loc_sym_table=htab_init(GTAB_SIZE); // inicializacia lokalnej tabulky symbolov
 
+  err=htab_new(glob_sym_table,TMPU,IDENTIFIER,NULL,0);
+  err=htab_new(glob_sym_table,TMPU2,IDENTIFIER,NULL,0);
+  err=htab_new(glob_sym_table,TMParam,IDENTIFIER,NULL,0);
+
   T_Actual *Act=calloc(1,sizeof(*Act)); // pomocna struktura pre semantiku
   Act->act_funcID=NULL;
   Act->act_varID=NULL;
@@ -209,6 +213,7 @@ i=0;
    return SYNTAX_ERR;
   }
   interpretLoop(inslist,vflist,lablist);
+ // showList(inslist);
   free_all(PItems,p_stack,0,0,glob_sym_table,loc_sym_table,Act,vflist,lablist,inslist,flist);
   return EVERYTHINGSOKAY;
 }
@@ -744,7 +749,11 @@ if(Ac->rpt_size==MAX_RPTYPES)
                 case KwBegin:
                       if(Ac->begincnt==0)
                       {
-                        ins_adress=generator(inslistp,I_LABEL,NULL,NULL,NULL);
+                        varA=malloc(sizeof(*varA));
+                        if(varA==NULL)return INTERN_INTERPRETATION_ERR;
+                        varA->type=tINTEGER;
+                        varA->data.i=Ac->labIDcnt;
+                        ins_adress=generator(inslistp,I_LABEL,varA,NULL,NULL);
                         labL_insertlast(lablistp,ins_adress,Ac->labIDcnt);
                         Ac->labIDcnt++;
                       }
@@ -804,10 +813,14 @@ if(Ac->rpt_size==MAX_RPTYPES)
                         Ac->ifbegcnt=*((int*)top(ib_stack));
                         pop(ib_stack);
                         // LAB 2
-                        lab=*((int*)top(s_stack));
+                        lab2=*((int*)top(s_stack));
                         pop(s_stack);
-                        ins_adress=generator(inslistp,I_LABEL,NULL,NULL,NULL);
-                        labL_insertlast(lablistp,ins_adress,lab);
+                        varA=malloc(sizeof(*varA));
+                        if(varA==NULL)return INTERN_INTERPRETATION_ERR;
+                        varA->type=tINTEGER;
+                        varA->data.i=lab2;
+                        ins_adress=generator(inslistp,I_LABEL,varA,NULL,NULL);
+                        labL_insertlast(lablistp,ins_adress,lab2);
                       }
                       if(Ac->whbegcnt==0 && Ac->is_while==true) // koniec prikazu while
                       {
@@ -828,7 +841,11 @@ if(Ac->rpt_size==MAX_RPTYPES)
                         varA->data.s=NULL;
                         generator(inslistp,I_GOTO,varA,NULL,NULL);
                         // vygeneruj LAB2
-                        ins_adress=generator(inslistp,I_LABEL,NULL,NULL,NULL);
+                        varA=malloc(sizeof(*varA));
+                        if(varA==NULL)return INTERN_INTERPRETATION_ERR;
+                        varA->type=tINTEGER;
+                        varA->data.i=lab2;
+                        ins_adress=generator(inslistp,I_LABEL,varA,NULL,NULL);
                         labL_insertlast(lablistp,ins_adress,lab2);
                       }
                       break;
@@ -870,13 +887,21 @@ if(Ac->rpt_size==MAX_RPTYPES)
                       Ac->labIDcnt++;
                       generator(inslistp,I_GOTO,varA,NULL,NULL);
                       // vygeneruj LAB1
-                      ins_adress=generator(inslistp,I_LABEL,NULL,NULL,NULL);
+                      varA=malloc(sizeof(*varA));
+                      if(varA==NULL)return INTERN_INTERPRETATION_ERR;
+                      varA->type=tINTEGER;
+                      varA->data.i=lab;
+                      ins_adress=generator(inslistp,I_LABEL,varA,NULL,NULL);
                       labL_insertlast(lablistp,ins_adress,lab);
                       break;
                 case KwWhile:
                       Ac->is_while=true;
                       // LAB 1, uloz LAB1 na zasobnik
-                      ins_adress=generator(inslistp,I_LABEL,NULL,NULL,NULL);
+                      varA=malloc(sizeof(*varA));
+                      if(varA==NULL)return INTERN_INTERPRETATION_ERR;
+                      varA->type=tINTEGER;
+                      varA->data.i=Ac->labIDcnt;
+                      ins_adress=generator(inslistp,I_LABEL,varA,NULL,NULL);
                       labL_insertlast(lablistp,ins_adress,Ac->labIDcnt);
                       push(s_stack,&Ac->labIDcnt,-1);
                       Ac->labIDcnt++;
@@ -1014,7 +1039,11 @@ if(Ac->rpt_size==MAX_RPTYPES)
                 case KwBegin:
                       if(Ac->begincnt==0)
                       {
-                        ins_adress=generator(inslistp,I_LABEL,NULL,NULL,NULL);
+                        varA=malloc(sizeof(*varA));
+                        if(varA==NULL)return INTERN_INTERPRETATION_ERR;
+                        varA->type=tINTEGER;
+                        varA->data.i=Ac->labIDcnt;
+                        ins_adress=generator(inslistp,I_LABEL,varA,NULL,NULL);
                         labL_insertlast(lablistp,ins_adress,Ac->labIDcnt);
                         Ac->labIDcnt++;
                       }
@@ -1087,7 +1116,11 @@ if(Ac->rpt_size==MAX_RPTYPES)
                         // LAB 2
                         lab=*((int*)top(s_stack));
                         pop(s_stack);
-                        ins_adress=generator(inslistp,I_LABEL,NULL,NULL,NULL);
+                        varA=malloc(sizeof(*varA));
+                        if(varA==NULL)return INTERN_INTERPRETATION_ERR;
+                        varA->type=tINTEGER;
+                        varA->data.i=lab;
+                        ins_adress=generator(inslistp,I_LABEL,varA,NULL,NULL);
                         labL_insertlast(lablistp,ins_adress,lab);
                       }
                       if(Ac->whbegcnt==0 && Ac->is_while==true) // koniec prikazu while
@@ -1109,7 +1142,11 @@ if(Ac->rpt_size==MAX_RPTYPES)
                         varA->data.s=NULL;
                         generator(inslistp,I_GOTO,varA,NULL,NULL);
                         // vygeneruj LAB2
-                        ins_adress=generator(inslistp,I_LABEL,NULL,NULL,NULL);
+                        varA=malloc(sizeof(*varA));
+                        if(varA==NULL)return INTERN_INTERPRETATION_ERR;
+                        varA->type=tINTEGER;
+                        varA->data.i=lab2;
+                        ins_adress=generator(inslistp,I_LABEL,varA,NULL,NULL);
                         labL_insertlast(lablistp,ins_adress,lab2);
                       }
                       break;
@@ -1151,13 +1188,21 @@ if(Ac->rpt_size==MAX_RPTYPES)
                       Ac->labIDcnt++;
                       generator(inslistp,I_GOTO,varA,NULL,NULL);
                       // vygeneruj LAB1
-                      ins_adress=generator(inslistp,I_LABEL,NULL,NULL,NULL);
+                      varA=malloc(sizeof(*varA));
+                      if(varA==NULL)return INTERN_INTERPRETATION_ERR;
+                      varA->type=tINTEGER;
+                      varA->data.i=lab;
+                      ins_adress=generator(inslistp,I_LABEL,varA,NULL,NULL);
                       labL_insertlast(lablistp,ins_adress,lab);
                       break;
                 case KwWhile:
                       Ac->is_while=true;
                       // LAB 1, uloz LAB1 na zasobnik
-                      ins_adress=generator(inslistp,I_LABEL,NULL,NULL,NULL);
+                      varA=malloc(sizeof(*varA));
+                      if(varA==NULL)return INTERN_INTERPRETATION_ERR;
+                      varA->type=tINTEGER;
+                      varA->data.i=Ac->labIDcnt;
+                      ins_adress=generator(inslistp,I_LABEL,varA,NULL,NULL);
                       labL_insertlast(lablistp,ins_adress,Ac->labIDcnt);
                       push(s_stack,&Ac->labIDcnt,-1);
                       Ac->labIDcnt++;
