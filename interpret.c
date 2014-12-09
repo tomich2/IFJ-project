@@ -19,7 +19,6 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 {
 	bool run =true;
 	bool div0=false;
-	int len;
 	struct FrameVariable *op1,*op2,*op3;
 	tInstruction *instr;
 	tListofVariables *LocalFrame=NULL;
@@ -27,6 +26,10 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 	bool bop1, bop2;
 	bop1=false;
 	bop2=false;
+	Stack Fstack;
+	init(&Fstack,sizeof(struct tListofVariables*));
+	Stack stack;
+	init(&stack,sizeof(struct tListofVariables*));
 	
 	
 	/**************pomocne**************/
@@ -712,10 +715,9 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 				{	
 					if (instr->a->type==tVAR)
 					{
-						len=strlen(op1->data.s);
 						if(op3->data.s != NULL)
 							free(op3->data.s);
-						op3->data.s=malloc(len*sizeof(char));
+						op3->data.s=malloc(strlen(op1->data.s)+1);
 						strcpy(op3->data.s,op1->data.s);
 					}
 					else op3->data.s=op1->data.s;
@@ -735,7 +737,7 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 				}
 				else if((op1->type)==tREAL)
 				{	
-					printf("%f",op1->data.r );
+					printf("%g",op1->data.r );
 					break;
 				}
 				else if((op1->type)==tBOOLEAN)
@@ -797,6 +799,20 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 						op3->data.r=num;	
 					} 
 
+					else if (op3->type == tBOOLEAN)
+					
+					{
+						Error(4);
+						break;
+					}
+
+					else 
+						
+						{
+								Error(4);
+								break;
+						}
+
 					free(pStr);
 					pStr = NULL;
 					
@@ -819,7 +835,7 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 				{
 					if(op2->type==tBOOLEAN)
 					{
-						if(op2->data.b==false)
+						if(op2->data.b==true)
 						{
 							break;
 						}
@@ -835,6 +851,182 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 				}
 				break;
 			}
+			case I_CALL:
+			{
+				if(LocalFrame != NULL)
+					push(&Fstack,&LocalFrame,-1);
+				LocalFrame=createFrame(op1->data.s, varList);
+				
+				LocalFrame->active=LocalFrame->first;
+				while(LocalFrame->active->param==false)	//najde prvy param v zozname
+					LocalFrame->active=LocalFrame->active->nextvar;
+					
+				while(LocalFrame->active->param==true)
+				{
+					switch(LocalFrame->active->type)
+					{
+						case tINTEGER:
+						LocalFrame->active->data.i=*(int *)top(&stack);
+						pop(&stack);
+						break;
+
+						case tREAL:
+						LocalFrame->active->data.r=*(double *)top(&stack);
+						pop(&stack);
+						break;
+
+						case tBOOLEAN:
+						LocalFrame->active->data.b=*(bool *)top(&stack);
+						pop(&stack);
+						break;
+
+						case tSTRING:
+						/*LocalFrame->active->data.s=malloc
+						LocalFrame->active->data.s=top(&stack);*/
+						pop(&stack);
+						break;
+
+						default:
+						break;
+
+					}
+					LocalFrame->active=LocalFrame->active->nextvar;
+				}
+				
+				break;
+			}
+			
+			case I_RETURN:
+			{
+				frameFree(LocalFrame);
+				LocalFrame=*(tListofVariables **)top(&Fstack);
+				pop(&Fstack);
+				break;
+			}
+			
+			case I_PUSH:
+			{
+				switch(op1->type)
+				{
+					case tINTEGER:
+					push(&stack,&op1->data.i,sizeof(int));
+					break;
+
+					case tREAL:
+					push(&stack,&op1->data.r,sizeof(double));
+					break;
+
+					case tBOOLEAN:
+					push(&stack,&op1->data.b,sizeof(bool));
+					break;
+
+					case tSTRING:
+				//	push(&stack,&op1->data.s,sizeof(char)* (strlen(op1->data.s)));
+					break;
+
+					default:
+					break;
+
+				}
+				
+				break;
+			}
+
+			case I_LENGTH:
+			{
+				if((op1->type) == tSTRING)
+				{
+					if ((op1->data.s) != NULL)
+					{					
+
+						if((op2->type) == tINTEGER)
+							{	
+								op2->data.i=length_func(op1->data.s);
+								if((op2 == tmp1) || (op2 == tmp2) || (op2 == tmparam))
+								op2->type=tINTEGER;
+
+							}
+					
+							else
+							{
+								Error(4);
+								break;
+							}
+					} 
+
+					//else 
+				
+				} 
+
+				else 
+					{
+						Error(4);
+						break;
+					}
+
+				break;
+			}
+
+			case I_SORT:
+			{
+
+				if((op1->type) == tSTRING)
+				{
+					if ((op1->data.s) != NULL)
+					{
+
+						if((op2->type) == tSTRING)
+							{	
+								op2->data.s=sort_func(op1->data.s);
+								if((op2 == tmp1) || (op2 == tmp2) || (op2 == tmparam))
+								op2->type=tSTRING;
+
+							}
+
+							else
+							
+								{
+									Error(4);
+									break;
+								}
+					
+					}
+				}
+
+				else
+					
+					{
+						Error(4);
+						break;
+					}
+					break;
+			}
+
+			case I_FIND:
+			{
+				if(((op1->type) == tSTRING) && ((op2->type) == tSTRING) && ((op3->type) == tINTEGER)) 
+
+					{
+						if (((op1->data.s) != NULL) && ((op2->data.s) != NULL))
+						{
+							
+							op3->data.i=find_func((op1->data.s),(op2->data.s));	
+							if((op3 == tmp1) || (op3 == tmp2) || (op3 == tmparam))
+							op3->type=tINTEGER;
+						}
+					}
+				
+				else 
+					
+					{
+						Error(4);
+						break;
+					}
+
+				break;
+			}
+			
+				
 			
 			default:
 			break;
@@ -875,7 +1067,7 @@ if(div0==true)
 	
 }  //KONIEC FUNKCIE INTERPRETATION LOOP
 
-void printchar(unsigned char theChar)
+	void printchar(unsigned char theChar)
 	{
 		switch (theChar)
 		{
