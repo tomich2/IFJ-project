@@ -149,9 +149,9 @@ char * sort_func (char * str1)
 }
 
 
-unsigned int hash_function(const char *str, unsigned long htab_size)
+unsigned long hash_function(const char *str, unsigned long htab_size)
 {
- unsigned int h=0;
+ unsigned long h=0;
  const unsigned char *p;
  for(p=(const unsigned char*)str; *p!='\0'; p++)
  h = 65599*h + *p;
@@ -175,7 +175,7 @@ htab_t *htab_init(unsigned long size)
 
 void *htab_search(htab_t *t,char *key)
 {
- unsigned int hash=hash_function(key,t->htab_size);
+ unsigned long hash=hash_function(key,t->htab_size);
  Hitem *item=t->ptrs[hash]; //ziskanie umiestnenia pomocou hash funkcie
 
  while(item!=NULL)
@@ -213,19 +213,13 @@ int htab_new(htab_t *t,char *key,types type, void *data, size_t data_size)
  new->type=type;
  new->next=NULL; // inicializacia dalsieho zaznamu
 
- unsigned int hash=hash_function(key,t->htab_size);
+ unsigned long hash=hash_function(key,t->htab_size);
  if (t->ptrs[hash]==NULL) t->ptrs[hash]=new;
  else
  {
 	Hitem *item=t->ptrs[hash];
-	if(strcmp(item->key,key)==0)
-		{
-			free(new->key);
-			free(new->data);
-			free(new);
-			return SEMANTIC_ERR;
-		}
-	while(item->next!=NULL)
+
+	while (item->next!=NULL)
 	{
 		if(strcmp(item->key,key)==0)
 		{
@@ -236,6 +230,13 @@ int htab_new(htab_t *t,char *key,types type, void *data, size_t data_size)
 		}
 		item=item->next;
 	}
+	if(strcmp(item->key,key)==0)
+		{
+			free(new->key);
+			free(new->data);
+			free(new);
+			return SEMANTIC_ERR;
+		}
 	item->next=new; //pripojenie polozky do tabulky
  }
  return EVERYTHINGSOKAY;
