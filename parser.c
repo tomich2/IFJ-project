@@ -187,6 +187,7 @@ i=0;
         else // terminaly sa nezhoduju=syntakticka chyba
         {
           free_all(PItems,p_stack,1,1,glob_sym_table,loc_sym_table,Act,vflist,lablist,inslist,flist);
+          if(token->identity==KwSort || token->identity==KwFind)return SEMANTIC_ERR;
           return SYNTAX_ERR;
         }
       }
@@ -212,8 +213,9 @@ i=0;
    free_all(PItems,p_stack,0,1,glob_sym_table,loc_sym_table,Act,vflist,lablist,inslist,flist);
    return SYNTAX_ERR;
   }
+   showList(inslist);
   interpretLoop(inslist,vflist,lablist);
- // showList(inslist);
+
   free_all(PItems,p_stack,0,0,glob_sym_table,loc_sym_table,Act,vflist,lablist,inslist,flist);
   return EVERYTHINGSOKAY;
 }
@@ -311,7 +313,6 @@ if(Ac->rpt_size==MAX_RPTYPES)
 
     case FUNC_ID:
               if(token->identity==OpLZat || token->identity==KwFunction)break;
-              if(token->identity==KwSort || token->identity==KwFind)return SEMANTIC_ERR;
               if(strcmp(token->mem,"COPY")==0 || strcmp(token->mem,"LENGTH")==0)return SEMANTIC_ERR;
               if(Ac->was_func==true)
               {
@@ -462,6 +463,12 @@ if(Ac->rpt_size==MAX_RPTYPES)
               cmp=htab_search(gsymtab,Ac->act_funcID);
               if(cmp!=NULL)
               {
+                if(cmp->type==IDENTIFIER)
+                {
+                  free(fdattmp->ret_par_types);
+                  free(fdattmp);
+                  return SEMANTIC_ERR;
+                }
                 fcmpd=cmp->data;
                 if(fcmpd->is_def==false)
                 {
@@ -763,10 +770,6 @@ if(Ac->rpt_size==MAX_RPTYPES)
                       break;
                 case KwEnd:
                       Ac->begincnt--;
-                      if(Ac->begincnt==0)
-                      {
-                        generator(inslistp,I_RETURN,NULL,NULL,NULL);
-                      }
                       if(*expt!=tERR)
                       {
                         cmp=htab_search(lsymtab,Ac->act_varID);
@@ -848,8 +851,13 @@ if(Ac->rpt_size==MAX_RPTYPES)
                         ins_adress=generator(inslistp,I_LABEL,varA,NULL,NULL);
                         labL_insertlast(lablistp,ins_adress,lab2);
                       }
+                      if(Ac->begincnt==0)
+                      {
+                        generator(inslistp,I_RETURN,NULL,NULL,NULL);
+                      }
                       break;
                 case KwThen:
+                      if(*expt!=tBOOLEAN)return EXPRESSION_ERR;
                       // GOTO LAB1 podmienene, uloz LAB1 na zasobnik
                       varA=malloc(sizeof(*varA));
                       if(varA==NULL)return INTERN_INTERPRETATION_ERR;
@@ -907,6 +915,7 @@ if(Ac->rpt_size==MAX_RPTYPES)
                       Ac->labIDcnt++;
                       break;
                 case KwDo:
+                      if(*expt!=tBOOLEAN)return EXPRESSION_ERR;
                       push(wb_stack,&Ac->whbegcnt,-1);
                       Ac->whbegcnt=0;
                       // GOTO LAB2 podmienene, uloz LAB2 na zasobnik
@@ -1151,6 +1160,7 @@ if(Ac->rpt_size==MAX_RPTYPES)
                       }
                       break;
                 case KwThen:
+                      if(*expt!=tBOOLEAN)return EXPRESSION_ERR;
                       // GOTO LAB1 podmienene, uloz LAB1 na zasobnik
                       varA=malloc(sizeof(*varA));
                       if(varA==NULL)return INTERN_INTERPRETATION_ERR;
@@ -1208,6 +1218,7 @@ if(Ac->rpt_size==MAX_RPTYPES)
                       Ac->labIDcnt++;
                       break;
                 case KwDo:
+                      if(*expt!=tBOOLEAN)return EXPRESSION_ERR;
                       push(wb_stack,&Ac->whbegcnt,-1);
                       Ac->whbegcnt=0;
                       // GOTO LAB2 podmienene, uloz LAB2 na zasobnik
