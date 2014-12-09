@@ -47,7 +47,7 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 	/**************pomocne**************/
 	
 
-
+	//showList(instList);
 
 	instList->active=instList->first;
 	instr=instList->active->Instr;
@@ -744,23 +744,10 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 					break;
 				}
 				else if((op1->type)==tSTRING)
-                   {      
-                      if(strcmp(op1->data.s,"\n") == 0)
-                      printf("\\n");
-                                               
-                      else if(strcmp(op1->data.s,"\r") == 0)
-                      printf("\\r");
- 
-                      else if(strcmp(op1->data.s,"\t") == 0)
-                      printf("\\t");
- 
-                      else if(strcmp(op1->data.s,"\0") == 0)
-                      printf("\\0");
- 
-                      else printf("%s",op1->data.s);
-                                               
-                                       
-                  }
+				{
+				print_my_string(op1->data.s);
+					break;
+				}
 				
 				break;	
 			}
@@ -887,3 +874,61 @@ if(div0==true)
 	Error(8);
 	
 }  //KONIEC FUNKCIE INTERPRETATION LOOP
+
+void printchar(unsigned char theChar)
+	{
+		switch (theChar)
+		{
+			case '\n':
+			printf("\\n");
+			break;
+			case '\r':
+			printf("\\r");
+			break;
+			case '\t':
+			printf("\\t");
+			break;
+			case '\f':
+			printf("\\f");
+			break;
+		}
+	}
+
+	void print_my_string (char *str)
+	{
+		int i=0;
+		
+		while (str[i]!='\0')
+		{
+		
+			if (str[i]=='#')
+			{
+			
+				int j=0;
+				int count=i+1;
+				
+				while (str[count]>='0' && str[count]<='9')
+				{
+					count++;
+					j++;
+				}
+
+
+				char convert[j+1];
+				strncpy(convert,(str+i+1),j);
+				convert[j]='\0';
+				//printf ("%s\n",convert);
+				int value=atoi(convert);
+				printf ("%c",value);
+				i=count;
+			}
+
+			if (str[i]!='\'')
+			{
+				if (str[i]<32) printchar (str[i]);
+				else printf ("%c",str[i]);
+
+			}i++;
+		
+		}
+	}
