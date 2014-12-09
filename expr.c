@@ -450,10 +450,11 @@ ERROR_MSG ExprParse( htab_t *glob, htab_t *loc, T_vartype *dt, tListOfInstr *Ins
 	}
 
 if((tmp=htab_search(STab.loc,(char *) in.value.nonterm.index))==NULL) tmp=htab_search(STab.glob,(char *) in.value.nonterm.index);
-if(tmp==NULL) MakeVariable(&a,in.value.nonterm.d_type,in.value.nonterm.index);
-else MakeVariable(&a,tVAR,in.value.nonterm.index); //doriesit chybove stavy
-
-generator(STab.InstL,I_ASSIGN,a,NULL,TMPU);
+if(tmp==NULL)
+{
+	MakeVariable(&a,in.value.nonterm.d_type,in.value.nonterm.index);
+	generator(STab.InstL,I_ASSIGN,a,NULL,TMPU);
+}
 if((strcmp(in.value.nonterm.index,TMPU)!=0) && (strcmp(in.value.nonterm.index,TMPU2)!=0) && (strcmp(in.value.nonterm.index,TMParam)!=0)) free(in.value.nonterm.index);
 //if(in.value.nonterm.index!=NULL) free(in.value.nonterm.index);
 *dt=in.value.nonterm.d_type;
@@ -710,7 +711,7 @@ ERROR_MSG ExprSem(int rule, nont *op1, nont *op2, Tabs *STab)
 			if(tmp==NULL) MakeVariable(&b,op2->d_type,op2->index);
 			else MakeVariable(&b,tVAR,op2->index); //doriesit chybove stavy
 
-			generator(STab->InstL,inst,a,b,TMPU);
+			generator(STab->InstL,inst,b,a,TMPU);
 
 			op1->d_type=tp;
 			if((strcmp(op1->index,TMPU)!=0) && (strcmp(op1->index,TMPU2)!=0)) free(op1->index);
@@ -748,7 +749,7 @@ ERROR_MSG ExprSem(int rule, nont *op1, nont *op2, Tabs *STab)
 			return EVERYTHINGSOKAY;	
 		
 		case 13://E->f(E)
-			if(strcmp(op2->index,"length")==0) 
+			if(strcmp(op2->index,"LENGTH")==0) 
 			{
 				if((int) op1->d_type!=tSTRING) vst=false;
 				op1->d_type=tINTEGER;
@@ -766,7 +767,7 @@ ERROR_MSG ExprSem(int rule, nont *op1, nont *op2, Tabs *STab)
 				return vst ? EVERYTHINGSOKAY:SEMANTIC_ERR;
 			}
 			
-			if(strcmp(op2->index,"sort")==0) 
+			if(strcmp(op2->index,"SORT")==0) 
 			{
 				if((int) op1->d_type!=tSTRING) vst=false;
 				op1->d_type=tSTRING;
@@ -833,7 +834,7 @@ ERROR_MSG ExprSem(int rule, nont *op1, nont *op2, Tabs *STab)
 
 		case 14://E->f(L)
 			
-			if(strcmp(op2->index,"find")==0) 
+			if(strcmp(op2->index,"FIND")==0) 
 			{
 				if(strcmp(op1->index,"ss")!=0) vst=false;
 				op1->d_type=tINTEGER;
@@ -844,7 +845,7 @@ ERROR_MSG ExprSem(int rule, nont *op1, nont *op2, Tabs *STab)
 				return vst ? EVERYTHINGSOKAY:SEMANTIC_ERR;
 			}
 			
-			if(strcmp(op2->index,"copy")==0) 
+			if(strcmp(op2->index,"COPY")==0) 
 			{
 				if(strcmp(op1->index,"sii")!=0) vst=false;
 				op1->d_type=tSTRING;
