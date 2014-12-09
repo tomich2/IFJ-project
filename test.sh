@@ -219,7 +219,7 @@ rm ./test/file14.cmp
 
 ./parser ./test/file15 > test0.outputs/file15.output 2>&1;
 value=$?;
-expected=0;
+expected=4;
 touch ./test/file15.cmp
 if [ $value = $expected ];
     then
@@ -462,7 +462,7 @@ fi
 
 ./parser ./test/file38 > test0.outputs/file38.output 2>&1;
 value=$?;
-expected=3;
+expected=4;
 if [ $value = $expected ];
     then
         echo -e "Testing file38                     ${green}PASS${NC}";
@@ -472,7 +472,7 @@ fi
 
 ./parser ./test/file39 > test0.outputs/file39.output 2>&1;
 value=$?;
-expected=3;
+expected=4;
 if [ $value = $expected ];
     then
         echo -e "Testing file39                     ${green}PASS${NC}";
@@ -512,7 +512,7 @@ fi
 
 ./parser ./test/file43 > test0.outputs/file43.output 2>&1;
 value=$?;
-expected=3;
+expected=4;
 if [ $value = $expected ];
     then
         echo -e "Testing file43                     ${green}PASS${NC}";
@@ -920,7 +920,7 @@ fi
 
 ./parser ./test/file83 > test0.outputs/file83.output 2>&1;
 value=$?;
-expected=3;
+expected=5;
 if [ $value = $expected ];
     then
         echo -e "Testing file83                     ${green}PASS${NC}";
@@ -976,9 +976,9 @@ value=$?;
 expected=3;
 if [ $value = $expected ];
     then
-        echo -e "Testing file80                     ${green}PASS${NC}";
+        echo -e "Testing file88                     ${green}PASS${NC}";
     else
-        echo -e "Testing file80                     ${red}FAIL, return code $value, expected $expected${NC}";
+        echo -e "Testing file88                     ${red}FAIL, return code $value, expected $expected${NC}";
 fi
 
 
@@ -1148,3 +1148,4 @@ fi
 
 
 exit 0;
+
