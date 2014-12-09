@@ -449,6 +449,7 @@ ERROR_MSG ExprParse( htab_t *glob, htab_t *loc, T_vartype *dt, tListOfInstr *Ins
 		}
 
 	}
+S_erase(&stack);
 if(is_exp)
 {
 	if((tmp=htab_search(STab.loc,(char *) in.value.nonterm.index))==NULL) tmp=htab_search(STab.glob,(char *) in.value.nonterm.index);
@@ -460,9 +461,16 @@ if(is_exp)
 	if((strcmp(in.value.nonterm.index,TMPU)!=0) && (strcmp(in.value.nonterm.index,TMPU2)!=0) && (strcmp(in.value.nonterm.index,TMParam)!=0)) free(in.value.nonterm.index);
 	//if(in.value.nonterm.index!=NULL) free(in.value.nonterm.index);
 	*dt=in.value.nonterm.d_type;
+	S_erase(&stack);
+	return EVERYTHINGSOKAY;
 }
-S_erase(&stack);
-return EVERYTHINGSOKAY;
+else 
+{
+	S_erase(&stack);
+	return SYNTAX_ERR;
+}
+}
+
 }
 
 ERROR_MSG MakeVariable(Variable **a, T_vartype type, void *data)
