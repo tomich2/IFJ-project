@@ -266,7 +266,7 @@ ERROR_MSG get_token ()
                     }
                     if (bodka==0)
                     {
-                        token->identity=DtInteger;
+                        token->identity=DtReal;
                         return EVERYTHINGSOKAY;
                     }
                 }
@@ -667,7 +667,7 @@ ERROR_MSG get_token ()
                                     return INTERN_INTERPRETATION_ERR;
                                 }
                                 int numero = atoi(convert);
-                                if (numero<=0 || numero==39 || numero>=32)
+                                if (numero<=0 || numero>255)
                                 {
                                     free(token->mem);
                                     return LEXICAL_ERR;
