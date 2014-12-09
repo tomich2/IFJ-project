@@ -266,17 +266,21 @@ void listFree(tListOfInstr *L)
     instr= L->first->Instr;
     if ((L->first->Instr->a)!=NULL)
     {
-	//	if(L->first->Instr->a->data.s != NULL)		//zakomentovane pre interpret, hadzalo errory
-	//		free(L->first->Instr->a->data.s);
+		if(L->first->Instr->a->data.s != NULL)		//zakomentovane pre interpret, hadzalo errory
+			free(L->first->Instr->a->data.s);
 		var = L->first->Instr->a;
 		free(var);
 	}
 	if ((L->first->Instr->b)!=NULL)
     {
-	//	if(L->first->Instr->b->data.s != NULL)
-	//		free(L->first->Instr->b->data.s);
+		if(L->first->Instr->b->data.s != NULL)
+			free(L->first->Instr->b->data.s);
 		var = L->first->Instr->b;
 		free(var);
+	}
+	if ((L->first->Instr->res)!=NULL)
+    {
+		free(L->first->Instr->res);
 	}
 	
     L->first = L->first->nextItem;
@@ -292,7 +296,13 @@ tListItem* generator(tListOfInstr *L, InstName name, Variable *a, Variable *b, c
 	instr->Iname=name;
 	instr->a=a;
 	instr->b=b;
-	instr->res=s;
+	instr->res=NULL;
+	if(s!=NULL)
+	{
+		instr->res=malloc(strlen(s)+1);
+		if (instr->res==NULL) printf("je to napicu\n");
+		strcpy(instr->res,s);
+	}
 	
 	tListItem *newItem;
 	newItem = malloc(sizeof (tListItem));
