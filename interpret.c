@@ -871,7 +871,7 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 
 					{
 						double num;
-						num = strtof(pStr,NULL);
+						num = strtod(pStr,NULL);
 						op3->data.r=num;
 					}
 
