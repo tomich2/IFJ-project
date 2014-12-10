@@ -81,10 +81,8 @@ if [ $value = $expected ];
         echo -e "Testing file3                      ${red}FAIL, return code $value, expected $expected${NC}";
 fi
 
-./parser & ./test/file4 > test0.outputs/file4.output 2>&1;
-sleep 1;
-kill $! 2>/dev/null;
-value=$?;
+./parser ./test/file4 > test0.outputs/file4.output 2>&1;
+
 expected=0;
 if [ $value = $expected ];
     then
