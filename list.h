@@ -46,6 +46,7 @@ typedef struct labitem{
         struct labitem *next;
         tListItem *ins_ptr;
         int lab_ID;
+        char *func_name;
         }t_lablist_item;
 
 typedef struct{
@@ -63,6 +64,6 @@ int funcL_insertfirst(t_func_list *l, char *idp, T_vartype dtypep, bool is_parp)
 void funcL_dispose(t_func_list *l);
 
 void labL_init(t_lablist *l);
-int labL_insertlast(t_lablist *l, tListItem *insptr, int labID);
+int labL_insertlast(t_lablist *l, tListItem *insptr, int labID, char *func);
 void labL_dispose(t_lablist *l);
 #endif
