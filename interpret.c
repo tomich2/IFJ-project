@@ -740,7 +740,7 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 		 					
 		 					if((op3 == tmp1) || (op3 == tmp2) || (op3 == tmparam) || (op3 == tmfunc))
 								op3->type=tBOOLEAN;	
-			 					break;
+			 				break;
 
 		 				default:
 		 					op3->data.b=false;
@@ -952,8 +952,8 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 						break;
 
 						case tSTRING:
-						/*LocalFrame->active->data.s=malloc
-						LocalFrame->active->data.s=top(&stack);*/
+						LocalFrame->active->data.s=malloc(strlen(*(char **)stack.Top->data)+1);
+						strcpy(LocalFrame->active->data.s,*(char **)top(&stack));
 						pop(&stack);
 						break;
 
@@ -995,7 +995,7 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 					break;
 
 					case tSTRING:
-				//	push(&stack,&op1->data.s,sizeof(char)* (strlen(op1->data.s)));
+					push(&stack,&op1->data.s,strlen(op1->data.s)+1);
 					break;
 
 					default:
