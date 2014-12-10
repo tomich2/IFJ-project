@@ -220,19 +220,12 @@ rm ./test/file14.cmp
 ./parser ./test/file15 > test0.outputs/file15.output 2>&1;
 value=$?;
 expected=4;
-touch ./test/file15.cmp
 if [ $value = $expected ];
     then
-	if diff ./test0.outputs/file15.output ./test/file15.cmp >/dev/null ;
-        then
-	echo -e "Testing file15                     ${green}PASS${NC}";
-	else
-	echo -e "Testing file15                     ${red}FAIL, different output${NC}";
-	fi
+        echo -e "Testing file15                     ${green}PASS${NC}";
     else
         echo -e "Testing file15                     ${red}FAIL, return code $value, expected $expected${NC}";
 fi
-rm ./test/file15.cmp
 
 ./parser ./test/file16 > test0.outputs/file16.output 2>&1;
 value=$?;
