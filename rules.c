@@ -152,6 +152,7 @@ int get_rule(T_nonterms nonterm, T_ParserItem **PItem_Arr, T_State *st, bool *is
     case 9: // 9. <FORWARD> → forward
           PItem_Arr[0]->type=TERMINAL;
           PItem_Arr[0]->value.term.type=KwForward;
+          *is_f=false;
           break;
     case 10: // 10. <FORWARD> →  <DEF_VAR> <BODY>
           PItem_Arr[0]->type=NONTERMINAL;
