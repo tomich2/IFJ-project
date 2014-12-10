@@ -764,7 +764,7 @@ ERROR_MSG ExprSem(int rule, nont *op1, nont *op2, Tabs *STab)
 			op1->d_type=get_type(((T_FuncData *) ((Hitem *) tmp)->data)->ret_par_types,0);
 
 
-			MakeVariable(&a,tString,op1->index); //doriesit chybove stavy
+			MakeVariable(&a,tSTRING,op1->index); //doriesit chybove stavy
 
 			generator(STab->InstL,I_CALL,a,NULL,res);
 			STab->was_func=true;
@@ -780,7 +780,7 @@ ERROR_MSG ExprSem(int rule, nont *op1, nont *op2, Tabs *STab)
 			if(STab->was_func) res=TMFunc;
 			if((tmp=htab_search(STab->loc,(char *) op1->index))==NULL) tmp=htab_search(STab->glob,(char *) op1->index);
 			if(tmp==NULL) MakeVariable(&a,op1->d_type,op1->index);
-			else MakeVariable(&a,tVar,op1->index); //doriesit chybove stavy
+			else MakeVariable(&a,tVAR,op1->index); //doriesit chybove stavy
 
 			generator(STab->InstL,I_PUSH,a,NULL,NULL);
 
@@ -848,7 +848,7 @@ ERROR_MSG ExprSem(int rule, nont *op1, nont *op2, Tabs *STab)
 			op1->d_type=get_type(((T_FuncData *) ((Hitem *) tmp)->data)->ret_par_types,0);
 
 
-			MakeVariable(&a,tString,op2->index); //doriesit chybove stavy
+			MakeVariable(&a,tSTRING,op2->index); //doriesit chybove stavy
 			
 
 			generator(STab->InstL,I_CALL,a,NULL,res);
@@ -920,7 +920,7 @@ ERROR_MSG ExprSem(int rule, nont *op1, nont *op2, Tabs *STab)
 			}
 			free(str);
 
-			MakeVariable(&a,tString,op2->index); //doriesit chybove stavy
+			MakeVariable(&a,tSTRING,op2->index); //doriesit chybove stavy
 
 
 			generator(STab->InstL,I_CALL,a,NULL,res);
