@@ -16,13 +16,16 @@ void frameInit(tListofVariables *F)
 void frameFree(tListofVariables *F)
 {
   struct FrameVariable *var;
-  while (F->first != NULL)
+  if(F != NULL)
   {
-    var= F->first;
-    F->first = F->first->nextvar;
-    free(var);
+	  while (F->first != NULL)
+	  {
+		var= F->first;
+		F->first = F->first->nextvar;
+		free(var);
+	  }
+	  free(F);
   }
-  free(F);
 }
 
 void frameInsert(tListofVariables *F, struct FrameVariable *var)
@@ -37,66 +40,74 @@ void frameInsert(tListofVariables *F, struct FrameVariable *var)
 
 tListofVariables* createGlobFrame(t_varfunc_list *L)
 {
-	tListofVariables *F;
-	F=malloc(sizeof(struct tListofVariables));
-	frameInit(F);
-	L->Active=L->First;
-	while(L->Active != NULL)
+	if(L != NULL)
 	{
-		if(L->Active->type==IDENTIFIER)
+		tListofVariables *F;
+		F=malloc(sizeof(struct tListofVariables));
+		frameInit(F);
+		L->Active=L->First;
+		while(L->Active != NULL)
 		{
-			struct FrameVariable *var;
-			var=malloc(sizeof(struct FrameVariable));
-			var->type=L->Active->dattype;
-			var->name=L->Active->item_ID;
-			var->param=false;
-			frameInsert(F, var);
+			if(L->Active->type==IDENTIFIER)
+			{
+				struct FrameVariable *var;
+				var=malloc(sizeof(struct FrameVariable));
+				var->type=L->Active->dattype;
+				var->name=L->Active->item_ID;
+				var->param=false;
+				frameInsert(F, var);
+			}
+			L->Active=L->Active->next;
 		}
-		L->Active=L->Active->next;
+		return F;
 	}
-	return F;
+	else return NULL;
 }
 
 			
 
 tListofVariables* createFrame(char *item_ID, t_varfunc_list *L)
 {
-	tListofVariables *F;
-	F=malloc(sizeof(struct tListofVariables));
-	frameInit(F);
-	L->Active=L->First;
-	while(L->Active != NULL)
+	if(L != NULL)
 	{
-		if(L->Active->type == FUNCTION)
+		tListofVariables *F;
+		F=malloc(sizeof(struct tListofVariables));
+		frameInit(F);
+		L->Active=L->First;
+		while(L->Active != NULL)
 		{
-			if(strcmp(L->Active->item_ID, item_ID)==0)
-				{
-					struct FrameVariable *var;
-					var=malloc(sizeof(struct FrameVariable));
-					var->type=L->Active->dattype;
-					var->name=L->Active->item_ID;
-					var->param=false;
-					frameInsert(F, var);
-					
-					if(L->Active->flist != NULL)
+			if(L->Active->type == FUNCTION)
+			{
+				if(strcmp(L->Active->item_ID, item_ID)==0)
 					{
-						L->Active->flist->Active=L->Active->flist->First;
-						while(L->Active->flist->Active != NULL)
+						struct FrameVariable *var;
+						var=malloc(sizeof(struct FrameVariable));
+						var->type=L->Active->dattype;
+						var->name=L->Active->item_ID;
+						var->param=false;
+						frameInsert(F, var);
+						
+						if(L->Active->flist != NULL)
 						{
-							var=malloc(sizeof(struct FrameVariable));
-							var->type=L->Active->flist->Active->dattype;
-							var->name=L->Active->flist->Active->item_ID;
-							var->param=L->Active->flist->Active->is_param;
-							frameInsert(F, var);
-							L->Active->flist->Active=L->Active->flist->Active->next;
+							L->Active->flist->Active=L->Active->flist->First;
+							while(L->Active->flist->Active != NULL)
+							{
+								var=malloc(sizeof(struct FrameVariable));
+								var->type=L->Active->flist->Active->dattype;
+								var->name=L->Active->flist->Active->item_ID;
+								var->param=L->Active->flist->Active->is_param;
+								frameInsert(F, var);
+								L->Active->flist->Active=L->Active->flist->Active->next;
+							}
 						}
+								
 					}
-							
-				}
+			}
+			L->Active=L->Active->next;
 		}
-		L->Active=L->Active->next;
+		return F;
 	}
-	return F;
+	else return NULL;
 }
 
 struct FrameVariable* findFrameVar(struct Variable *a, tListofVariables* globalFrame, tListofVariables* localFrame)
