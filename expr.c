@@ -870,7 +870,7 @@ ERROR_MSG ExprSem(int rule, nont *op1, nont *op2, Tabs *STab)
 				if(strcmp(op1->index,"ss")!=0) vst=false;
 				op1->d_type=tINTEGER;
 				if((strcmp(op1->index,TMPU)!=0) && (strcmp(op1->index,TMPU2)!=0) && (strcmp(op1->index,TMFunc)!=0)) free(op1->index);
-				if((strcmp(op1->index,TMPU)!=0) && (strcmp(op1->index,TMPU2)!=0) && (strcmp(op1->index,TMFunc)!=0)) free(op2->index);
+				if((strcmp(op2->index,TMPU)!=0) && (strcmp(op2->index,TMPU2)!=0) && (strcmp(op2->index,TMFunc)!=0)) free(op2->index);
 				op1->index=res;
 				generator(STab->InstL,I_FIND,NULL,NULL,res);
 				return vst ? EVERYTHINGSOKAY:EXPRESSION_ERR;
@@ -881,7 +881,7 @@ ERROR_MSG ExprSem(int rule, nont *op1, nont *op2, Tabs *STab)
 				if(strcmp(op1->index,"sii")!=0) vst=false;
 				op1->d_type=tSTRING;
 				if((strcmp(op1->index,TMPU)!=0) && (strcmp(op1->index,TMPU2)!=0) && (strcmp(op1->index,TMFunc)!=0)) free(op1->index);
-				if((strcmp(op1->index,TMPU)!=0) && (strcmp(op1->index,TMPU2)!=0) && (strcmp(op1->index,TMFunc)!=0)) free(op2->index);
+				if((strcmp(op2->index,TMPU)!=0) && (strcmp(op2->index,TMPU2)!=0) && (strcmp(op2->index,TMFunc)!=0)) free(op2->index);
 				op1->index=res;
 				generator(STab->InstL,I_COPY,NULL,NULL,res);
 				return vst ? EVERYTHINGSOKAY:EXPRESSION_ERR;
@@ -891,7 +891,7 @@ ERROR_MSG ExprSem(int rule, nont *op1, nont *op2, Tabs *STab)
 			{
 				fprintf(stderr,"funkcia %s nebola deklarovana\n",(char *) op2->index);
 				if((strcmp(op1->index,TMPU)!=0) && (strcmp(op1->index,TMPU2)!=0) && (strcmp(op1->index,TMFunc)!=0)) free(op1->index);
-				if((strcmp(op1->index,TMPU)!=0) && (strcmp(op1->index,TMPU2)!=0) && (strcmp(op1->index,TMFunc)!=0)) free(op2->index);
+				if((strcmp(op2->index,TMPU)!=0) && (strcmp(op2->index,TMPU2)!=0) && (strcmp(op2->index,TMFunc)!=0)) free(op2->index);
 				return SEMANTIC_ERR;
 			}
 			else
@@ -899,7 +899,7 @@ ERROR_MSG ExprSem(int rule, nont *op1, nont *op2, Tabs *STab)
 				{
 					fprintf(stderr,"funkcia %s nebola definovana\n",(char *) op2->index);
 					if((strcmp(op1->index,TMPU)!=0) && (strcmp(op1->index,TMPU2)!=0) && (strcmp(op1->index,TMFunc)!=0)) free(op1->index);
-					if((strcmp(op1->index,TMPU)!=0) && (strcmp(op1->index,TMPU2)!=0) && (strcmp(op1->index,TMFunc)!=0)) free(op2->index);
+					if((strcmp(op2->index,TMPU)!=0) && (strcmp(op2->index,TMPU2)!=0) && (strcmp(op2->index,TMFunc)!=0)) free(op2->index);
 					return SEMANTIC_ERR;
 				}
 			op2->d_type=get_type(((T_FuncData *) ((Hitem *) tmp)->data)->ret_par_types,0);
@@ -913,6 +913,8 @@ ERROR_MSG ExprSem(int rule, nont *op1, nont *op2, Tabs *STab)
 			if(strcmp(str,op1->index)!=0)
 			{
 				free(str);
+				if((strcmp(op1->index,TMPU)!=0) && (strcmp(op1->index,TMPU2)!=0) && (strcmp(op1->index,TMFunc)!=0)) free(op1->index);
+				if((strcmp(op2->index,TMPU)!=0) && (strcmp(op2->index,TMPU2)!=0) && (strcmp(op2->index,TMFunc)!=0)) free(op2->index);
 				fprintf(stderr,"typy parametrov funkcie sa nezhoduju\n");
 				return EXPRESSION_ERR;
 			}
