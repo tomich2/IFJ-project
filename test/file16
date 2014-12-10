@@ -3,9 +3,9 @@ var
 begin
    a := 10;
    if a<>0 then begin 
-		write('neni nula') 
+		write('neni nula'#10'') 
 		end
    else begin 
-	write ('je nula') 
+	write ('je nula'#10'') 
 	end
 end.
