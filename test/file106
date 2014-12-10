@@ -1,0 +1,20 @@
+{ Test funkce find }
+var
+	str: string;
+	a: integer;
+
+begin
+	str := 'findo huli travu';
+	a := find(str, 'findo ');
+	write(a, ''#10'');
+
+	a := find(str, ' ');
+	write(a, ''#10'');
+
+	a := find(str, 'huli');
+	write(a, ''#10'');
+
+	a := find(str, 'findo fetuje kokain');
+	write(a, ''#10'')
+
+end.
