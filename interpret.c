@@ -3,7 +3,7 @@
 #include "error.h"
 #include "frame.h"
 #include "parser.h"
-
+#include "garbage.h	"
 
 #include <stdint.h>
 #include <stdio.h>
@@ -740,7 +740,7 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 		 					
 		 					if((op3 == tmp1) || (op3 == tmp2) || (op3 == tmparam) || (op3 == tmfunc))
 								op3->type=tBOOLEAN;	
-			 				break;
+			 					break;
 
 		 				default:
 		 					op3->data.b=false;
@@ -816,6 +816,9 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 				}
 				else if((op1->type)==tSTRING)
 				{
+				
+					//printf("%s\n",op1->data.s );
+				//	op1->data.s=NULL;
 				print_my_string(op1->data.s);
 					break;
 				}
@@ -830,6 +833,7 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 				unsigned int current_size = 0;
 				char *ptr;
 				char *pStr = malloc(len_max);
+				InsertFirst(LGar,pStr);
 				current_size = len_max;
 
 				if(pStr != NULL)
@@ -837,7 +841,7 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 					int c = EOF;
 					unsigned int i = 0;
 
-					while (( c = getc(stdin)) != '\n' && c != EOF)
+					while (( c = getc(stdin)) != '\n' && (c != EOF))
 					{
 						pStr[i++] = (char)c;
 
@@ -847,6 +851,8 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 							pStr = realloc(pStr,current_size);
 						}
 					}	
+					pStr[i]= '\0';
+
 		
 					if((op3->type)==tINTEGER)
 					{
@@ -856,7 +862,8 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 					} 
 					
 					else if (op3->type==tSTRING)
-					{
+					{	
+						
 						op3->data.s=pStr;
 					} 
 					
@@ -882,12 +889,11 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 								break;
 						}
 
-					free(pStr);
-					pStr = NULL;
+					
 					
 				}	
 
-
+					
 				break;
 			}
 			
@@ -952,8 +958,8 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 						break;
 
 						case tSTRING:
-						LocalFrame->active->data.s=malloc(strlen(*(char **)stack.Top->data)+1);
-						strcpy(LocalFrame->active->data.s,*(char **)top(&stack));
+						/*LocalFrame->active->data.s=malloc
+						LocalFrame->active->data.s=top(&stack);*/
 						pop(&stack);
 						break;
 
@@ -995,7 +1001,7 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 					break;
 
 					case tSTRING:
-					push(&stack,&op1->data.s,strlen(op1->data.s)+1);
+				//	push(&stack,&op1->data.s,sizeof(char)* (strlen(op1->data.s)));
 					break;
 
 					default:
@@ -1165,7 +1171,7 @@ if(div0==true)
 	{
 		int i=0;
 		
-		while (str[i]!='\0')
+		while ((str[i]!='\0') )   
 		{
 		
 			if (str[i]=='#')
@@ -1194,12 +1200,10 @@ if(div0==true)
 			if (str[i]!='\'')
 			{
 				if (str[i]<32) 
-					{
-						//string[i]=str[i];
+					{	
 						printchar (str[i]);
 					}
 				else{
-						//string[i]=str[i];	
 						printf ("%c",str[i]);
 					}
 			}i++;
