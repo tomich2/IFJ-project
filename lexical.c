@@ -688,13 +688,20 @@ ERROR_MSG get_token ()
 
                         else
                         {
-                            if (c=='\'') parity++;
-                            i++;
-                            token->mem=string_implementation(c,i,token->mem);
-                            if (token->mem==NULL)
+                            if (c=='\'')
                             {
-                                free(token->mem);
-                                return INTERN_INTERPRETATION_ERR;
+
+                                parity++;
+                            }
+                            else
+                            {
+                                i++;
+                                token->mem=string_implementation(c,i,token->mem);
+                                if (token->mem==NULL)
+                                {
+                                    free(token->mem);
+                                    return INTERN_INTERPRETATION_ERR;
+                                }
                             }
                         }
 
