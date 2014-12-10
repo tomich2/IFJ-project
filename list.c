@@ -117,12 +117,23 @@ void labL_init(t_lablist *l)
   l->Active=NULL;
 }
 
-int labL_insertlast(t_lablist *l, tListItem *insptr, int labID)
+int labL_insertlast(t_lablist *l, tListItem *insptr, int labID, char *func)
 {
   t_lablist_item *new=malloc(sizeof(*new));
   if(new==NULL)return 1;
   new->ins_ptr=insptr;
   new->lab_ID=labID;
+  if(func!=NULL)
+  {
+    new->func_name=malloc(sizeof(strlen(func)+1));
+    if(new->func_name==NULL)
+    {
+      free(new);
+      return 1;
+    }
+    strcpy(new->func_name,func);
+  }
+  else new->func_name=NULL;
   if(l->First==NULL)
   {
     new->next=NULL;
@@ -147,6 +158,7 @@ void labL_dispose(t_lablist *l)
   {
     tmp2=tmp;
     tmp=tmp->next;
+    if(tmp2->func_name!=NULL)free(tmp2->func_name);
     free(tmp2);
   }
   return;
