@@ -1,8 +1,8 @@
 var	a: real;
 	b: real;
 begin
-	a:=50;
-	b:=10;
-	a:=a/b/5;
+	a:=50.0;
+	b:=10.0;
+	a:=a/b/5.0;
 	write (a,'#10')
 end.
