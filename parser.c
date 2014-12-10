@@ -192,7 +192,7 @@ i=0;
           return SYNTAX_ERR;
         }
       }
-    fprintf(stderr,"debug..token: %s state: %d\n", token->mem,state);
+    //fprintf(stderr,"debug..token: %s state: %d\n", token->mem,state);
     free(token->mem);
     token->mem=NULL;
     expr_type=tERR;
@@ -214,7 +214,7 @@ i=0;
    free_all(PItems,p_stack,0,1,glob_sym_table,loc_sym_table,Act,vflist,lablist,inslist,flist);
    return SYNTAX_ERR;
   }
-   showList(inslist);
+  //showList(inslist);
   interpretLoop(inslist,vflist,lablist);
 
   free_all(PItems,p_stack,0,0,glob_sym_table,loc_sym_table,Act,vflist,lablist,inslist,flist);
