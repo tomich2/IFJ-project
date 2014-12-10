@@ -1,0 +1,5 @@
+var
+  value : real;
+begin
+  value := 17/0
+end.
