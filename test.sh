@@ -1204,9 +1204,95 @@ if [ $value = $expected ];
         echo -e "Testing file108                    ${red}FAIL, return code $value, expected $expected${NC}";
 fi
 
+./parser ./test/file109 > test0.outputs/file109.output 2>&1;
+value=$?;
+expected=0;
+if [ $value = $expected ];
+    then
+	if diff ./test0.outputs/file109.output ./test/file109.cmp >/dev/null ;
+        then
+	echo -e "Testing file109                    ${green}PASS${NC}";
+	else
+	echo -e "Testing file109                    ${red}FAIL, different output${NC}";
+	fi
+    else
+        echo -e "Testing file109                    ${red}FAIL, return code $value, expected $expected${NC}";
+fi
 
+./parser ./test/file110 > test0.outputs/file110.output 2>&1;
+value=$?;
+expected=0;
+if [ $value = $expected ];
+    then
+	if diff ./test0.outputs/file110.output ./test/file110.cmp >/dev/null ;
+        then
+	echo -e "Testing file110                    ${green}PASS${NC}";
+	else
+	echo -e "Testing file110                    ${red}FAIL, different output${NC}";
+	fi
+    else
+        echo -e "Testing file110                    ${red}FAIL, return code $value, expected $expected${NC}";
+fi
 
+./parser ./test/file111 > test0.outputs/file111.output 2>&1;
+value=$?;
+expected=0;
+if [ $value = $expected ];
+    then
+	if diff ./test0.outputs/file111.output ./test/file111.cmp >/dev/null ;
+        then
+	echo -e "Testing file111                    ${green}PASS${NC}";
+	else
+	echo -e "Testing file111                    ${red}FAIL, different output${NC}";
+	fi
+    else
+        echo -e "Testing file111                    ${red}FAIL, return code $value, expected $expected${NC}";
+fi
 
+./parser ./test/file112 > test0.outputs/file112.output 2>&1;
+value=$?;
+expected=0;
+if [ $value = $expected ];
+    then
+	if diff ./test0.outputs/file112.output ./test/file112.cmp >/dev/null ;
+        then
+	echo -e "Testing file112                    ${green}PASS${NC}";
+	else
+	echo -e "Testing file112                    ${red}FAIL, different output${NC}";
+	fi
+    else
+        echo -e "Testing file112                    ${red}FAIL, return code $value, expected $expected${NC}";
+fi
+
+./parser ./test/file113 > test0.outputs/file113.output 2>&1;
+value=$?;
+expected=0;
+if [ $value = $expected ];
+    then
+	if diff ./test0.outputs/file113.output ./test/file113.cmp >/dev/null ;
+        then
+	echo -e "Testing file113                    ${green}PASS${NC}";
+	else
+	echo -e "Testing file113                    ${red}FAIL, different output${NC}";
+	fi
+    else
+        echo -e "Testing file113                    ${red}FAIL, return code $value, expected $expected${NC}";
+fi
+
+./parser ./test/file114 > test0.outputs/file114.output 2>&1;
+value=$?;
+expected=0;
+if [ $value = $expected ];
+    then
+	if diff ./test0.outputs/file114.output ./test/file114.cmp >/dev/null ;
+        then
+	echo -e "Testing file114                    ${green}PASS${NC}";
+	else
+	echo -e "Testing file114                    ${red}FAIL, different output${NC}";
+	fi
+    else
+        echo -e "Testing file114                    ${red}FAIL, return code $value, expected $expected${NC}";
+fi
 
 
 exit 0;
