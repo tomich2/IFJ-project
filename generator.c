@@ -264,14 +264,14 @@ void listFree(tListOfInstr *L)
   {
     tmp = L->first;
     instr= L->first->Instr;
-    if ((L->first->Instr->a)!=NULL)
+    if (L->first->Instr->a != NULL)
     {
 		if(L->first->Instr->a->data.s != NULL)		//zakomentovane pre interpret, hadzalo errory
 			free(L->first->Instr->a->data.s);
 		var = L->first->Instr->a;
 		free(var);
 	}
-	if ((L->first->Instr->b)!=NULL)
+	if (L->first->Instr->b != NULL)
     {
 		if(L->first->Instr->b->data.s != NULL)
 			free(L->first->Instr->b->data.s);
@@ -295,7 +295,15 @@ tListItem* generator(tListOfInstr *L, InstName name, Variable *a, Variable *b, c
 	
 	instr->Iname=name;
 	instr->a=a;
+	if(a !=NULL)
+		if(a->type != tSTRING)
+			if(a->type != tVAR)
+				a->data.s=NULL;
 	instr->b=b;
+	if(b!=NULL)
+		if(b->type != tSTRING)
+			if(b->type != tVAR)
+				b->data.s=NULL;
 	instr->res=NULL;
 	if(s!=NULL)
 	{
