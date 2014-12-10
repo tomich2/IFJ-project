@@ -47,6 +47,7 @@ ERROR_MSG top_down()
   err=htab_new(glob_sym_table,TMPU,IDENTIFIER,NULL,0);
   err=htab_new(glob_sym_table,TMPU2,IDENTIFIER,NULL,0);
   err=htab_new(glob_sym_table,TMParam,IDENTIFIER,NULL,0);
+  err=htab_new(glob_sym_table,TMFunc,IDENTIFIER,NULL,0);
 
   T_Actual *Act=calloc(1,sizeof(*Act)); // pomocna struktura pre semantiku
   Act->act_funcID=NULL;
