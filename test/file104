@@ -1,0 +1,7 @@
+var
+  magic : real;
+  value : real;
+begin
+  value := 5.0;
+  magic := 17/(value - value)
+end.
