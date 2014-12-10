@@ -11,5 +11,6 @@ begin
      begin
        write('a is not less than 20'#10'' )
      end;
-    write('value of a is : '#10'', a)
+    write('value of a is : '#10'', a);
+    write (''#10'')
 end.
