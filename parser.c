@@ -214,7 +214,7 @@ i=0;
    free_all(PItems,p_stack,0,1,glob_sym_table,loc_sym_table,Act,vflist,lablist,inslist,flist);
    return SYNTAX_ERR;
   }
-  //showList(inslist);
+   showList(inslist);
   interpretLoop(inslist,vflist,lablist);
 
   free_all(PItems,p_stack,0,0,glob_sym_table,loc_sym_table,Act,vflist,lablist,inslist,flist);
@@ -764,6 +764,12 @@ if(Ac->rpt_size==MAX_RPTYPES)
                         ins_adress=generator(inslistp,I_LABEL,varA,NULL,NULL);
                         labL_insertlast(lablistp,ins_adress,Ac->labIDcnt);
                         Ac->labIDcnt++;
+                        varA=malloc(sizeof(*varA));
+                        if(varA==NULL)return INTERN_INTERPRETATION_ERR;
+                        varA->type=tINTEGER;
+                        varA->data.i=0;
+                        varA->data.s=NULL;
+                        generator(inslistp,I_GOTO,varA,NULL,NULL);
                       }
                       Ac->begincnt++;
                       if(Ac->is_else==true)Ac->ifbegcnt++;
@@ -1052,9 +1058,9 @@ if(Ac->rpt_size==MAX_RPTYPES)
                         varA=malloc(sizeof(*varA));
                         if(varA==NULL)return INTERN_INTERPRETATION_ERR;
                         varA->type=tINTEGER;
-                        varA->data.i=Ac->labIDcnt;
-                        ins_adress=generator(inslistp,I_LABEL,varA,NULL,NULL);
-                        labL_insertlast(lablistp,ins_adress,Ac->labIDcnt);
+                        varA->data.i=0;
+                        ins_adress=generator(inslistp,I_LABEL,varA,NULL,NULL); // nulty label=zaciatok hlavneho programu
+                        labL_insertlast(lablistp,ins_adress,0);
                         Ac->labIDcnt++;
                       }
                       Ac->begincnt++;
