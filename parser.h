@@ -24,6 +24,7 @@
 #define TMPU "42TMP14ifj"
 #define TMPU2 "42TMP24ifj"
 #define TMParam "42TMPar2ifj"
+#define TMFunc "42TMfun2ifj"
 
 typedef enum{NONTERMINAL, TERMINAL, EMPTY=-1}ItemType;
 
