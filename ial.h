@@ -39,7 +39,7 @@ struct htab {
 	//int range;
 	    };
 //funkcie pre pracu s tabulkou
-unsigned int hash_function(const char *str, unsigned long htab_size); //hashovacia funkcia
+unsigned long hash_function(const char *str, unsigned long htab_size); //hashovacia funkcia
 htab_t *htab_init(unsigned long size); // inicialiacia tabulky -treba zvolit vhodnu velkost
 void *htab_search(htab_t *t,char *key); //vyhladavanie v tabulke- vrati data najdeneho prvku alebo NULL ak nenajde
 int htab_new(htab_t *t,char *key,types type, void *data, size_t data_size); //novy prvok
