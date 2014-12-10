@@ -21,6 +21,8 @@ void frameFree(tListofVariables *F)
 	  while (F->first != NULL)
 	  {
 		var= F->first;
+		if(var->data.s != NULL)
+			free(var->data.s);
 		F->first = F->first->nextvar;
 		free(var);
 	  }
@@ -30,6 +32,8 @@ void frameFree(tListofVariables *F)
 
 void frameInsert(tListofVariables *F, struct FrameVariable *var)
 {
+  
+  var->data.s=NULL;
   var->nextvar = NULL;
   if (F->first == NULL)
      F->first = var;
@@ -159,7 +163,6 @@ struct FrameVariable* findFrameDest(char *s, tListofVariables* globalFrame, tLis
 		globalFrame->active=globalFrame->first;
 		while(globalFrame->active != NULL)
 		{
-		//	printf("%s \n",globalFrame->active->name);		//zmazat
 			if(strcmp(s,globalFrame->active->name)==0)
 			{
 				return globalFrame->active;
