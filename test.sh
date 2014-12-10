@@ -1122,10 +1122,26 @@ if [ $value = $expected ];
         echo -e "Testing file102                    ${red}FAIL, return code $value, expected $expected${NC}";
 fi
 
+./parser ./test/file103 > test0.outputs/file103.output 2>&1;
+value=$?;
+expected=8;
+if [ $value = $expected ];
+    then
+        echo -e "Testing file103                    ${green}PASS${NC}";
+    else
+        echo -e "Testing file103                    ${red}FAIL, return code $value, expected $expected${NC}";
+fi
 
 
-
-
+./parser ./test/file104 > test0.outputs/file104.output 2>&1;
+value=$?;
+expected=8;
+if [ $value = $expected ];
+    then
+        echo -e "Testing file104                    ${green}PASS${NC}";
+    else
+        echo -e "Testing file104                    ${red}FAIL, return code $value, expected $expected${NC}";
+fi
 
 
 
