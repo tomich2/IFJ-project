@@ -232,7 +232,7 @@ ERROR_MSG get_token ()
                         return INTERN_INTERPRETATION_ERR;
                     }
                     c=fgetc(fp);
-                    if ((c!='+' || c!='-') &&  (c<'0' || c>'9'))
+                    if (!((c>'0' && c<'9') || (c=='+' || c=='-')))
                     {
                         free(token->mem);
                         return LEXICAL_ERR;
