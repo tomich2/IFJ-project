@@ -2,7 +2,7 @@ var	a: real;
 	b: real;
 begin
 	a:=5e-1;
-	b:=10;
+	b:=10.0;
 	a:=b/a;
 	write (a,'#10')
 end.
