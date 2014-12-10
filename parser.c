@@ -762,7 +762,8 @@ if(Ac->rpt_size==MAX_RPTYPES)
                         varA->type=tINTEGER;
                         varA->data.i=Ac->labIDcnt;
                         ins_adress=generator(inslistp,I_LABEL,varA,NULL,NULL);
-                        labL_insertlast(lablistp,ins_adress,Ac->labIDcnt);
+                        err=labL_insertlast(lablistp,ins_adress,Ac->labIDcnt,Ac->act_funcID);
+                        if(err!=0)return INTERN_INTERPRETATION_ERR;
                         Ac->labIDcnt++;
                         varA=malloc(sizeof(*varA));
                         if(varA==NULL)return INTERN_INTERPRETATION_ERR;
@@ -830,7 +831,8 @@ if(Ac->rpt_size==MAX_RPTYPES)
                         varA->type=tINTEGER;
                         varA->data.i=lab2;
                         ins_adress=generator(inslistp,I_LABEL,varA,NULL,NULL);
-                        labL_insertlast(lablistp,ins_adress,lab2);
+                        err=labL_insertlast(lablistp,ins_adress,lab2,NULL);
+                        if(err!=0)return INTERN_INTERPRETATION_ERR;
                       }
                       if(Ac->whbegcnt==0 && Ac->is_while==true) // koniec prikazu while
                       {
@@ -856,7 +858,8 @@ if(Ac->rpt_size==MAX_RPTYPES)
                         varA->type=tINTEGER;
                         varA->data.i=lab2;
                         ins_adress=generator(inslistp,I_LABEL,varA,NULL,NULL);
-                        labL_insertlast(lablistp,ins_adress,lab2);
+                        err=labL_insertlast(lablistp,ins_adress,lab2,NULL);
+                        if(err!=0)return INTERN_INTERPRETATION_ERR;
                       }
                       if(Ac->begincnt==0)
                       {
@@ -907,7 +910,8 @@ if(Ac->rpt_size==MAX_RPTYPES)
                       varA->type=tINTEGER;
                       varA->data.i=lab;
                       ins_adress=generator(inslistp,I_LABEL,varA,NULL,NULL);
-                      labL_insertlast(lablistp,ins_adress,lab);
+                      err=labL_insertlast(lablistp,ins_adress,lab,NULL);
+                      if(err!=0)return INTERN_INTERPRETATION_ERR;
                       break;
                 case KwWhile:
                       Ac->is_while=true;
@@ -917,7 +921,8 @@ if(Ac->rpt_size==MAX_RPTYPES)
                       varA->type=tINTEGER;
                       varA->data.i=Ac->labIDcnt;
                       ins_adress=generator(inslistp,I_LABEL,varA,NULL,NULL);
-                      labL_insertlast(lablistp,ins_adress,Ac->labIDcnt);
+                      err=labL_insertlast(lablistp,ins_adress,Ac->labIDcnt,NULL);
+                      if(err!=0)return INTERN_INTERPRETATION_ERR;
                       push(s_stack,&Ac->labIDcnt,-1);
                       Ac->labIDcnt++;
                       break;
@@ -1060,7 +1065,8 @@ if(Ac->rpt_size==MAX_RPTYPES)
                         varA->type=tINTEGER;
                         varA->data.i=0;
                         ins_adress=generator(inslistp,I_LABEL,varA,NULL,NULL); // nulty label=zaciatok hlavneho programu
-                        labL_insertlast(lablistp,ins_adress,0);
+                        err=labL_insertlast(lablistp,ins_adress,0,NULL);
+                        if(err!=0)return INTERN_INTERPRETATION_ERR;
                         Ac->labIDcnt++;
                       }
                       Ac->begincnt++;
@@ -1137,7 +1143,8 @@ if(Ac->rpt_size==MAX_RPTYPES)
                         varA->type=tINTEGER;
                         varA->data.i=lab;
                         ins_adress=generator(inslistp,I_LABEL,varA,NULL,NULL);
-                        labL_insertlast(lablistp,ins_adress,lab);
+                        err=labL_insertlast(lablistp,ins_adress,lab,NULL);
+                        if(err!=0)return INTERN_INTERPRETATION_ERR;
                       }
                       if(Ac->whbegcnt==0 && Ac->is_while==true) // koniec prikazu while
                       {
@@ -1163,7 +1170,8 @@ if(Ac->rpt_size==MAX_RPTYPES)
                         varA->type=tINTEGER;
                         varA->data.i=lab2;
                         ins_adress=generator(inslistp,I_LABEL,varA,NULL,NULL);
-                        labL_insertlast(lablistp,ins_adress,lab2);
+                        err=labL_insertlast(lablistp,ins_adress,lab2,NULL);
+                        if(err!=0)return INTERN_INTERPRETATION_ERR;
                       }
                       break;
                 case KwThen:
@@ -1210,7 +1218,8 @@ if(Ac->rpt_size==MAX_RPTYPES)
                       varA->type=tINTEGER;
                       varA->data.i=lab;
                       ins_adress=generator(inslistp,I_LABEL,varA,NULL,NULL);
-                      labL_insertlast(lablistp,ins_adress,lab);
+                      err=labL_insertlast(lablistp,ins_adress,lab,NULL);
+                      if(err!=0)return INTERN_INTERPRETATION_ERR;
                       break;
                 case KwWhile:
                       Ac->is_while=true;
@@ -1220,7 +1229,8 @@ if(Ac->rpt_size==MAX_RPTYPES)
                       varA->type=tINTEGER;
                       varA->data.i=Ac->labIDcnt;
                       ins_adress=generator(inslistp,I_LABEL,varA,NULL,NULL);
-                      labL_insertlast(lablistp,ins_adress,Ac->labIDcnt);
+                      err=labL_insertlast(lablistp,ins_adress,Ac->labIDcnt,NULL);
+                      if(err!=0)return INTERN_INTERPRETATION_ERR;
                       push(s_stack,&Ac->labIDcnt,-1);
                       Ac->labIDcnt++;
                       break;
