@@ -958,8 +958,8 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 						break;
 
 						case tSTRING:
-						/*LocalFrame->active->data.s=malloc
-						LocalFrame->active->data.s=top(&stack);*/
+						LocalFrame->active->data.s=malloc(strlen(*(char **)stack.Top->data)+1);
+						strcpy(LocalFrame->active->data.s,*(char **)top(&stack));
 						pop(&stack);
 						break;
 
@@ -1001,7 +1001,7 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 					break;
 
 					case tSTRING:
-				//	push(&stack,&op1->data.s,sizeof(char)* (strlen(op1->data.s)));
+					push(&stack,&op1->data.s,strlen(op1->data.s)+1);
 					break;
 
 					default:
