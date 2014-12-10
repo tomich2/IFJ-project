@@ -24,6 +24,7 @@ typedef struct sym_tabs
 	bool is_cmp;
 	bool is_comm;
 	bool is_func;
+	bool was_func;
 } Tabs;
 
 
