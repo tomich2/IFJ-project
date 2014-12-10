@@ -1144,12 +1144,65 @@ if [ $value = $expected ];
 fi
 
 
+./parser ./test/file105 > test0.outputs/file105.output 2>&1;
+value=$?;
+expected=0;
+if [ $value = $expected ];
+    then
+	if diff ./test0.outputs/file105.output ./test/file105.cmp >/dev/null ;
+        then
+	echo -e "Testing file105                    ${green}PASS${NC}";
+	else
+	echo -e "Testing file105                    ${red}FAIL, different output${NC}";
+	fi
+    else
+        echo -e "Testing file105                    ${red}FAIL, return code $value, expected $expected${NC}";
+fi
 
+./parser ./test/file106 > test0.outputs/file106.output 2>&1;
+value=$?;
+expected=0;
+if [ $value = $expected ];
+    then
+	if diff ./test0.outputs/file106.output ./test/file106.cmp >/dev/null ;
+        then
+	echo -e "Testing file106                    ${green}PASS${NC}";
+	else
+	echo -e "Testing file106                    ${red}FAIL, different output${NC}";
+	fi
+    else
+        echo -e "Testing file106                    ${red}FAIL, return code $value, expected $expected${NC}";
+fi
 
+./parser ./test/file107 > test0.outputs/file107.output 2>&1;
+value=$?;
+expected=0;
+if [ $value = $expected ];
+    then
+	if diff ./test0.outputs/file107.output ./test/file107.cmp >/dev/null ;
+        then
+	echo -e "Testing file107                    ${green}PASS${NC}";
+	else
+	echo -e "Testing file107                    ${red}FAIL, different output${NC}";
+	fi
+    else
+        echo -e "Testing file107                    ${red}FAIL, return code $value, expected $expected${NC}";
+fi
 
-
-
-
+./parser ./test/file108 > test0.outputs/file108.output 2>&1;
+value=$?;
+expected=0;
+if [ $value = $expected ];
+    then
+	if diff ./test0.outputs/file108.output ./test/file108.cmp >/dev/null ;
+        then
+	echo -e "Testing file108                    ${green}PASS${NC}";
+	else
+	echo -e "Testing file108                    ${red}FAIL, different output${NC}";
+	fi
+    else
+        echo -e "Testing file108                    ${red}FAIL, return code $value, expected $expected${NC}";
+fi
 
 
 
