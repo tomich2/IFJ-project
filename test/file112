@@ -1,0 +1,8 @@
+var	a: real;
+	b: real;
+begin
+	a:=50;
+	b:=10;
+	a:=a/b/5;
+	write (a,'#10')
+end.
