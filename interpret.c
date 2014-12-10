@@ -1210,7 +1210,7 @@ if(div0==true)
 			else
 			{
                 parity++;
-                if (parity % 2 == 0 && str[i+1]=='\'') printf ("%c",str[i++]);
+                //if (parity % 2 == 0 && str[i+1]=='\'') printf ("%c",str[i++]);
 			}
 
 
