@@ -3,7 +3,7 @@
 #include "error.h"
 #include "frame.h"
 #include "parser.h"
-#include "garbage.h	"
+#include "garbage.h"
 
 #include <stdint.h>
 #include <stdio.h>
