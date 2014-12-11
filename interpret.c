@@ -28,10 +28,12 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 	bool bop1, bop2;
 	bop1=false;
 	bop2=false;
+	bool bcall=false;
 	Stack Fstack;
 	init(&Fstack,sizeof(struct tListofVariables*));
 	Stack stack;
 	init(&stack,sizeof(struct tListofVariables*));
+	
 
 
 	/**************pomocne**************/
@@ -47,15 +49,19 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 	tmfunc=malloc(sizeof(struct FrameVariable));
 
 	tmp1->name=TMPU;
+	tmp1->data.s=NULL;
 	tmp2->name=TMPU2;
+	tmp2->data.s=NULL;
 	tmparam->name=TMParam;
+	tmparam->data.s=NULL;
 	tmfunc->name=TMFunc;
+	tmfunc->data.s=NULL;
 
 
 	/**************pomocne**************/
 
 
-	//showList(instList);
+
 
 	instList->active=instList->first;
 	instr=instList->active->Instr;
@@ -66,7 +72,8 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 
 	while(run)
 	{
-
+	instr=instList->active->Instr;
+	
 	if(instr->a != NULL)
 	{
 		if(instr->a->type==tVAR)
@@ -191,6 +198,7 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 	}
 	else op3=NULL;
 
+	
 	/*************************************************SWITCH*****************************************************************/
 
 		switch(instList->active->Instr->Iname)
@@ -760,9 +768,11 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 
 			case I_ASSIGN:
 			{
-
+				
+				//printf("op1 type =%d \n",op1->type);
 				if((op1->type)==tINTEGER)
 				{
+					
 					op3->data.i=op1->data.i;
 					if((op3 == tmp1) || (op3 == tmp2) || (op3 == tmparam) || (op3 == tmfunc))
 					op3->type=tINTEGER;
@@ -770,6 +780,7 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 				}
 				else if((op1->type)==tREAL)
 				{
+					
 					op3->data.r=op1->data.r;
 					if((op3 == tmp1) || (op3 == tmp2) || (op3 == tmparam) || (op3 == tmfunc))
 					op3->type=tREAL;
@@ -900,12 +911,14 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 
 			case I_LABEL:
 			{
+				
 				break;
 			}
 
 
 			case I_GOTO:
 			{
+				
 				if(op2 != NULL)
 				{
 					if(op2->type==tBOOLEAN)
@@ -929,10 +942,14 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 
 			case I_CALL:
 			{
+				
 				if(LocalFrame != NULL)
 					push(&Fstack,&LocalFrame,-1);
 				LocalFrame=createFrame(op1->data.s, varList);
-
+				
+				push(&Fstack,&instList->active,sizeof(tListItem*));
+				
+				push(&Fstack,&op3,sizeof(struct FrameVariable*));
 
 				LocalFrame->active=LocalFrame->first;
 				while((LocalFrame->active != NULL) && (LocalFrame->active->param==false))	//najde prvy param v zozname
@@ -969,23 +986,83 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 					}
 					LocalFrame->active=LocalFrame->active->nextvar;
 				}
+				
+				lablist->Active=lablist->First;
+				while(lablist->Active != NULL)
+				{
+					if(lablist->Active->func_name != NULL)
+					{
+						if(strcmp(op1->data.s, lablist->Active->func_name)==0)
+						{
+							instList->active=lablist->Active->ins_ptr;
+							instList->active=instList->active->nextItem;
+							instList->active=instList->active->nextItem;
+							
+							bcall=true;
+						}
+					}
+					lablist->Active=lablist->Active->next;
+				}
 
 				break;
 			}
 
 			case I_RETURN:
 			{
+				
+				op3=*(tFrameVariable**)top(&Fstack);
+				pop(&Fstack);
+				
+				op3->type=LocalFrame->first->type;
+				
+				switch(LocalFrame->first->type)
+				{
+					case tINTEGER:
+						op3->data.i=LocalFrame->first->data.i;
+						
+						break;
+
+						case tREAL:
+						
+						op3->data.r=LocalFrame->first->data.r;
+						
+						break;
+
+						case tBOOLEAN:
+						op3->data.b=LocalFrame->first->data.b;
+						break;
+
+						case tSTRING:
+						if(op3->data.s != NULL)
+							free(op3->data.s);
+						op3->data.s=malloc(strlen(LocalFrame->first->data.s));
+						strcpy(op3->data.s, LocalFrame->first->data.s);
+						
+						break;
+
+						default:
+						break;
+				}
+
+				instList->active=*(struct listItem**)top(&Fstack);
+				pop(&Fstack);
+				
 				frameFree(LocalFrame);
+				
 				if(S_empty(&Fstack)==false)
 				{
 					LocalFrame=*(tListofVariables **)top(&Fstack);
 					pop(&Fstack);
 				}
+				else LocalFrame=NULL;
+				
+				
 				break;
 			}
 
 			case I_PUSH:
 			{
+				
 				switch(op1->type)
 				{
 					case tINTEGER:
@@ -1113,11 +1190,14 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 
 	}	//KONIEC SWITCHU
 
-
-	instList->active=instList->active->nextItem;
-	if (instList->active == NULL)
-		run=false;
-	else instr=instList->active->Instr;
+	if(bcall==false)
+	{
+		instList->active=instList->active->nextItem;
+		if (instList->active == NULL)
+			run=false;
+		
+	}
+	else bcall=false;
 
 	if(bop1 == true )
 	{
@@ -1139,9 +1219,22 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 
 if(GlobalFrame != NULL)
 	frameFree(GlobalFrame);
+	
+if(tmp1->data.s != NULL)
+	free(tmp1->data.s);
 free(tmp1);
+
+if(tmp2->data.s != NULL)
+	free(tmp2->data.s);
 free(tmp2);
+
+if(tmparam->data.s != NULL)
+	free(tmparam->data.s);
 free(tmparam);
+
+if(tmfunc->data.s != NULL)
+	free(tmfunc->data.s);
+free(tmfunc);
 
 if(div0==true)
 	Error(8);
