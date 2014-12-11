@@ -760,17 +760,17 @@ if(Ac->rpt_size==MAX_RPTYPES)
                         varA=malloc(sizeof(*varA));
                         if(varA==NULL)return INTERN_INTERPRETATION_ERR;
                         varA->type=tINTEGER;
+                        varA->data.i=0;
+                        varA->data.s=NULL;
+                        generator(inslistp,I_GOTO,varA,NULL,NULL);
+                        varA=malloc(sizeof(*varA));
+                        if(varA==NULL)return INTERN_INTERPRETATION_ERR;
+                        varA->type=tINTEGER;
                         varA->data.i=Ac->labIDcnt;
                         ins_adress=generator(inslistp,I_LABEL,varA,NULL,NULL);
                         err=labL_insertlast(lablistp,ins_adress,Ac->labIDcnt,Ac->act_funcID);
                         if(err!=0)return INTERN_INTERPRETATION_ERR;
                         Ac->labIDcnt++;
-                        varA=malloc(sizeof(*varA));
-                        if(varA==NULL)return INTERN_INTERPRETATION_ERR;
-                        varA->type=tINTEGER;
-                        varA->data.i=0;
-                        varA->data.s=NULL;
-                        generator(inslistp,I_GOTO,varA,NULL,NULL);
                       }
                       Ac->begincnt++;
                       if(Ac->is_else==true)Ac->ifbegcnt++;
