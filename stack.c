@@ -19,7 +19,7 @@ void push(Stack *stack, void *push_data, int size_sp)
 {
  S_item *tmp;
  size_t size=stack->it_size;
- if (size_sp>0) size=size_sp+1;
+ if (size_sp>0) size=size_sp;
  tmp=(S_item *) malloc(sizeof(S_item));
  if (tmp==NULL) 
  	{
