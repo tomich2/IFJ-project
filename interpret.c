@@ -995,8 +995,7 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 						if(strcmp(op1->data.s, lablist->Active->func_name)==0)
 						{
 							instList->active=lablist->Active->ins_ptr;
-							instList->active=instList->active->nextItem;
-							instList->active=instList->active->nextItem;
+							
 							
 							bcall=true;
 						}
