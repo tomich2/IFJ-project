@@ -1,9 +1,11 @@
 // IFJ14, projekt do predmetu IFJ pre 2BIT 2014/2015 //
+
 /////// Autor: Jan Profant
 ///////        Filip Badan
 ///////        Michal Chomo
 ///////        Tomas Chomo
-///////        Findo
+///////        Filip Listiak
+
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -12,7 +14,16 @@
 #include "lexstring.h"
 #include "error.h"
 
-int kluc=1;
+//
+// Subor lexstring.c obsahuje implementaciu funkcii potrebnych pre funkciu get_token(), hlavne
+// kvoli dynamickej praci s pamatou
+//
+
+int kluc=1;                                                                                     // pomocna premenna
+
+// Funkcia string_implementation sluzi na zistenie, ci je potrebne naalokovate viac miesta
+// alebo je velkost pola znakov dostacujuca.
+// Sluzi na ulozenie jedneho znaku do pola
 
 char *string_implementation (char c,int i,char *mem)
 {
@@ -21,6 +32,8 @@ char *string_implementation (char c,int i,char *mem)
     mem[i]=c;                                                                                   // uloz znak
     return mem;                                                                                 // vrat ukazovatel
 }
+
+// Funkcia aloocate_string naalokuje miesto potrebne pre ulozenie retazca
 
 char *allocate_string (int i,char *mem)
 {
@@ -38,6 +51,8 @@ char *allocate_string (int i,char *mem)
     }
     return mem;
 }
+
+// Funkcia first_allocation sa vola pri prvej alokacii retazca
 
 char *first_allocation ()
 {
