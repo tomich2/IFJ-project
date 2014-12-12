@@ -769,7 +769,7 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 			case I_ASSIGN:
 			{
 				
-				//printf("op1 type =%d \n",op1->type);
+				
 				if((op1->type)==tINTEGER)
 				{
 					
@@ -795,9 +795,9 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 				{
 					if (instr->a->type==tVAR)
 					{
-						if(op3->data.s != NULL)
-							free(op3->data.s);
 						op3->data.s=malloc(strlen(op1->data.s)+1);
+						if((op3 == tmp1) || (op3 == tmp2) || (op3 == tmparam) || (op3 == tmfunc))
+							 InsertFirst(LGar,op3->data.s); 
 						strcpy(op3->data.s,op1->data.s);
 					}
 					else op3->data.s=op1->data.s;
@@ -1032,9 +1032,10 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 						break;
 
 						case tSTRING:
-						if(op3->data.s != NULL)
-							free(op3->data.s);
+						
 						op3->data.s=malloc(strlen(LocalFrame->first->data.s));
+						if((op3 == tmp1) || (op3 == tmp2) || (op3 == tmparam) || (op3 == tmfunc))
+							 InsertFirst(LGar,op3->data.s);  
 						strcpy(op3->data.s, LocalFrame->first->data.s);
 						
 						break;
@@ -1090,100 +1091,87 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 
 			case I_LENGTH:
 			{
-				if((op1->type) == tSTRING)
-				{
-					if ((op1->data.s) != NULL)
-					{
+				
+				tmp1->type=tSTRING;
+				tmp1->data.s=malloc(strlen(*(char **)stack.Top->data)+1);
+				strcpy(tmp1->data.s,*(char **)top(&stack));
+				pop(&stack);
+			
+			    InsertFirst(LGar,tmp1->data.s); 
+				
+				op3->data.i=length_func(convert_my_string(tmp1->data.s));
+				op3->type=tINTEGER;
+			
 
-						if((op2->type) == tINTEGER)
-							{
-								op2->data.i=length_func(op1->data.s);
-								if((op2 == tmp1) || (op2 == tmp2) || (op2 == tmparam))
-								op2->type=tINTEGER;
-
-							}
-
-							else
-							{
-								Error(4);
-								break;
-							}
-					}
-
-					//else
-
-				}
-
-				else
-					{
-						Error(4);
-						break;
-					}
 
 				break;
 			}
 
 			case I_SORT:
 			{
-
-				if((op1->type) == tSTRING)
-				{
-					if ((op1->data.s) != NULL)
-					{
-
-						if((op2->type) == tSTRING)
-							{
-								op2->data.s=sort_func(op1->data.s);
-								if((op2 == tmp1) || (op2 == tmp2) || (op2 == tmparam))
-								op2->type=tSTRING;
-
-							}
-
-							else
-
-								{
-									Error(4);
-									break;
-								}
-
-					}
-				}
-
-				else
-
-					{
-						Error(4);
-						break;
-					}
-					break;
+				
+				tmp1->type=tSTRING;
+				tmp1->data.s=malloc(strlen(*(char **)stack.Top->data)+1);
+				strcpy(tmp1->data.s,*(char **)top(&stack));
+				pop(&stack);
+				InsertFirst(LGar,tmp1->data.s);  
+				
+				
+				
+				op3->data.s=sort_func(convert_my_string(tmp1->data.s));
+				op3->type=tSTRING;
+				
+			
+				break;
 			}
 
 			case I_FIND:
 			{
-				if(((op1->type) == tSTRING) && ((op2->type) == tSTRING) && ((op3->type) == tINTEGER))
-
-					{
-						if (((op1->data.s) != NULL) && ((op2->data.s) != NULL))
-						{
-
-							op3->data.i=find_func((op1->data.s),(op2->data.s));
-							if((op3 == tmp1) || (op3 == tmp2) || (op3 == tmparam) || (op3 == tmfunc))
-							op3->type=tINTEGER;
-						}
-					}
-
-				else
-
-					{
-						Error(4);
-						break;
-					}
-
+				
+				tmp2->type=tSTRING;
+				tmp2->data.s=malloc(strlen(*(char **)stack.Top->data)+1);
+				strcpy(tmp2->data.s,*(char **)top(&stack));
+				pop(&stack);
+				InsertFirst(LGar,tmp2->data.s); 
+				
+				tmp1->type=tSTRING;
+				tmp1->data.s=malloc(strlen(*(char **)stack.Top->data)+1);
+				strcpy(tmp1->data.s,*(char **)top(&stack));
+				pop(&stack);
+				InsertFirst(LGar,tmp1->data.s); 
+				
+				op3->data.i=find_func(convert_my_string(tmp1->data.s), convert_my_string(tmp2->data.s));
+				op3->type=tINTEGER;
+				
+				
+				break;
+				
+			}
+			
+			case I_COPY:
+			{
+				tmparam->type=tINTEGER;
+				tmparam->data.i=*(int *)top(&stack);
+				pop(&stack);
+				
+				tmp2->type=tINTEGER;
+				tmp2->data.i=*(int *)top(&stack);
+				pop(&stack);
+				
+				tmp1->type=tSTRING;
+				tmp1->data.s=malloc(strlen(*(char **)stack.Top->data)+1);
+				strcpy(tmp1->data.s,*(char **)top(&stack));
+				pop(&stack);
+				
+				InsertFirst(LGar,tmp1->data.s);  
+				
+				op3->data.s=copy_func(convert_my_string(tmp1->data.s), tmp2->data.i, tmparam->data.i);
+				op3->type=tSTRING;
+				
 				break;
 			}
-
-
-
+				
+				
 			default:
 			break;
 
@@ -1219,20 +1207,10 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 if(GlobalFrame != NULL)
 	frameFree(GlobalFrame);
 	
-if(tmp1->data.s != NULL)
-	free(tmp1->data.s);
+
 free(tmp1);
-
-if(tmp2->data.s != NULL)
-	free(tmp2->data.s);
 free(tmp2);
-
-if(tmparam->data.s != NULL)
-	free(tmparam->data.s);
 free(tmparam);
-
-if(tmfunc->data.s != NULL)
-	free(tmfunc->data.s);
 free(tmfunc);
 
 if(div0==true)
@@ -1240,7 +1218,26 @@ if(div0==true)
 
 }  //KONIEC FUNKCIE INTERPRETATION LOOP
 
-void print_my_string (char *str)
+	void printchar(unsigned char theChar)
+	{
+		switch (theChar)
+		{
+			case '\n':
+			printf("\\n");
+			break;
+			case '\r':
+			printf("\\r");
+			break;
+			case '\t':
+			printf("\\t");
+			break;
+			case '\f':
+			printf("\\f");
+			break;
+		}
+	}
+
+	void print_my_string (char *str)
 	{
 		int i=0;
 		int parity=0;
@@ -1263,6 +1260,7 @@ void print_my_string (char *str)
 				char convert[j+1];
 				strncpy(convert,(str+i+1),j);
 				convert[j]='\0';
+				//printf ("%s\n",convert);
 				int value=atoi(convert);
 
 				printf ("%c",value);
@@ -1290,27 +1288,7 @@ void print_my_string (char *str)
 
 		}
 	}
-
-	void printchar(unsigned char theChar)
-	{
-		switch (theChar)
-		{
-			case '\n':
-			printf("\\n");
-			break;
-			case '\r':
-			printf("\\r");
-			break;
-			case '\t':
-			printf("\\t");
-			break;
-			case '\f':
-			printf("\\f");
-			break;
-		}
-	}
-
-
+	
 	char * convert_my_string (char *str)
 	{
 		int i=0;
