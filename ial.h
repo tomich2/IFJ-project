@@ -1,9 +1,10 @@
 // IFJ14, projekt do predmetu IFJ pre 2BIT 2014/2015 //
+
 /////// Autor: Jan Profant
 ///////        Filip Badan
 ///////        Michal Chomo
 ///////        Tomas Chomo
-///////        Findo
+///////        Filip Listiak
 
 #ifndef IAL_H
 #define IAL_H
@@ -11,6 +12,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+
+//
+// Subor ial.h obsahuje deklaraciu vstavanych funkcii jazyka IFJ14 a implementaciu
+// tabulky symbolov pomocou hashovacej tabulky
+//
 
 typedef enum types_tab { FUNCTION, IDENTIFIER, LOOP } types;
 
@@ -51,6 +57,6 @@ int length_func(char *str);
 char * copy_func (char *str,unsigned int i, unsigned int n);
 unsigned int find_func (char *str,char *search_str);
 char * sort_func (char * str);
-void func_Sift_Down(char * str,int Left,int Right);
+void Sift_Down(char * str,int Left,int Right);
 #endif
-	
+
