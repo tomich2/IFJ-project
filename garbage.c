@@ -20,6 +20,7 @@
 // s pamatou a nasledne ju aj transparentne uvolnit
 
 // Inicializacia zoznamu pre garbage collector
+
 void InitList (TGarbage *L)
 {
     L->Act = NULL;
@@ -28,6 +29,7 @@ void InitList (TGarbage *L)
 
 // Vlozi novy prvok zoznamu, najskor prehlada, ci sa tam rovnaky prvok uz nenachadza,
 // aby nedoslo k dvojnasobnemu uvolneniu
+
 void InsertFirst (TGarbage * L, char * Elem)
 {
     TGarbagePtr uk=L->First;
@@ -47,6 +49,7 @@ void InsertFirst (TGarbage * L, char * Elem)
 }
 
 // Uvolni cely zoznam aj vsetky naalokovane ukazovatele
+
 void DisposeList (TGarbage * L)
 {
     TGarbagePtr p=NULL;
