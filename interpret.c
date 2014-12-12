@@ -33,7 +33,7 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 	init(&Fstack,sizeof(struct tListofVariables*));
 	Stack stack;
 	init(&stack,sizeof(struct tListofVariables*));
-	
+
 
 
 	/**************pomocne**************/
@@ -73,7 +73,7 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 	while(run)
 	{
 	instr=instList->active->Instr;
-	
+
 	if(instr->a != NULL)
 	{
 		if(instr->a->type==tVAR)
@@ -198,7 +198,7 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 	}
 	else op3=NULL;
 
-	
+
 	/*************************************************SWITCH*****************************************************************/
 
 		switch(instList->active->Instr->Iname)
@@ -768,11 +768,11 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 
 			case I_ASSIGN:
 			{
-				
-				
+
+
 				if((op1->type)==tINTEGER)
 				{
-					
+
 					op3->data.i=op1->data.i;
 					if((op3 == tmp1) || (op3 == tmp2) || (op3 == tmparam) || (op3 == tmfunc))
 					op3->type=tINTEGER;
@@ -780,7 +780,7 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 				}
 				else if((op1->type)==tREAL)
 				{
-					
+
 					op3->data.r=op1->data.r;
 					if((op3 == tmp1) || (op3 == tmp2) || (op3 == tmparam) || (op3 == tmfunc))
 					op3->type=tREAL;
@@ -797,7 +797,7 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 					{
 						op3->data.s=malloc(strlen(op1->data.s)+1);
 						if((op3 == tmp1) || (op3 == tmp2) || (op3 == tmparam) || (op3 == tmfunc))
-							 InsertFirst(LGar,op3->data.s); 
+							 InsertFirst(LGar,op3->data.s);
 						strcpy(op3->data.s,op1->data.s);
 					}
 					else op3->data.s=op1->data.s;
@@ -911,14 +911,14 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 
 			case I_LABEL:
 			{
-				
+
 				break;
 			}
 
 
 			case I_GOTO:
 			{
-				
+
 				if(op2 != NULL)
 				{
 					if(op2->type==tBOOLEAN)
@@ -942,13 +942,13 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 
 			case I_CALL:
 			{
-				
+
 				if(LocalFrame != NULL)
 					push(&Fstack,&LocalFrame,-1);
 				LocalFrame=createFrame(op1->data.s, varList);
-				
+
 				push(&Fstack,&instList->active,sizeof(tListItem*));
-				
+
 				push(&Fstack,&op3,sizeof(struct FrameVariable*));
 
 				LocalFrame->active=LocalFrame->first;
@@ -986,7 +986,7 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 					}
 					LocalFrame->active=LocalFrame->active->nextvar;
 				}
-				
+
 				lablist->Active=lablist->First;
 				while(lablist->Active != NULL)
 				{
@@ -995,8 +995,8 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 						if(strcmp(op1->data.s, lablist->Active->func_name)==0)
 						{
 							instList->active=lablist->Active->ins_ptr;
-							
-							
+
+
 							bcall=true;
 						}
 					}
@@ -1008,23 +1008,23 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 
 			case I_RETURN:
 			{
-				
+
 				op3=*(tFrameVariable**)top(&Fstack);
 				pop(&Fstack);
-				
+
 				op3->type=LocalFrame->first->type;
-				
+
 				switch(LocalFrame->first->type)
 				{
 					case tINTEGER:
 						op3->data.i=LocalFrame->first->data.i;
-						
+
 						break;
 
 						case tREAL:
-						
+
 						op3->data.r=LocalFrame->first->data.r;
-						
+
 						break;
 
 						case tBOOLEAN:
@@ -1032,12 +1032,12 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 						break;
 
 						case tSTRING:
-						
+
 						op3->data.s=malloc(strlen(LocalFrame->first->data.s));
 						if((op3 == tmp1) || (op3 == tmp2) || (op3 == tmparam) || (op3 == tmfunc))
-							 InsertFirst(LGar,op3->data.s);  
+							 InsertFirst(LGar,op3->data.s);
 						strcpy(op3->data.s, LocalFrame->first->data.s);
-						
+
 						break;
 
 						default:
@@ -1046,23 +1046,23 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 
 				instList->active=*(struct listItem**)top(&Fstack);
 				pop(&Fstack);
-				
+
 				frameFree(LocalFrame);
-				
+
 				if(S_empty(&Fstack)==false)
 				{
 					LocalFrame=*(tListofVariables **)top(&Fstack);
 					pop(&Fstack);
 				}
 				else LocalFrame=NULL;
-				
-				
+
+
 				break;
 			}
 
 			case I_PUSH:
 			{
-				
+
 				switch(op1->type)
 				{
 					case tINTEGER:
@@ -1091,17 +1091,17 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 
 			case I_LENGTH:
 			{
-				
+
 				tmp1->type=tSTRING;
 				tmp1->data.s=malloc(strlen(*(char **)stack.Top->data)+1);
 				strcpy(tmp1->data.s,*(char **)top(&stack));
 				pop(&stack);
-			
-			    InsertFirst(LGar,tmp1->data.s); 
-				
+
+			    InsertFirst(LGar,tmp1->data.s);
+
 				op3->data.i=length_func(convert_my_string(tmp1->data.s));
 				op3->type=tINTEGER;
-			
+
 
 
 				break;
@@ -1109,69 +1109,69 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 
 			case I_SORT:
 			{
-				
+
 				tmp1->type=tSTRING;
 				tmp1->data.s=malloc(strlen(*(char **)stack.Top->data)+1);
 				strcpy(tmp1->data.s,*(char **)top(&stack));
 				pop(&stack);
-				InsertFirst(LGar,tmp1->data.s);  
-				
-				
-				
+				InsertFirst(LGar,tmp1->data.s);
+
+
+
 				op3->data.s=sort_func(convert_my_string(tmp1->data.s));
 				op3->type=tSTRING;
-				
-			
+
+
 				break;
 			}
 
 			case I_FIND:
 			{
-				
+
 				tmp2->type=tSTRING;
 				tmp2->data.s=malloc(strlen(*(char **)stack.Top->data)+1);
 				strcpy(tmp2->data.s,*(char **)top(&stack));
 				pop(&stack);
-				InsertFirst(LGar,tmp2->data.s); 
-				
+				InsertFirst(LGar,tmp2->data.s);
+
 				tmp1->type=tSTRING;
 				tmp1->data.s=malloc(strlen(*(char **)stack.Top->data)+1);
 				strcpy(tmp1->data.s,*(char **)top(&stack));
 				pop(&stack);
-				InsertFirst(LGar,tmp1->data.s); 
-				
+				InsertFirst(LGar,tmp1->data.s);
+
 				op3->data.i=find_func(convert_my_string(tmp1->data.s), convert_my_string(tmp2->data.s));
 				op3->type=tINTEGER;
-				
-				
+
+
 				break;
-				
+
 			}
-			
+
 			case I_COPY:
 			{
 				tmparam->type=tINTEGER;
 				tmparam->data.i=*(int *)top(&stack);
 				pop(&stack);
-				
+
 				tmp2->type=tINTEGER;
 				tmp2->data.i=*(int *)top(&stack);
 				pop(&stack);
-				
+
 				tmp1->type=tSTRING;
 				tmp1->data.s=malloc(strlen(*(char **)stack.Top->data)+1);
 				strcpy(tmp1->data.s,*(char **)top(&stack));
 				pop(&stack);
-				
-				InsertFirst(LGar,tmp1->data.s);  
-				
+
+				InsertFirst(LGar,tmp1->data.s);
+
 				op3->data.s=copy_func(convert_my_string(tmp1->data.s), tmp2->data.i, tmparam->data.i);
 				op3->type=tSTRING;
-				
+
 				break;
 			}
-				
-				
+
+
 			default:
 			break;
 
@@ -1182,7 +1182,7 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 		instList->active=instList->active->nextItem;
 		if (instList->active == NULL)
 			run=false;
-		
+
 	}
 	else bcall=false;
 
@@ -1206,7 +1206,7 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 
 if(GlobalFrame != NULL)
 	frameFree(GlobalFrame);
-	
+
 
 free(tmp1);
 free(tmp2);
@@ -1218,155 +1218,149 @@ if(div0==true)
 
 }  //KONIEC FUNKCIE INTERPRETATION LOOP
 
-	void printchar(unsigned char theChar)
+
+// Funkcia printchar sluzi na zabranie vytlacenia netlacitelneho znaku, napr. koniec riadku, tabulator
+
+void printchar(unsigned char theChar)
+{
+	switch (theChar)
 	{
-		switch (theChar)
-		{
-			case '\n':
-			printf("\\n");
-			break;
-			case '\r':
-			printf("\\r");
-			break;
-			case '\t':
-			printf("\\t");
-			break;
-			case '\f':
-			printf("\\f");
-			break;
-		}
+		case '\n':
+		printf("\\n");
+		break;
+		case '\r':
+		printf("\\r");
+		break;
+		case '\t':
+		printf("\\t");
+		break;
+		case '\f':
+		printf("\\f");
+		break;
 	}
+}
 
-	void print_my_string (char *str)
+// Funkcia print_my_string sluzi na vytlacenie retazca podla formatovaneho vystupu jazyka IFJ14 (funkcia write)
+
+void print_my_string (char *str)
+{
+	int i=0;
+	int parity=0;
+	while ((str[i]!='\0'))                                                  // kym nie si na konci
 	{
-		int i=0;
-		int parity=0;
-		while ((str[i]!='\0') )
+		if (str[i]=='#')                                                    // ak narazis na escape sekvenciu
 		{
-
-			if (str[i]=='#')
+			int j=0;
+			int count=i+1;
+			while (str[count]>='0' && str[count]<='9')                      // spracuj ju ako cislo
 			{
-
-				int j=0;
-				int count=i+1;
-
-				while (str[count]>='0' && str[count]<='9')
-				{
-					count++;
-					j++;
-				}
-
-
-				char convert[j+1];
-				strncpy(convert,(str+i+1),j);
-				convert[j]='\0';
-				//printf ("%s\n",convert);
-				int value=atoi(convert);
-
-				printf ("%c",value);
-				i=count;
+				count++;
+				j++;
 			}
-
-			if (str[i]!='\'')
+			char convert[j+1];
+			strncpy(convert,(str+i+1),j);
+			convert[j]='\0';
+            int value=atoi(convert);                                        // skonvertuj
+            printf ("%c",value);                                            // a vytlac
+			i=count;
+        }
+		if (str[i]!='\'')                                                   // ak si nenarazil na apostrof
+		{
+			if (str[i]<32)
 			{
-				if (str[i]<32)
-					{
-						printchar (str[i]);
-					}
-				else{
-						printf ("%c",str[i]);
-					}
+				printchar (str[i]);                                         // znak so spatnym lomitkom
+            }
+			else
+			{
+				printf ("%c",str[i]);                                       // vytlac znak
+            }
+        }
+        else
+        {
+            parity++;                                                       // ak sedi parita a dalsi znak je apostrof, vytlac ho
+            if (parity % 2 == 0 && str[i+1]=='\'') printf ("%c",str[i++]);
+		}
+
+
+        i++;
+
+    }
+}
+
+// Funkcia convert_my_string sluzi na konverzovanie retazca pre pracu s nim, napr tlac, ale hlavne vstavane funkcie
+
+char * convert_my_string (char *str)
+{
+	int i=0;
+	int k=0;
+	char * string = malloc (sizeof(char)*(strlen(str)));
+	InsertFirst(LGar,string);
+	int parity=0;
+	while ((str[i]!='\0'))
+	{
+		if (str[i]=='#')
+		{
+			int j=0;
+			int count=i+1;
+			while (str[count]>='0' && str[count]<='9')
+			{
+				count++;
+				j++;
+			}
+			char convert[j+1];
+			strncpy(convert,(str+i+1),j);
+			convert[j]='\0';
+			int value=atoi(convert);
+			string[k]=value;
+			k++;
+			i=count;
+		}
+		if (str[i]!='\'')
+		{
+			if (str[i]<32)
+			{
+				string[k]=convertchar(str[i]);
 			}
 			else
 			{
-                parity++;
-                if (parity % 2 == 0 && str[i+1]=='\'') printf ("%c",str[i++]);
-			}
-
-
-			i++;
-
-		}
-	}
-	
-	char * convert_my_string (char *str)
-	{
-		int i=0;
-		int k=0;
-		char * string = malloc (sizeof(char)*(strlen(str)));
-		InsertFirst(LGar,string);
-		int parity=0;
-		while ((str[i]!='\0'))
-		{
-
-			if (str[i]=='#')
-			{
-
-				int j=0;
-				int count=i+1;
-
-				while (str[count]>='0' && str[count]<='9')
-				{
-					count++;
-					j++;
-				}
-
-
-				char convert[j+1];
-				strncpy(convert,(str+i+1),j);
-				convert[j]='\0';
-				int value=atoi(convert);
-				string[k]=value;
+				string[k]=str[i];
 				k++;
-				i=count;
 			}
-
-			if (str[i]!='\'')
-			{
-				if (str[i]<32)
-				{
-					string[k]=convertchar(str[i]);
-				}
-				else
-				{
-					//printf ("%c",str[i]);
-					string[k]=str[i];
-					k++;
-				}
-			}
-			else
-			{
-                parity++;
-                if (parity % 2 == 0 && str[i+1]=='\'')
-                {
-                    string[k]=str[i++];
-                    k++;
-                }
-			}
-
-
-			i++;
-
 		}
-		string[k]='\0';
-		return string;
-	}
-
-	char convertchar(unsigned char theChar)
-	{
-		switch (theChar)
+		else
 		{
-			case '\n':
-			return '\n';
+            parity++;
+            if (parity % 2 == 0 && str[i+1]=='\'')
+            {
+                string[k]=str[i++];
+                k++;
+            }
+        }
 
-			case '\r':
-			return '\r';
+        i++;
 
-			case '\t':
-			return '\t';
+    }
+	string[k]='\0';
+	return string;
+}
 
-			case '\f':
-            return '\f';
-		}
-		return 0;
+// Funkcia convertchar prekonvertuje znak na znak uzivany v jazyku C
+
+char convertchar(unsigned char theChar)
+{
+	switch (theChar)
+	{
+		case '\n':
+		return '\n';
+
+		case '\r':
+		return '\r';
+
+		case '\t':
+		return '\t';
+
+		case '\f':
+        return '\f';
 	}
+	return 0;
+}
