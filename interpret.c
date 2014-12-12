@@ -1240,26 +1240,7 @@ if(div0==true)
 
 }  //KONIEC FUNKCIE INTERPRETATION LOOP
 
-	void printchar(unsigned char theChar)
-	{
-		switch (theChar)
-		{
-			case '\n':
-			printf("\\n");
-			break;
-			case '\r':
-			printf("\\r");
-			break;
-			case '\t':
-			printf("\\t");
-			break;
-			case '\f':
-			printf("\\f");
-			break;
-		}
-	}
-
-	void print_my_string (char *str)
+void print_my_string (char *str)
 	{
 		int i=0;
 		int parity=0;
@@ -1282,7 +1263,6 @@ if(div0==true)
 				char convert[j+1];
 				strncpy(convert,(str+i+1),j);
 				convert[j]='\0';
-				//printf ("%s\n",convert);
 				int value=atoi(convert);
 
 				printf ("%c",value);
@@ -1309,4 +1289,106 @@ if(div0==true)
 			i++;
 
 		}
+	}
+
+	void printchar(unsigned char theChar)
+	{
+		switch (theChar)
+		{
+			case '\n':
+			printf("\\n");
+			break;
+			case '\r':
+			printf("\\r");
+			break;
+			case '\t':
+			printf("\\t");
+			break;
+			case '\f':
+			printf("\\f");
+			break;
+		}
+	}
+
+
+	char * convert_my_string (char *str)
+	{
+		int i=0;
+		int k=0;
+		char * string = malloc (sizeof(char)*(strlen(str)));
+		InsertFirst(LGar,string);
+		int parity=0;
+		while ((str[i]!='\0'))
+		{
+
+			if (str[i]=='#')
+			{
+
+				int j=0;
+				int count=i+1;
+
+				while (str[count]>='0' && str[count]<='9')
+				{
+					count++;
+					j++;
+				}
+
+
+				char convert[j+1];
+				strncpy(convert,(str+i+1),j);
+				convert[j]='\0';
+				int value=atoi(convert);
+				string[k]=value;
+				k++;
+				i=count;
+			}
+
+			if (str[i]!='\'')
+			{
+				if (str[i]<32)
+				{
+					string[k]=convertchar(str[i]);
+				}
+				else
+				{
+					//printf ("%c",str[i]);
+					string[k]=str[i];
+					k++;
+				}
+			}
+			else
+			{
+                parity++;
+                if (parity % 2 == 0 && str[i+1]=='\'')
+                {
+                    string[k]=str[i++];
+                    k++;
+                }
+			}
+
+
+			i++;
+
+		}
+		string[k]='\0';
+		return string;
+	}
+
+	char convertchar(unsigned char theChar)
+	{
+		switch (theChar)
+		{
+			case '\n':
+			return '\n';
+
+			case '\r':
+			return '\r';
+
+			case '\t':
+			return '\t';
+
+			case '\f':
+            return '\f';
+		}
+		return 0;
 	}
