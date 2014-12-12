@@ -1,9 +1,10 @@
 // IFJ14, projekt do predmetu IFJ pre 2BIT 2014/2015 //
+
 /////// Autor: Jan Profant
 ///////        Filip Badan
 ///////        Michal Chomo
 ///////        Tomas Chomo
-///////        Findo
+///////        Filip Listiak
 
 #ifndef _ERROR_H
 #define _ERROR_H
@@ -11,6 +12,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
+
+//
+// Subor error.h obsahuje difinicu funkcie Error() a definiciu vyctoveho typu pre navratovy kod programu
+//
 
 typedef enum ERR {
                     EVERYTHINGSOKAY=0,
