@@ -1,9 +1,10 @@
 // IFJ14, projekt do predmetu IFJ pre 2BIT 2014/2015 //
+
 /////// Autor: Jan Profant
 ///////        Filip Badan
 ///////        Michal Chomo
 ///////        Tomas Chomo
-///////        Findo
+///////        Filip Listiak
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -14,139 +15,159 @@
 #include "ial.h"
 #include "garbage.h"
 
+//
+// Subor ial.c obsahuje definiciu vstavanych funkcii jazyka IFJ14 a implementaciu
+// tabulky symbolov pomocou hashovacej tabulky
+//
+
+// Funkcia length_func () vracia dlzku retazca zadaneho parametrom char *str
+
 int length_func (char *str)
 {
-    int i=0;
-    while (str[i]!='\0') i++;
-    return i;
+    return strlen (str);
 }
 
+// Funkcia copy_func () vracia ukazovatel na retazec skopirovany z retazca zadaneho parametrom * str,
+// kopiruje sa od pozicie i - n znakov
+// Funkcia pridava naalokovany retazec do Garbage Collectora (dalej len GC)
 
 char * copy_func (char *str,unsigned int i, unsigned int n)
 {
-    if (i+n-1>(strlen(str))) return NULL;
-    char * x=malloc(sizeof(char)*n+1*(sizeof(char)));
-    x[n]='\0';
-    InsertFirst(LGar,x);
+    if (i+n-1>(strlen(str))) return NULL;                       // neda sa kopirovat
+    char * x=malloc(sizeof(char)*n+1*(sizeof(char)));           // naalokuj n znakov
+    x[n]='\0';                                                  // ukonci ho koncovou nulou
+    InsertFirst(LGar,x);                                        // vloz do GC
     int p=0;
-    for (unsigned int j=i-1;j<i+n-1;j++)
+    for (unsigned int j=i-1;j<i+n-1;j++)                        // a veselo kopiruj
     {
         x[p]=str[j];
         if (x[p]=='\0') return x;
         p++;
     }
-    return x;
+    return x;                                                   // vrat ukazovatel
 }
 
 
+// Funkcia find_func () vyhlada a vrati prvy vyskyt podretazca zadaneho parametrom
+// search_string v retazci str
+// Ak sa podretazec nenasiel, vracia 0
+// Pre vyhladavanie je pouzity Boyer-Moore algoritmus
+
 unsigned int find_func (char *str,char *search_str)
 {
-    int length=strlen(search_str);
+    int length=strlen(search_str);                              // spocitaj dlzku retazca
     int str_len=((int)strlen(str));
-    if (length>str_len) return 0;
-    int array[length];
+    if (length>str_len) return 0;                               // podretazec je dlhsi ako retazec
+    int array[length];                                          // vytvor pole typu int
     unsigned indicator=0;
     int i;
-    for (i=0;i<length-1;i++)
-    {
+    for (i=0;i<length-1;i++)                                    // pre kazde pismeno podla indexu a dlzky vytvor
+    {                                                           // cislo, o ktore sa bude posuvat
         array[i]=length-i-1;
 
         if (str[i]==str[length])
             indicator=array[i];
     }
+
     if (indicator==0) array[length-1]=length;
     else array[length-1]=indicator;
 
     i=length-1;
     int j;
     int copy_i=i;
-    while (1)
+    while (1)                                                   // cyklus
     {
         j=length-1;
-        if (search_str[length-1]==str[i])
+        if (search_str[length-1]==str[i])                       // ak si narazil na zhodu znakov
         {
             copy_i=i;
             i--;
             j--;
-            while (j>=0 && search_str[j]==str[i])
+            while (j>=0 && search_str[j]==str[i])               // posuvaj sa kym sa rovnaju
             {
                 i--;
                 j--;
             }
-            if (j==-1) return i+2;
+            if (j==-1) return i+2;                              // nasiel sa string
             j=length-1;
             while (j>=0 && search_str[j]!=str[i]) j--;
-            i=copy_i;
-            if (j==-1) i=i+array[length-1];
+            i=copy_i;                                           // retazec sa nenasiel, obnov i
+            if (j==-1) i=i+array[length-1];                     // a posun sa s indexom
             else i=i+array[j];
-            if (i>=str_len) return 0;
+            if (i>=str_len) return 0;                           // presiel si za dlzku retazca, retazec sa nenasiel
         }
-        if (str[i]=='\0') return 0;
+        if (str[i]=='\0') return 0;                             // si na konci retazca
         i++;
         if (str[i]=='\0') return 0;
     }
 }
 
-void func_Sift_Down(char * str, int Left, int Right)
+// Implementacia radiacej funkcie pre predmet IAL
+// Funkcia ma za ulohu zoradit pole znakov zadane parametrom str
+// Pre implementaciu bol pouzity algoritmus Heap Sort
+// Vo funkcii je volana funkcia Sift_Down pre znovuustanovanie hromady
+
+char * sort_func (char * str1)
+{
+    int N=strlen(str1);                                         // spocitaj dlzku
+    char * str;
+    str=malloc(sizeof(char)*N+1*(sizeof(char)));                // naalokuj potrebnu dlzku retazca
+    str[N]='\0';
+    InsertFirst(LGar,str);                                      // vloz do GC
+    memcpy(str,str1,N);
+    int i, Left, Right,p;
+    Left=N/2;                                                   // index najpravejsieho uzlu na najnizsej urovni
+    Right=N;
+    for (i=Left;i>0;i--)
+    {
+        Sift_Down(str,i,Right);                                 // vlastny cyklus Heap Sortu
+    }
+    for (Right=N;Right>1;Right--)
+    {
+        p=str[0];                                               // vymen koren s aktivnym poslednym prvkom
+        str[0]=str[Right-1];
+        str[Right-1]=p;
+        Sift_Down(str,1,Right-1);                               // prehadz hromadu
+    }
+    return str;
+}
+
+void Sift_Down(char * str, int Left, int Right)
 {
     int i,j;
-    char p;
-    bool Cont;
+    char p;                                                     // pomocna premenna
+    bool Cont;                                                  // riadiaca premenna cyklu
     i=Left;
-    j=2*i;
+    j=2*i;                                                      // index laveho syna
     p=str[i-1];
     Cont=(j<Right) ? 1 : 0;
     while (Cont)
     {
-        if (j<Right)
+        if (j<Right)                                            // uzol ma oba synovske uzly
         {
-            if (str[j-1]<str[j])
+            if (str[j-1]<str[j])                                // pravy syn je vacsi
             {
-                j++;
+                j++;                                            // nastav ho ako vacsieho z dvojice
             }
 
         }
-        if (p>=str[j-1])
+        if (p>=str[j-1])                                        // prvok je na svojom mieste
         {
-            Cont=false;
+            Cont=false;                                         // tak teda skonci
         }
 
         else
-        {
+        {                                                       // p prepada nizsie, str[j] sa presuva vyssie
             str[i-1]=str[j-1];
-            i=j;
-            j=2*i;
-            Cont=(j<Right) ? 1 : 0;
+            i=j;                                                // syn sa stane otcom pre dalsi cyklus
+            j=2*i;                                              // dalsi lavy syn
+            Cont=(j<Right) ? 1 : 0;                             // a pokracujeme
         }
 
     }
-    str[i-1]=p;
+    str[i-1]=p;                                                 // konecne umiestnenie uzlu
 }
 
-char * sort_func (char * str1)
-{
-    int N=strlen(str1);
-    char * str;
-    str=malloc(sizeof(char)*N+1*(sizeof(char)));
-    str[N]='\0';
-    InsertFirst(LGar,str);
-    memcpy(str,str1,N);
-    int i, Left, Right,p;
-    Left=N/2;
-    Right=N;
-    for (i=Left;i>0;i--)
-    {
-        func_Sift_Down(str,i,Right);
-    }
-    for (Right=N;Right>1;Right--)
-    {
-        p=str[0];
-        str[0]=str[Right-1];
-        str[Right-1]=p;
-        func_Sift_Down(str,1,Right-1);
-    }
-    return str;
-}
 
 
 unsigned long hash_function(const char *str, unsigned long htab_size)
