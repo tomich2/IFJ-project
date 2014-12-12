@@ -1,9 +1,11 @@
 // IFJ14, projekt do predmetu IFJ pre 2BIT 2014/2015 //
+
 /////// Autor: Jan Profant
 ///////        Filip Badan
 ///////        Michal Chomo
 ///////        Tomas Chomo
-///////        Findo
+///////        Filip Listiak
+
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -13,9 +15,15 @@
 #include "lexstring.h"
 #include "ial.h"
 
-//retazec klucovych slov
-const char key_words [] = {",begin,boolean,do,else,end,false,find,forward,function,if,integer,readln,real,sort,string,then,true,var,while,write,"};
 //
+// Subor lexical.c obsahuje vsetku implementaciu lexikalnej analyzy prekladaca a intepreta IFJ14
+//
+
+// retazec klucovych slov
+const char key_words [] = {",begin,boolean,do,else,end,false,find,forward,function,if,integer,readln,real,sort,string,then,true,var,while,write,"};
+
+// Funkcia get_token vracia spravu o chybe, resp. spravnom nacitani jedneho tokenu
+// Pracuje s globalnou strukturou token
 
 ERROR_MSG get_token ()
 {
@@ -24,7 +32,7 @@ ERROR_MSG get_token ()
         {
             while (isspace(c)!=0 && c!=EOF) c=fgetc(fp);
         }
-        if (c==EOF)
+        if (c==EOF)                                                                             // narazil si na koniec suboru, referuj o tom
         {
             token->identity=EndOfFile;
             return EVERYTHINGSOKAY;
@@ -68,13 +76,13 @@ ERROR_MSG get_token ()
             while (isspace(c)!=0 && c!=EOF) c=fgetc(fp);
         }
         i=0;
-        switch (c)
+        switch (c)                                                                              // KONECNY AUTOMAT pre TOKEN
         {
-            case 'A'...'Z':
-                case 'a'...'z':
+            case 'A'...'Z':                                                                     //
+                case 'a'...'z':                                                                 //
                     case '_':                                                                   // konecny automat pre identifikator
                     {
-                        if (i==0)
+                        if (i==0)                                                               // naalokuj a uloz mi prvy znak
                         {
                             token->mem=first_allocation ();
                             if (token->mem==NULL)
@@ -91,7 +99,7 @@ ERROR_MSG get_token ()
                         }
                         c=fgetc(fp);
                         while ((c>='A' && c<='Z') || (c>='a' && c<='z') || (c=='_') || (c>='0' && c<='9'))
-                        {
+                        {                                                                       // a nacitavaj a ukladaj kym mas co
                             i++;
                             token->mem=string_implementation(c,i,token->mem);
                             if (token->mem==NULL)
@@ -102,14 +110,14 @@ ERROR_MSG get_token ()
                             c=fgetc(fp);
                         }
                         int Iden;
-                        token->mem=string_implementation('\0',i+1,token->mem);
+                        token->mem=string_implementation('\0',i+1,token->mem);                  // ukonci korektne retazec
                         if (token->mem==NULL)
                         {
                                 free(token->mem);
                                 return INTERN_INTERPRETATION_ERR;
                         }
-                        if ((Iden=is_key_word(token->mem))==0) token->identity=ID;
-                        else token->identity=Iden;
+                        if ((Iden=is_key_word(token->mem))==0) token->identity=ID;              // je to identifikator alebo
+                        else token->identity=Iden;                                              // klucove slovo<
                         return EVERYTHINGSOKAY;
                     }
 
@@ -143,7 +151,7 @@ ERROR_MSG get_token ()
                     }
                     c=fgetc(fp);
                 }
-                if (c=='.')
+                if (c=='.')                                                                     // je to desatinne cislo
                 {
                     bodka=1;
                     i++;
@@ -170,7 +178,7 @@ ERROR_MSG get_token ()
                         }
                         c=fgetc(fp);
                     }
-                    switch (c)
+                    switch (c)                                                                  // nasiel si exponent
                     {
                         case 'e':
                         case 'E':
@@ -376,7 +384,7 @@ ERROR_MSG get_token ()
                 return EVERYTHINGSOKAY;
             }
 
-            case ';':
+            case ';':                                                                                   // je to bodkociarka (strednik)
             {
                 if (i==0)
                 {
@@ -404,7 +412,7 @@ ERROR_MSG get_token ()
                 return EVERYTHINGSOKAY;
             }
 
-            case '=':
+            case '=':                                                                                   // operator rovnosti
             {
                 if (i==0)
                 {
@@ -427,7 +435,7 @@ ERROR_MSG get_token ()
                 return EVERYTHINGSOKAY;
             }
 
-            case ',':
+            case ',':                                                                                   // ciarka
             {
                 if (i==0)
                 {
@@ -455,7 +463,7 @@ ERROR_MSG get_token ()
                 return EVERYTHINGSOKAY;
             }
 
-            case '>':
+            case '>':                                                                                   // operator porovnania - vacsi
             {
                 if (i==0)
                 {
@@ -474,7 +482,7 @@ ERROR_MSG get_token ()
                 }
                 token->identity=OpVacsi;
                 c=fgetc(fp);
-                if (c=='=')
+                if (c=='=')                                                                              // vacsi rovny
                 {
                     i++;
                     token->mem=string_implementation(c,i,token->mem);
@@ -495,7 +503,7 @@ ERROR_MSG get_token ()
                 return EVERYTHINGSOKAY;
             }
 
-            case '<':
+            case '<':                                                                                       // operator porovnania - mensi
             {
                 if (i==0)
                 {
@@ -514,7 +522,7 @@ ERROR_MSG get_token ()
                     }
                 }
                 c=fgetc(fp);
-                if (c=='>')
+                if (c=='>')                                                                                 // nerovny
                 {
                     i++;
                     token->identity=OpNerovny;
@@ -525,7 +533,7 @@ ERROR_MSG get_token ()
                         return INTERN_INTERPRETATION_ERR;
                     }
                 }
-                if (c=='=')
+                if (c=='=')                                                                                 // mensi rovny
                 {
                     i++;
                     token->identity=OpMensiR;
@@ -546,7 +554,7 @@ ERROR_MSG get_token ()
                 return EVERYTHINGSOKAY;
             }
 
-            case '(':
+            case '(':                                                                                       // je to jedna zo zatvoriek
             case ')':
             {
                 if (i==0)
@@ -576,7 +584,7 @@ ERROR_MSG get_token ()
                 return EVERYTHINGSOKAY;
             }
 
-            case '\'':
+            case '\'':                                                                                      // retazcovy literal
             {
                 if (i==0)
                 {
@@ -727,7 +735,7 @@ ERROR_MSG get_token ()
                 return EVERYTHINGSOKAY;
             }
 
-            case '.':
+            case '.':                                                                                   // bodka
             {
                 if (i==0)
                 {
@@ -755,53 +763,8 @@ ERROR_MSG get_token ()
                 }
             }
 
-           /* case '#':
+            default:                                                                                    // neocakavany znak, vrat chybu
             {
-                if (i==0)
-                {
-                    token->mem=first_allocation ();
-                    if (token->mem==NULL)
-                    {
-                        free(token->mem);
-                        return INTERN_INTERPRETATION_ERR;
-                    }
-                    token->mem=string_implementation(c,i,token->mem);
-                    if (token->mem==NULL)
-                    {
-                        free(token->mem);
-                        return INTERN_INTERPRETATION_ERR;
-                    }
-                    c=fgetc(fp);
-                    if (c<'0' || c>'9')
-                    {
-                        free(token->mem);
-                        return LEXICAL_ERR;
-                    }
-                    while (c>='0' && c<='9')
-                    {
-                        i++;
-                        token->mem=string_implementation(c,i,token->mem);
-                        if (token->mem==NULL)
-                        {
-                            free(token->mem);
-                            return INTERN_INTERPRETATION_ERR;
-                        }
-                        c=fgetc(fp);
-                    }
-                    token->mem=string_implementation('\0',i+1,token->mem);
-                    if (token->mem==NULL)
-                    {
-                        free(token->mem);
-                        return INTERN_INTERPRETATION_ERR;
-                    }
-                    return EVERYTHINGSOKAY;
-                }*/
-
-
-            default:
-            {
-                //token->identity=EndOfFile;
-                //free(token->mem);
                 return LEXICAL_ERR;
             }
         }
@@ -809,6 +772,8 @@ ERROR_MSG get_token ()
     token->identity=EndOfFile;
     return EVERYTHINGSOKAY;
 }
+
+// Funkcia porovnava dva znaky kvoli INCASESENSITIVITE jazyka IFJ14
 
 int CaseInsensitiveCharCmp (char c1, char c2)
 {
@@ -818,12 +783,14 @@ int CaseInsensitiveCharCmp (char c1, char c2)
     else return -1;
 }
 
+// Funkcia is_key_word zisti ci je retazec zadany klucom klucove slovo jazyka alebo nie
+
 int is_key_word (char *key)
 {
     unsigned int p=0;
     for (unsigned int i=1;i<=strlen(key_words);i++)
     {
-        if (CaseInsensitiveCharCmp(key[0],key_words[i])==0 && key_words[i-1]==',')
+        if (CaseInsensitiveCharCmp(key[0],key_words[i])==0 && key_words[i-1]==',')                  // prejdi cele pole znakov key_words
         {
             p=0;
             int j=1;
@@ -839,8 +806,8 @@ int is_key_word (char *key)
             }
             if (p+1==(strlen(key)) && (j-p)==1 && ((strlen(key))>1))
             {
-                switch (i)
-                {
+                switch (i)                                                                          // podla polohy ciarky rozhodni ktore klucove
+                {                                                                                   // slovo to je
                     case 6:
                         return KwBegin;
                     case 14:
@@ -889,6 +856,8 @@ int is_key_word (char *key)
     return 0;                                                                                           // nenasiel si nic :(
 }
 
+// Funkcia open_file otvori subor, resp. vrati chybu
+
 int open_file (char *filename,int argc)
 {
     if (argc!=2)
@@ -902,6 +871,8 @@ int open_file (char *filename,int argc)
     }
     return 0;
 }
+
+// Funkcia close_file zatvori subor
 
 void close_file ()
 {
