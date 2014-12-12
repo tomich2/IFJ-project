@@ -1,14 +1,19 @@
 // IFJ14, projekt do predmetu IFJ pre 2BIT 2014/2015 //
+
 /////// Autor: Jan Profant
 ///////        Filip Badan
 ///////        Michal Chomo
 ///////        Tomas Chomo
-///////        Findo
+///////        Filip Listiak
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
 #include "error.h"
+
+
+// Subor error.c obsahuje jednu jedinu funkciu pre vratenie spravneho navratoveho kodu programu,
+// funkcia nic neuvolnuje, len vracia kod
 
 void Error(int p)
 {
