@@ -1,9 +1,10 @@
 // IFJ14, projekt do predmetu IFJ pre 2BIT 2014/2015 //
+
 /////// Autor: Jan Profant
 ///////        Filip Badan
 ///////        Michal Chomo
 ///////        Tomas Chomo
-///////        Findo
+///////        Filip Listiak
 
 #ifndef _LEXICAL_H_
 #define _LEXICAL_H_
@@ -15,7 +16,12 @@
 #include "error.h"
 
 #define NATIVE_CHAR 10                                              //velkost retazca pre ukladanie
+//
+// Subor lexical.h deklaruje vyctove typy a funkcie potrebne pre lexikalnu analyzu
+//
 
+
+// Definicia:
 // identita oznacuje typ tokenu
 // identifikator
 // keywords: begin, boolean, do, else, end
@@ -49,7 +55,7 @@ TOKEN *token;                                                       // struktura
 FILE *fp;                                                           //subor
 int c;                                                              //nacitavany znak
 
-ERROR_MSG get_token ();                                                   // vrat status o chybe
+ERROR_MSG get_token ();                                             // vrat status o chybe
 int open_file (char *filename,int argc);                            // otvor subor
 void close_file ();                                                 // zavri subor
 int is_key_word (char *key);                                        // zisti ci ide o klucove slovo
