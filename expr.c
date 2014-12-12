@@ -792,11 +792,11 @@ ERROR_MSG ExprSem(int rule, nont *op1, nont *op2, Tabs *STab)
 				if((strcmp(op2->index,TMPU)!=0) && (strcmp(op2->index,TMPU2)!=0) && (strcmp(op2->index,TMFunc)!=0)) free(op2->index);
 				op1->index=res;
 
-				if((tmp=htab_search(STab->loc,(char *) op1->index))==NULL) tmp=htab_search(STab->glob,(char *) op1->index);
-				if(tmp==NULL) MakeVariable(&a,op1->d_type,op1->index);
-				else MakeVariable(&a,tVAR,op1->index); //doriesit chybove stavy
+			//	if((tmp=htab_search(STab->loc,(char *) op1->index))==NULL) tmp=htab_search(STab->glob,(char *) op1->index);
+			//	if(tmp==NULL) MakeVariable(&a,op1->d_type,op1->index);
+			//	else MakeVariable(&a,tVAR,op1->index); //doriesit chybove stavy
 
-				generator(STab->InstL,I_PUSH,a,NULL,NULL);
+			//	generator(STab->InstL,I_PUSH,a,NULL,NULL);
 
 				generator(STab->InstL,I_LENGTH,NULL,NULL,res);
 				return vst ? EVERYTHINGSOKAY:EXPRESSION_ERR;
@@ -810,11 +810,11 @@ ERROR_MSG ExprSem(int rule, nont *op1, nont *op2, Tabs *STab)
 				if((strcmp(op2->index,TMPU)!=0) && (strcmp(op2->index,TMPU2)!=0) && (strcmp(op2->index,TMFunc)!=0)) free(op2->index);
 				op1->index=res;
 
-				if((tmp=htab_search(STab->loc,(char *) op1->index))==NULL) tmp=htab_search(STab->glob,(char *) op1->index);
-				if(tmp==NULL) MakeVariable(&a,op1->d_type,op1->index);
-				else MakeVariable(&a,tVAR,op1->index); //doriesit chybove stavy
+			//	if((tmp=htab_search(STab->loc,(char *) op1->index))==NULL) tmp=htab_search(STab->glob,(char *) op1->index);
+			//	if(tmp==NULL) MakeVariable(&a,op1->d_type,op1->index);
+			//	else MakeVariable(&a,tVAR,op1->index); //doriesit chybove stavy
 
-				generator(STab->InstL,I_PUSH,a,NULL,NULL);
+			//	generator(STab->InstL,I_PUSH,a,NULL,NULL);
 
 				generator(STab->InstL,I_SORT,NULL,NULL,res);
 				return vst ? EVERYTHINGSOKAY:EXPRESSION_ERR;
