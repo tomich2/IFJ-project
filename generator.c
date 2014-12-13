@@ -1,3 +1,10 @@
+// IFJ14, projekt do predmetu IFJ pre 2BIT 2014/2015 //
+/////// Autor: Jan Profant
+///////         Filip Badan
+///////         Michal Chomo
+///////         Tomas Chomo
+///////         Filip Listiak
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -6,7 +13,7 @@
 #include "struct.h"
 #include "generator.h"
 #include "error.h" 
-
+/*
 void showList(tListOfInstr *L)
 {
        
@@ -130,7 +137,7 @@ void showList(tListOfInstr *L)
                         break;
                    }
                 printf("A:");
-                //printf("%d\n",active->Instr->a->type );
+               
                 if (L->active->Instr->a!=NULL)
                 {
 					switch(L->active->Instr->a->type)
@@ -184,7 +191,7 @@ void showList(tListOfInstr *L)
  
  
                 printf("B:");
-                //printf("%d\n",active->Instr->a->type );
+               
                 if (L->active->Instr->b!=NULL)
                 {
 					switch(L->active->Instr->b->type)
@@ -246,8 +253,9 @@ void showList(tListOfInstr *L)
  
         }
         return;
-}
+}*/
 
+/*inicializacia listu*/
 void listInit(tListOfInstr *L)
 {
   L->first  = NULL;
@@ -255,6 +263,7 @@ void listInit(tListOfInstr *L)
   L->active = NULL;
 }
   
+/*uvolnenie listu instrukcii*/
 void listFree(tListOfInstr *L)
 {
   tListItem *tmp;
@@ -266,7 +275,7 @@ void listFree(tListOfInstr *L)
     instr= L->first->Instr;
     if (L->first->Instr->a != NULL)
     {
-		if(L->first->Instr->a->data.s != NULL)		//zakomentovane pre interpret, hadzalo errory
+		if(L->first->Instr->a->data.s != NULL)		
 			free(L->first->Instr->a->data.s);
 		var = L->first->Instr->a;
 		free(var);
@@ -289,6 +298,7 @@ void listFree(tListOfInstr *L)
   }
 }
 
+/*vygeneruje instrukciu s danymi operandami a vlozi ju do zoznamu*/
 tListItem* generator(tListOfInstr *L, InstName name, Variable *a, Variable *b, char *s)
 {
 	tInstruction *instr=malloc(sizeof(tInstruction));
@@ -308,7 +318,6 @@ tListItem* generator(tListOfInstr *L, InstName name, Variable *a, Variable *b, c
 	if(s!=NULL)
 	{
 		instr->res=malloc(strlen(s)+1);
-		if (instr->res==NULL) printf("je to napicu\n");
 		strcpy(instr->res,s);
 	}
 	
