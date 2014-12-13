@@ -862,7 +862,7 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 							pStr = realloc(pStr,current_size);
 						}
 					}
-					pStr[i]= '\0';
+					pStr[i]= '\n';
 
 
 					if((op3->type)==tINTEGER)
