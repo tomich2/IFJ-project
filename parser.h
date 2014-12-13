@@ -28,7 +28,7 @@
 
 typedef enum{NONTERMINAL, TERMINAL, EMPTY=-1}ItemType;
 
-typedef enum{GLOBVAR_DEK, FUNC_ID, FUNC_PARAMS, FUNC_TYPE, LOCVAR_DEK, FUNC_BODY, MAIN_BODY}T_State;
+typedef enum{GLOBVAR_DEK, FUNC_ID, FUNC_PARAMS, FUNC_TYPE, LOCVAR_DEK, FUNC_BODY, MAIN_BODY}T_State; // stavy programu, potrebne pre semanticku analyzu
 
 typedef struct non_term
 {
@@ -48,22 +48,26 @@ typedef union{
         tterm term;
         }U_Item;
 
+// struktura pre terminaly a neterminaly
 typedef struct{
         ItemType type;
         U_Item value;
         }T_ParserItem;
 
+// struktura pre premenne v tabulkach symbolov
 typedef struct{
         T_vartype type;
         bool is_def;
         }T_VarData;
 
+// struktura pre funkcie v tabulkach symbolov
 typedef struct{
         bool is_def;
         bool is_ret;
         char *ret_par_types; // retazec zaciatocnych pismen typov navratovej hodnoty a parametrov
         }T_FuncData;
 
+// pomocna struktura pre semantiku
 typedef struct{
         char *act_varID;
         char *act_funcID;
