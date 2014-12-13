@@ -57,6 +57,7 @@ tListofVariables* createGlobFrame(t_varfunc_list *L)
 				var->type=L->Active->dattype;
 				var->name=L->Active->item_ID;
 				var->param=false;
+				var->inic=false;
 				frameInsert(F, var);
 			}
 			L->Active=L->Active->next;
@@ -87,6 +88,7 @@ tListofVariables* createFrame(char *item_ID, t_varfunc_list *L)
 						var->type=L->Active->dattype;
 						var->name=L->Active->item_ID;
 						var->param=false;
+						var->inic=false;
 						frameInsert(F, var);
 						
 						if(L->Active->flist != NULL)
@@ -98,6 +100,7 @@ tListofVariables* createFrame(char *item_ID, t_varfunc_list *L)
 								var->type=L->Active->flist->Active->dattype;
 								var->name=L->Active->flist->Active->item_ID;
 								var->param=L->Active->flist->Active->is_param;
+								var->inic=false;
 								frameInsert(F, var);
 								L->Active->flist->Active=L->Active->flist->Active->next;
 							}
