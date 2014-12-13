@@ -1,10 +1,17 @@
+// IFJ14, projekt do predmetu IFJ pre 2BIT 2014/2015 //
+/////// Autor: Jan Profant
+///////         Filip Badan
+///////         Michal Chomo
+///////         Tomas Chomo
+///////         Filip Listiak
+
 #ifndef _GENERATOR_H
 #define _GENERATOR_H
 
 #include <stdlib.h>
 #include "struct.h"
 
-
+/*zoznam instrukcii*/
 typedef struct listItem
 {
   tInstruction *Instr;
@@ -14,8 +21,8 @@ typedef struct listItem
 typedef struct tListOfInstr
 {
   tListItem *first;  // ukazatel na prvni prvek
-  tListItem *last;   // ukazatel na posledni prvek
-  tListItem *active;
+  tListItem *last;   
+  tListItem *active;	//ukazatel na aktivny prvek
 } tListOfInstr;
 
 void showList(tListOfInstr *L);
