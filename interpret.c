@@ -20,6 +20,7 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 {
 	bool run =true;
 	bool div0=false;
+	int len;
 
 	struct FrameVariable *op1,*op2,*op3;
 	tInstruction *instr;
@@ -796,8 +797,7 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 					if (instr->a->type==tVAR)
 					{
 						op3->data.s=malloc(strlen(op1->data.s)+1);
-						if((op3 == tmp1) || (op3 == tmp2) || (op3 == tmparam) || (op3 == tmfunc))
-							 InsertFirst(LGar,op3->data.s);
+					    InsertFirst(LGar,op3->data.s);
 						strcpy(op3->data.s,op1->data.s);
 					}
 					else op3->data.s=op1->data.s;
@@ -977,6 +977,7 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 						case tSTRING:
 						LocalFrame->active->data.s=malloc(strlen(*(char **)stack.Top->data)+1);
 						strcpy(LocalFrame->active->data.s,*(char **)top(&stack));
+						InsertFirst(LGar,LocalFrame->active->data.s);
 						pop(&stack);
 						break;
 
@@ -1034,8 +1035,7 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 						case tSTRING:
 
 						op3->data.s=malloc(strlen(LocalFrame->first->data.s));
-						if((op3 == tmp1) || (op3 == tmp2) || (op3 == tmparam) || (op3 == tmfunc))
-							 InsertFirst(LGar,op3->data.s);
+					    InsertFirst(LGar,op3->data.s);
 						strcpy(op3->data.s, LocalFrame->first->data.s);
 
 						break;
@@ -1165,6 +1165,11 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 
 				InsertFirst(LGar,tmp1->data.s);
 
+				len=strlen(convert_my_string(tmp1->data.s));
+				if(tmparam->data.i > len)
+				{
+					Error(99);
+				}
 				op3->data.s=copy_func(convert_my_string(tmp1->data.s), tmp2->data.i, tmparam->data.i);
 				op3->type=tSTRING;
 
