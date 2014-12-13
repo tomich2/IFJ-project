@@ -614,7 +614,7 @@ ERROR_MSG get_token ()
                         free(token->mem);
                         return LEXICAL_ERR;
                     }
-                    if ((c==';' || c==')' || c==',' )) break;
+                    if ((c==';' || c==')' || c==',' ) && parity % 2 == 0) break;
                     i++;
                     token->mem=string_implementation(c,i,token->mem);
                     if (token->mem==NULL)
@@ -627,7 +627,7 @@ ERROR_MSG get_token ()
                         parity++;
                         c=fgetc(fp);
 
-                        if (c==')' || c==',' || c==';' || isspace(c)!=0)
+                        if ((c==')' || c==',' || c==';' || isspace(c)!=0) && parity % 2 == 0)
                         {
                             end=true;
                             break;
