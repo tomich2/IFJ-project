@@ -482,7 +482,8 @@ ERROR_MSG MakeVariable(Variable **a, T_vartype type, void *data)
 
 	switch((*a)->type)
 	{
-		case tBOOLEAN:  (*a)->data.i=atoi((char *) data);
+		case tBOOLEAN:  if(strcmp(((char *) data),"TRUE")==0) (*a)->data.i=1;
+				if(strcmp(((char *) data),"FALSE")==0) (*a)->data.i=0;
 				break;
 		case tINTEGER:  (*a)->data.i=atoi((char *) data);
 				break;
