@@ -125,7 +125,7 @@ int labL_insertlast(t_lablist *l, tListItem *insptr, int labID, char *func)
   new->lab_ID=labID;
   if(func!=NULL)
   {
-    new->func_name=malloc(sizeof(strlen(func)+1));
+    new->func_name=malloc(strlen(func)+1);
     if(new->func_name==NULL)
     {
       free(new);
