@@ -1,3 +1,10 @@
+// IFJ14, projekt do predmetu IFJ pre 2BIT 2014/2015 //
+/////// Autor: Jan Profant
+///////         Filip Badan
+///////         Michal Chomo
+///////         Tomas Chomo
+///////         Filip Listiak
+
 #include "struct.h"
 #include "generator.h"
 #include "error.h"
@@ -6,6 +13,7 @@
 #include "stack.h"
 #include "list.h"
 
+/*inicializacia zoznamu*/
 void frameInit(tListofVariables *F)
 {
   F->first  = NULL;
@@ -13,6 +21,7 @@ void frameInit(tListofVariables *F)
   F->active = NULL;
 }
   
+/*uvolnenie zoznamu premennych*/
 void frameFree(tListofVariables *F)
 {
   struct FrameVariable *var;
@@ -28,6 +37,7 @@ void frameFree(tListofVariables *F)
   }
 }
 
+/*vlozenie premennej do zoznamu*/
 void frameInsert(tListofVariables *F, struct FrameVariable *var)
 {
   
@@ -40,6 +50,7 @@ void frameInsert(tListofVariables *F, struct FrameVariable *var)
   F->last=var;
 }
 
+/*vytvorenie globalneho zoznamu premennych*/
 tListofVariables* createGlobFrame(t_varfunc_list *L)
 {
 	if(L != NULL)
@@ -57,7 +68,7 @@ tListofVariables* createGlobFrame(t_varfunc_list *L)
 				var->type=L->Active->dattype;
 				var->name=L->Active->item_ID;
 				var->param=false;
-				var->inic=false;
+
 				frameInsert(F, var);
 			}
 			L->Active=L->Active->next;
@@ -68,7 +79,7 @@ tListofVariables* createGlobFrame(t_varfunc_list *L)
 }
 
 			
-
+/*vytvorenie lokalneho zoznamu premennych podla mena funkcie*/
 tListofVariables* createFrame(char *item_ID, t_varfunc_list *L)
 {
 	if(L != NULL)
@@ -81,26 +92,26 @@ tListofVariables* createFrame(char *item_ID, t_varfunc_list *L)
 		{
 			if(L->Active->type == FUNCTION)
 			{
-				if(strcmp(L->Active->item_ID, item_ID)==0)
+				if(strcmp(L->Active->item_ID, item_ID)==0)	//najde meno funkcie
 					{
 						struct FrameVariable *var;
 						var=malloc(sizeof(struct FrameVariable));
 						var->type=L->Active->dattype;
 						var->name=L->Active->item_ID;
 						var->param=false;
-						var->inic=false;
+						
 						frameInsert(F, var);
 						
 						if(L->Active->flist != NULL)
 						{
 							L->Active->flist->Active=L->Active->flist->First;
-							while(L->Active->flist->Active != NULL)
+							while(L->Active->flist->Active != NULL)		//do zoznamu vlozi vsetky premenne v danej funkcii
 							{
 								var=malloc(sizeof(struct FrameVariable));
 								var->type=L->Active->flist->Active->dattype;
 								var->name=L->Active->flist->Active->item_ID;
 								var->param=L->Active->flist->Active->is_param;
-								var->inic=false;
+								
 								frameInsert(F, var);
 								L->Active->flist->Active=L->Active->flist->Active->next;
 							}
@@ -115,6 +126,7 @@ tListofVariables* createFrame(char *item_ID, t_varfunc_list *L)
 	else return NULL;
 }
 
+/*najde adresu premennej v globalnom alebo lokalnom zozname*/
 struct FrameVariable* findFrameVar(struct Variable *a, tListofVariables* globalFrame, tListofVariables* localFrame)
 {
 	if(localFrame != NULL)
@@ -145,6 +157,7 @@ struct FrameVariable* findFrameVar(struct Variable *a, tListofVariables* globalF
 	return NULL;
 }
 
+/*najde adresu premennej v zoznamoch*/
 struct FrameVariable* findFrameDest(char *s, tListofVariables* globalFrame, tListofVariables* localFrame)
 {
 	if (localFrame != NULL)
@@ -152,6 +165,7 @@ struct FrameVariable* findFrameDest(char *s, tListofVariables* globalFrame, tLis
 		localFrame->active=localFrame->first;
 		while(localFrame->active != NULL)
 		{
+			
 			if(strcmp(s,localFrame->active->name)==0)
 			{
 				return localFrame->active;
