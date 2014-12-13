@@ -1,0 +1,29 @@
+var vysledok:integer;
+
+function fact(n: integer): integer;
+begin
+    if n=0 then begin
+	        fact := 1
+		end
+    	   else begin
+        	fact := n * fact(n - 1)
+		end
+end;
+
+
+
+begin
+	vysledok:=fact(1);
+        write('1! = ',vysledok,''#10'');
+	vysledok:=fact(3);
+        write('3! = ',vysledok,''#10'');
+	vysledok:=fact(4);
+        write('4! = ',vysledok,''#10'');
+	vysledok:=fact(5);
+        write('5! = ',vysledok,''#10'');
+	vysledok:=fact(7);
+        write('!7 = ',vysledok,''#10'');
+	vysledok:=fact(10);
+        write('10! = ',vysledok,''#10'')
+        
+end.
