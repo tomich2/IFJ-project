@@ -14,6 +14,7 @@ typedef struct FrameVariable{
 	char *name;
 	struct FrameVariable *nextvar;	
 	bool param;
+	bool inic;
 }tFrameVariable;
 
 
