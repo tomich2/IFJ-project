@@ -1298,7 +1298,7 @@ void print_my_string (char *str)
 	int parity=0;
 	while ((str[i]!='\0'))                                                  // kym nie si na konci
 	{
-		if (str[i]=='#')                                                    // ak narazis na escape sekvenciu
+		if (str[i]=='#' && parity % 2 == 0)                                                    // ak narazis na escape sekvenciu
 		{
 			int j=0;
 			int count=i+1;
@@ -1348,7 +1348,7 @@ char * convert_my_string (char *str)
 	int parity=0;
 	while ((str[i]!='\0'))
 	{
-		if (str[i]=='#')
+		if (str[i]=='#' && parity % 2 == 0)
 		{
 			int j=0;
 			int count=i+1;
