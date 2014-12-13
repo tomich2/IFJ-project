@@ -17,6 +17,6 @@ begin
       vysl := vysl * a;
       a := a - 1
     end;
-    write('Vysledek je: ', vysl, ''#10'')
+    write('Vysledek je: ', vysl, ''#10''#10'')
   end
 end.
