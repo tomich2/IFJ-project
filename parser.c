@@ -1306,7 +1306,7 @@ t_lablist *lablistp, tListOfInstr *inslistp, const char *TMPUV, Stack *s_stack, 
                           return INTERN_INTERPRETATION_ERR;
                         }
                         strcpy(varA->data.s,token->mem);
-                        varA->type=tINTEGER;
+                        varA->type=tSTRING;
                         generator(inslistp,I_PRINT,varA,NULL,NULL);
                       }
                       break;
@@ -1322,7 +1322,7 @@ t_lablist *lablistp, tListOfInstr *inslistp, const char *TMPUV, Stack *s_stack, 
                           return INTERN_INTERPRETATION_ERR;
                         }
                         strcpy(varA->data.s,token->mem);
-                        varA->type=tREAL;
+                        varA->type=tSTRING;
                         generator(inslistp,I_PRINT,varA,NULL,NULL);
                       }
                       break;
