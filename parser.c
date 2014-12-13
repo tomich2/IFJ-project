@@ -1,9 +1,9 @@
 // IFJ14, projekt do predmetu IFJ pre 2BIT 2014/2015 //
 /////// Autor: Jan Profant
-///////        Filip Badan
-///////        Michal Chomo
-///////        Tomas Chomo
-///////        Findo
+///////         Filip Badan
+///////         Michal Chomo
+///////         Tomas Chomo
+///////         Filip Listiak
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -15,6 +15,7 @@
 #include "expr.h"
 
 
+// funkcia vykonava syntakticku analyzu a vracia typ chyby alebo uspech
 ERROR_MSG top_down()
 {
   ERROR_MSG err=EVERYTHINGSOKAY; // premenna pre chybove stavy
@@ -25,12 +26,12 @@ ERROR_MSG top_down()
 
   T_ParserItem *PItem_top; // prvok na vrchole zasobniku
 
-  int i=0;
+  int i=0; // pocitadlo prvkov ukladanych na zasobnik
 
-  T_vartype expr_type=tERR;
+  T_vartype expr_type=tERR; // typ vyrazu, posiela sa odkazom do funkcie ExprParse, ktora ho zmeni na aktualny typ vyrazu
 
   T_State state; // urcuje, ktora cast programu sa analyzuje(deklaracia premennych, definicia funkcie...)
-  bool is_func;
+  bool is_func; // pomocna premenna pre zistenie, ci sa analyzuje cast funkcie
 
   Stack p_stack; // zasobnik pre syntakticku analyzu
   init(&p_stack,sizeof(T_ParserItem));
@@ -44,12 +45,14 @@ ERROR_MSG top_down()
   htab_t *glob_sym_table=htab_init(GTAB_SIZE); // inicializacia globalnej tabulky symbolov
   htab_t *loc_sym_table=htab_init(GTAB_SIZE); // inicializacia lokalnej tabulky symbolov
 
+  // vlozenie unikatnych docasnych premennych do globalnej tabulky symbolov
   err=htab_new(glob_sym_table,TMPU,IDENTIFIER,NULL,0);
   err=htab_new(glob_sym_table,TMPU2,IDENTIFIER,NULL,0);
   err=htab_new(glob_sym_table,TMParam,IDENTIFIER,NULL,0);
   err=htab_new(glob_sym_table,TMFunc,IDENTIFIER,NULL,0);
 
   T_Actual *Act=calloc(1,sizeof(*Act)); // pomocna struktura pre semantiku
+  // inicializacia hodnot pomocnej struktury Act
   Act->act_funcID=NULL;
   Act->act_varID=NULL;
   Act->act_rptypes=calloc(1,sizeof(char)*MAX_RPTYPES);
@@ -65,26 +68,29 @@ ERROR_MSG top_down()
   Act->whbegcnt=0;
   Act->labIDcnt=1;
 
-  size_t tmem_size;
+  size_t tmem_size; // premenna pre aktualnu velkost token->mem
 
-  t_varfunc_list *vflist=malloc(sizeof(*vflist));
+  // inicializacia zoznamov
+  t_varfunc_list *vflist=malloc(sizeof(*vflist)); // zoznam premennych a funkcii
   varfuncL_init(vflist);
-  t_func_list *flist=malloc(sizeof(*flist));
+  t_func_list *flist=malloc(sizeof(*flist)); // zoznam parametrov a lokalnych premennych jednotlivych funkcii
   funcL_init(flist);
-  t_lablist *lablist=malloc(sizeof(*lablist));
+  t_lablist *lablist=malloc(sizeof(*lablist)); // zoznam navesti
   labL_init(lablist);
-  tListOfInstr *inslist=malloc(sizeof(*inslist));
+  tListOfInstr *inslist=malloc(sizeof(*inslist)); // zoznam instrukcii
   listInit(inslist);
 
-  const char TMPUV[]=TMPU; //"42TMP14ifj"; // unikatna docasna premenna
+  const char TMPUV[]=TMPU; // unikatna docasna premenna
 
-  err=get_token();
+  err=get_token(); // nacita prvy token
+
   if(err!=EVERYTHINGSOKAY) // lexikalna chyba
   {
     free_all(PItems,p_stack,0,0,glob_sym_table,loc_sym_table,Act,vflist,lablist,inslist,flist);
     return err;
   }
-  if(token->mem!=NULL)
+
+  if(token->mem!=NULL) // konvertovanie na UPPERCASE
   {
     if(token->identity!=DtString)strtoupper(&token->mem);
     tmem_size=strlen(token->mem)+1;
@@ -1315,6 +1321,8 @@ if(Ac->rpt_size==MAX_RPTYPES)
   return EVERYTHINGSOKAY;
 }
 
+// alokuje pamat pre strukturu PItems a jej polozky
+// poloziek je 12, pretoze viac terminalov a neterminalov sa nikdy neuklada na zasobnik
 ERROR_MSG PItems_alloc(T_ParserItem ***Ptr)
 {
   *Ptr=malloc(sizeof(*Ptr)*12);
@@ -1333,6 +1341,7 @@ ERROR_MSG PItems_alloc(T_ParserItem ***Ptr)
   return EVERYTHINGSOKAY;
 }
 
+// uvolni strukturu PItems a jej polozky
 void PItems_free(T_ParserItem ***Ptr)
 {
   for(int i=0;i<=11;i++)
@@ -1342,6 +1351,7 @@ void PItems_free(T_ParserItem ***Ptr)
   free(*Ptr);
 }
 
+// uvolni alokovanu pamat, daju sa nastavit priznaky pre vymazanie zasobnika a uvolnenie token->mem
 void free_all(T_ParserItem **p, Stack st, int stack_erase, int token_mem_free, htab_t *gsymtab, htab_t *lsymtab, T_Actual *Ac, t_varfunc_list *vflistp, t_lablist *lablistp, tListOfInstr *inslistp, t_func_list *flistp)
 {
   Hitem *cmp=NULL;
@@ -1376,9 +1386,11 @@ void free_all(T_ParserItem **p, Stack st, int stack_erase, int token_mem_free, h
   free(lablistp);
   listFree(inslistp);
   free(inslistp);
-  free(flistp);
 }
 
+// vrati navratovy typ funkcie alebo typ parametru
+// str je retazec pismen, ktore oznacuju jednotlive typy
+// pos urcuje, coho typ sa vrati, 0=navratovy typ funkcie, 1=prvy parameter 2=druhy parameter ...
 int get_type(char *str,int pos)
 {
   int l=strlen(str)+1;
