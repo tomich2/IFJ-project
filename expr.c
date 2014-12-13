@@ -479,11 +479,12 @@ ERROR_MSG MakeVariable(Variable **a, T_vartype type, void *data)
 	*a=(Variable *) malloc(sizeof(Variable));
 	if(a==NULL) return INTERN_INTERPRETATION_ERR;
 	(*a)->type=type;
+	char *str=(char *) data;
 
 	switch((*a)->type)
 	{
-		case tBOOLEAN:  if(strcmp(((char *) data),"TRUE")==0) (*a)->data.i=1;
-				if(strcmp(((char *) data),"FALSE")==0) (*a)->data.i=0;
+		case tBOOLEAN:  if(strcmp(str,"TRUE")==0) (*a)->data.b=1;
+				if(strcmp(str,"FALSE")==0) (*a)->data.b=0;
 				break;
 		case tINTEGER:  (*a)->data.i=atoi((char *) data);
 				break;
@@ -492,7 +493,7 @@ ERROR_MSG MakeVariable(Variable **a, T_vartype type, void *data)
 		case tSTRING:
 		case tVAR:
 				;
-				char *str=(char *) data;
+				
 				(*a)->data.s=malloc(strlen(str)+1);
 				if((*a)->data.s==NULL)
 				{
