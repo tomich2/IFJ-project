@@ -34,6 +34,7 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 	init(&Fstack,sizeof(struct tListofVariables*));
 	Stack stack;
 	init(&stack,sizeof(struct tListofVariables*));
+	
 
 
 
@@ -266,6 +267,7 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 
 			case I_SUB:
 			{
+				
 
 				if((op1->type)==tINTEGER)
 				{
@@ -324,6 +326,7 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 
 			case I_MUL:
 			{
+				
 
 				if((op1->type)==tINTEGER)
 				{
@@ -557,6 +560,7 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 
 			case I_LESS_CMP:
 			{
+				
 				if(op1->type == op2->type )
 				{
 					switch (op1->type)
@@ -609,7 +613,7 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 
 			case I_GR_CMP:
 			{
-
+				
 
 				if(op1->type == op2->type )
 				{
@@ -624,13 +628,14 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 		 				case tINTEGER:
 							op3->data.b=op1->data.i > op2->data.i;
 							if((op3 == tmp1) || (op3 == tmp2) || (op3 == tmparam) || (op3 == tmfunc))
-							op3->type=tINTEGER;
+							op3->type=tBOOLEAN;
+							
 			 				break;
 
 		 				case tREAL:
 							op3->data.b=op1->data.r > op2->data.r;
 							if((op3 == tmp1) || (op3 == tmp2) || (op3 == tmparam) || (op3 == tmfunc))
-							op3->type=tREAL;
+							op3->type=tBOOLEAN;
 			 				break;
 
 		 				case tSTRING:
@@ -677,13 +682,13 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 		 				case tINTEGER:
 							op3->data.b=op1->data.i <= op2->data.i;
 							if((op3 == tmp1) || (op3 == tmp2) || (op3 == tmparam) || (op3 == tmfunc))
-							op3->type=tINTEGER;
+							op3->type=tBOOLEAN;
 		 					break;
 
 		 				case tREAL:
 							op3->data.b=op1->data.r <= op2->data.r;
 							if((op3 == tmp1) || (op3 == tmp2) || (op3 == tmparam) || (op3 == tmfunc))
-							op3->type=tREAL;
+							op3->type=tBOOLEAN;
 			 				break;
 
 		 				case tSTRING:
@@ -730,13 +735,13 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 		 				case tINTEGER:
 							op3->data.b=op1->data.i >= op2->data.i;
 							if((op3 == tmp1) || (op3 == tmp2) || (op3 == tmparam) || (op3 == tmfunc))
-							op3->type=tINTEGER;
+							op3->type=tBOOLEAN;
 		 	 				break;
 
 		 				case tREAL:
 							op3->data.b=op1->data.r >= op2->data.r;
 							if((op3 == tmp1) || (op3 == tmp2) || (op3 == tmparam) || (op3 == tmfunc))
-							op3->type=tINTEGER;
+							op3->type=tBOOLEAN;
 		 					break;
 
 		 				case tSTRING:
@@ -769,7 +774,7 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 
 			case I_ASSIGN:
 			{
-
+				
 
 				if((op1->type)==tINTEGER)
 				{
@@ -809,6 +814,7 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 
 			case I_PRINT:
 			{
+				
 				if((op1->type)==tINTEGER)
 				{
 					printf("%d",op1->data.i);
@@ -839,7 +845,7 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 
 			case I_READ:
 			{
-
+				
 				unsigned int len_max = 128;
 				unsigned int current_size = 0;
 				char *ptr;
@@ -911,14 +917,14 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 
 			case I_LABEL:
 			{
-
+				
 				break;
 			}
 
 
 			case I_GOTO:
 			{
-
+				
 				if(op2 != NULL)
 				{
 					if(op2->type==tBOOLEAN)
