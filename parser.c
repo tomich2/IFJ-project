@@ -21,6 +21,16 @@ ERROR_MSG top_down()
   // vzdy, ked nastane chyba, ulozi sa do premennej err jej typ, uvolni sa pamat pomocou funkcie free_all a funkcia top_down sa ukonci s navratovou hodnotou chyby
   ERROR_MSG err=EVERYTHINGSOKAY; // premenna pre chybove stavy
 
+  err=get_token(); // nacita prvy token
+
+  if(err!=EVERYTHINGSOKAY) // lexikalna chyba
+  {
+    if(token->mem!=NULL)free(token->mem);
+    return err;
+  }
+
+  if(token->identity==EndOfFile)return SYNTAX_ERR; // syntakticka chyba=prazdny subor
+
   T_ParserItem **PItems=NULL; // ukazovatel na ukazovatel terminalu alebo neterminalu, v podstate "pole" terminalov a neterminalov ulozenych v strukture
   err=PItems_alloc(&PItems);
   if(err)return err;
@@ -82,25 +92,12 @@ ERROR_MSG top_down()
 
   const char TMPUV[]=TMPU; // unikatna docasna premenna
 
-  err=get_token(); // nacita prvy token
-
-  if(err!=EVERYTHINGSOKAY) // lexikalna chyba
-  {
-    free_all(PItems,p_stack,0,0,glob_sym_table,loc_sym_table,Act,vflist,lablist,inslist);
-    return err;
-  }
-
   if(token->mem!=NULL) // konvertovanie token->mem na UPPERCASE
   {
     if(token->identity!=DtString)strtoupper(&token->mem);
     tmem_size=strlen(token->mem)+1;
   }
 
-  if(token->identity==EndOfFile) // syntakticka chyba=prazdny subor
-  {
-    free_all(PItems,p_stack,0,1,glob_sym_table,loc_sym_table,Act,vflist,lablist,inslist);
-    return SYNTAX_ERR;
-  }
 
   if(get_rule(START,PItems,&state,&is_func)) // podla pravidla vykona expanziu a pravu stranu pravidla ulozi do PItems
   {
