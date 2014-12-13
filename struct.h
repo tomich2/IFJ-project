@@ -1,3 +1,10 @@
+// IFJ14, projekt do predmetu IFJ pre 2BIT 2014/2015 //
+/////// Autor: Jan Profant
+///////         Filip Badan
+///////         Michal Chomo
+///////         Tomas Chomo
+///////         Filip Listiak
+
 #ifndef _STRUCT_H
 #define _STRUCT_H
 
@@ -7,6 +14,7 @@
 #include <string.h>
 #include <stdbool.h>
 
+/*vycet typov*/
 typedef enum{tINTEGER, tSTRING, tREAL, tBOOLEAN, tVAR, tERR=-1}T_vartype;
 
 typedef enum
@@ -21,7 +29,6 @@ typedef enum
 	I_SUB,
 	I_MUL,
 	I_DIV,
-	I_MOD,
 	/*COMPARING*/
 	I_LESS_CMP,
 	I_GR_CMP,
@@ -29,24 +36,21 @@ typedef enum
 	I_GR_EQUAL_CMP,
 	I_EQUAL_CMP,
 	I_NOT_EQUAL_CMP,
-
-I_ASSIGN,
-I_PRINT,
-I_READ,
-
-I_PUSH,
-I_POP,
-
-I_COPY,
-I_FIND,
-I_LENGTH,
-I_SORT
-//doplnit co treba
+	/*ostatne*/
+	I_ASSIGN,
+	I_PRINT,
+	I_READ,
+	I_PUSH,
+	/*vstavane*/
+	I_COPY,
+	I_FIND,
+	I_LENGTH,
+	I_SORT
 
 }InstName;
 
 
-
+/*struktura instrukcie*/
 typedef struct Instruction
 {
 	InstName Iname;
@@ -57,17 +61,13 @@ typedef struct Instruction
 
 
 
-
-	/*************VALUEEEE********************/
-
+/*data*/
 typedef struct
 {
 		int i;
-	//	int label;	ziadny label tu nebude
 		double r;
 		char *s;
 		bool b;
-		//string s;
 }VariableData;
 
 
