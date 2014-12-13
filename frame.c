@@ -21,8 +21,6 @@ void frameFree(tListofVariables *F)
 	  while (F->first != NULL)
 	  {
 		var= F->first;
-		if(var->data.s != NULL)
-			free(var->data.s);
 		F->first = F->first->nextvar;
 		free(var);
 	  }
