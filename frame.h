@@ -1,3 +1,10 @@
+// IFJ14, projekt do predmetu IFJ pre 2BIT 2014/2015 //
+/////// Autor: Jan Profant
+///////         Filip Badan
+///////         Michal Chomo
+///////         Tomas Chomo
+///////         Filip Listiak
+
 #ifndef _FRAME_H
 #define _FRAME_H
 
@@ -6,7 +13,7 @@
 #include "list.h"
 #include <stdbool.h>
 
-
+/*struktura premennej pre interpret*/
 typedef struct FrameVariable{
 
 	VariableData data;
@@ -14,7 +21,6 @@ typedef struct FrameVariable{
 	char *name;
 	struct FrameVariable *nextvar;	
 	bool param;
-	bool inic;
 }tFrameVariable;
 
 
