@@ -52,12 +52,16 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 
 	tmp1->name=TMPU;
 	tmp1->data.s=NULL;
+	tmp1->inic=true;
 	tmp2->name=TMPU2;
 	tmp2->data.s=NULL;
+	tmp2->inic=true;
 	tmparam->name=TMParam;
 	tmparam->data.s=NULL;
+	tmparam->inic=true;
 	tmfunc->name=TMFunc;
 	tmfunc->data.s=NULL;
+	tmfunc->inic=true;
 
 
 	/**************pomocne**************/
@@ -96,6 +100,7 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 				bop1=true;
 
 				op1->type=instr->a->type;
+				op1->inic=true;
 
 				switch(instr->a->type)
 				{
@@ -149,7 +154,8 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 			bop2=true;
 
 			op2->type=instr->b->type;
-
+			op2->inic=true;
+			
 			switch(instr->b->type)
 			{
 
@@ -208,6 +214,8 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 
 			case I_ADD:
 			{
+				if((op1->inic==false) || (op2->inic==false))
+					Error(7);
 
 
 				if((op1->type)==tINTEGER)
@@ -262,12 +270,15 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 						Error(4);
 						break;
 					 }
+					 
+				op3->inic=true;
 				break;
 			}
 
 			case I_SUB:
 			{
-				
+				if((op1->inic==false) || (op2->inic==false))
+					Error(7);
 
 				if((op1->type)==tINTEGER)
 				{
@@ -321,13 +332,16 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 						break;
 					 }
 
-					break;
+				op3->inic=true;	
+				break;
 			}
 
 			case I_MUL:
 			{
 				
-
+				if((op1->inic==false) || (op2->inic==false))
+					Error(7);
+					
 				if((op1->type)==tINTEGER)
 				{
 					if((op2->type)==tINTEGER)
@@ -379,13 +393,14 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 						Error(4);
 						break;
 			     	 }
-
+				op3->inic=true;
 				break;
 			}
 
 			case I_DIV:
 			{
-
+				if((op1->inic==false) || (op2->inic==false))
+					Error(7);
 				if((op2->type)==tINTEGER)
 				{
 					if (op2->data.i == 0)
@@ -449,12 +464,15 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 						break;
 					}
 
+				op3->inic=true;
 				break;
 			}
 
 			case I_EQUAL_CMP:
 			{
-
+				
+				if((op1->inic==false) || (op2->inic==false))
+					Error(7);
 				if(op1->type == op2->type )
 				{
 					switch (op1->type)
@@ -503,11 +521,14 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 							op3->type=tBOOLEAN;
  	   				}
 
+				op3->inic=true;
 				break;
 			}
 
 			case I_NOT_EQUAL_CMP:
 			{
+				if((op1->inic==false) || (op2->inic==false))
+					Error(7);
 				if(op1->type == op2->type )
 				{
 					switch (op1->type)
@@ -554,13 +575,15 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 						if((op3 == tmp1) || (op3 == tmp2) || (op3 == tmparam) || (op3 == tmfunc))
 							op3->type=tBOOLEAN;
 	   				}
-
+	
+				op3->inic=true;
 				break;
 			}
 
 			case I_LESS_CMP:
 			{
-				
+				if((op1->inic==false) || (op2->inic==false))
+					Error(7);
 				if(op1->type == op2->type )
 				{
 					switch (op1->type)
@@ -607,14 +630,15 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 						Error(4);
 						break;
  	   				}
-
+				op3->inic=true;
 				break;
 			}
 
 			case I_GR_CMP:
 			{
 				
-
+				if((op1->inic==false) || (op2->inic==false))
+					Error(7);
 				if(op1->type == op2->type )
 				{
 					switch (op1->type)
@@ -662,13 +686,15 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 						Error(4);
 						break;
  	   				}
-
+				op3->inic=true;
 				break;
 			}
 
 			case I_LESS_EQUAL_CMP:
 			{
-
+				
+				if((op1->inic==false) || (op2->inic==false))
+					Error(7);
 				if(op1->type == op2->type )
 				{
 					switch (op1->type)
@@ -715,13 +741,14 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 						Error(4);
 						break;
  	   				}
-
+				op3->inic=true;
 				break;
 			}
 
 			case I_GR_EQUAL_CMP:
 			{
-
+				if((op1->inic==false) || (op2->inic==false))
+					Error(7);
 				if(op1->type == op2->type )
 				{
 					switch (op1->type)
@@ -768,13 +795,15 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 						Error(4);
 						break;
  	   				}
-
+				
+				op3->inic=true;
 				break;
 			}
 
 			case I_ASSIGN:
 			{
-				
+				if(op1->inic==false) 
+					Error(7);
 
 				if((op1->type)==tINTEGER)
 				{
@@ -809,12 +838,14 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 					if((op3 == tmp1) || (op3 == tmp2) || (op3 == tmparam) || (op3 == tmfunc))
 					op3->type=tSTRING;
 				}
+				op3->inic=true;
 				break;
 			}
 
 			case I_PRINT:
 			{
-				
+				if(op1->inic==false)
+					Error(7);
 				if((op1->type)==tINTEGER)
 				{
 					printf("%d",op1->data.i);
@@ -834,8 +865,6 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 				else if((op1->type)==tSTRING)
 				{
 
-					//printf("%s\n",op1->data.s );
-				//	op1->data.s=NULL;
 				print_my_string(op1->data.s);
 					break;
 				}
@@ -868,20 +897,23 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 							pStr = realloc(pStr,current_size);
 						}
 					}
-					//pStr[i]= '\n';
-					printf ("\n");
+					pStr[i]= '\0';
+					//printf ("\n");
+
 
 					if((op3->type)==tINTEGER)
 					{
 						long num;
 						num = strtol(pStr,&ptr,10);
 						op3->data.i=num;
+						op3->inic=true;
 					}
 
 					else if (op3->type==tSTRING)
 					{
-
+						
 						op3->data.s=pStr;
+						op3->inic=true;
 					}
 
 					else if (op3->type==tREAL)
@@ -890,6 +922,7 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 						double num;
 						num = strtod(pStr,NULL);
 						op3->data.r=num;
+						op3->inic=true;
 					}
 
 					else if (op3->type == tBOOLEAN)
@@ -910,7 +943,7 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 
 				}
 
-
+				
 				break;
 			}
 
@@ -968,16 +1001,19 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 						case tINTEGER:
 						LocalFrame->active->data.i=*(int *)top(&stack);
 						pop(&stack);
+						LocalFrame->active->inic=true;
 						break;
 
 						case tREAL:
 						LocalFrame->active->data.r=*(double *)top(&stack);
 						pop(&stack);
+						LocalFrame->active->inic=true;
 						break;
 
 						case tBOOLEAN:
 						LocalFrame->active->data.b=*(bool *)top(&stack);
 						pop(&stack);
+						LocalFrame->active->inic=true;
 						break;
 
 						case tSTRING:
@@ -985,6 +1021,7 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 						strcpy(LocalFrame->active->data.s,*(char **)top(&stack));
 						InsertFirst(LGar,LocalFrame->active->data.s);
 						pop(&stack);
+						LocalFrame->active->inic=true;
 						break;
 
 						default:
@@ -1068,7 +1105,9 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 
 			case I_PUSH:
 			{
-
+				if(op1->inic==false)
+					Error(7);
+					
 				switch(op1->type)
 				{
 					case tINTEGER:
@@ -1123,9 +1162,9 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 				InsertFirst(LGar,tmp1->data.s);
 
 
-
 				op3->data.s=sort_func(convert_my_string(tmp1->data.s));
 				op3->type=tSTRING;
+				
 
 
 				break;
