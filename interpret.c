@@ -1,3 +1,10 @@
+// IFJ14, projekt do predmetu IFJ pre 2BIT 2014/2015 //
+/////// Autor: Jan Profant
+///////         Filip Badan
+///////         Michal Chomo
+///////         Tomas Chomo
+///////         Filip Listiak
+
 #include "interpret.h"
 #include "struct.h"
 #include "error.h"
@@ -11,27 +18,26 @@
 #include <malloc.h>
 #include <string.h>
 #include <stdbool.h>
-#include <errno.h>
 
 #define mallConst 10
 
 
-
+/*hlavna funkcia interpretu, prechadza listom instrukcii a postupne ich vykonava*/
 void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lablist)
 {
 	bool run =true;
-	bool div0=false;
+	
 	int len;
 
-	struct FrameVariable *op1,*op2,*op3;
-	tInstruction *instr;
-	tListofVariables *LocalFrame=NULL;
-	tListofVariables *GlobalFrame=NULL;
+	struct FrameVariable *op1,*op2,*op3;		//operandy instrukcie
+	tInstruction *instr;						//instrukcia
+	tListofVariables *LocalFrame=NULL;			//Lokalny zoznam premennych
+	tListofVariables *GlobalFrame=NULL;			//globalny zoznam premennych
 	bool bop1, bop2;
 	bop1=false;
 	bop2=false;
 	bool bcall=false;
-	Stack Fstack;
+	Stack Fstack;								//zasobniky
 	init(&Fstack,sizeof(struct tListofVariables*));
 	Stack stack;
 	init(&stack,sizeof(struct tListofVariables*));
@@ -39,7 +45,7 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 
 
 
-	/**************pomocne**************/
+	/*pomocne premenne*/
 
 	struct FrameVariable *tmp1;
 	struct FrameVariable *tmp2;
@@ -53,34 +59,29 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 
 	tmp1->name=TMPU;
 	tmp1->data.s=NULL;
-	tmp1->inic=true;
+	
 	tmp2->name=TMPU2;
 	tmp2->data.s=NULL;
-	tmp2->inic=true;
+	
 	tmparam->name=TMParam;
 	tmparam->data.s=NULL;
-	tmparam->inic=true;
+	
 	tmfunc->name=TMFunc;
 	tmfunc->data.s=NULL;
-	tmfunc->inic=true;
+	
 
 
-	/**************pomocne**************/
+	instList->active=instList->first;		//prva instrukcia sa nastavi ako aktivna
 
 
-
-
-	instList->active=instList->first;
-	instr=instList->active->Instr;
-
-
-	GlobalFrame=createGlobFrame(varList);
+	GlobalFrame=createGlobFrame(varList);		//vytvori sa zoznam globalnych premennych
 
 
 	while(run)
 	{
 	instr=instList->active->Instr;
 
+	/*najde sa op1*/
 	if(instr->a != NULL)
 	{
 		if(instr->a->type==tVAR)
@@ -93,15 +94,16 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 
 					  else if(strcmp(instr->a->data.s, tmfunc->name)==0) op1=tmfunc;
 
-					       else op1=findFrameVar(instr->a, GlobalFrame, LocalFrame);
+					       else op1=findFrameVar(instr->a, GlobalFrame, LocalFrame);		//funkcia vrati adresu premennej zo zoznamu 
 		}
 		else
 			{
+				/*pokial bola zadana konstanta, op1 sa naplni jej hodnotou*/
 				op1=malloc(sizeof(struct FrameVariable));
 				bop1=true;
 
 				op1->type=instr->a->type;
-				op1->inic=true;
+				
 
 				switch(instr->a->type)
 				{
@@ -135,6 +137,7 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 	}
 	else op1=NULL;
 
+	/*najde sa op2*/
 	if(instr->b != NULL)
 	{
 		if(instr->b->type==tVAR)
@@ -147,15 +150,16 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 
 					  else if(strcmp(instr->b->data.s, tmfunc->name)==0) op2=tmfunc;
 
-						   else op2=findFrameVar(instr->b, GlobalFrame, LocalFrame);
+						   else op2=findFrameVar(instr->b, GlobalFrame, LocalFrame);		//funkcia vrati adresu premennej zo zoznamu 
 		}
 		else
 		{
+			/*pokial bola zadana konstanta, op2 sa naplni jej hodnotou*/
 			op2=malloc(sizeof(struct FrameVariable));
 			bop2=true;
 
 			op2->type=instr->b->type;
-			op2->inic=true;
+			
 			
 			switch(instr->b->type)
 			{
@@ -192,6 +196,7 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 	}
 	else op2=NULL;
 
+	/*najde sa op3*/
 	if(instr->res != NULL)
 	{
 		if(strcmp(instr->res, tmp1->name)==0) op3=tmp1;
@@ -202,22 +207,20 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 
 				  else if(strcmp(instr->res, tmfunc->name)==0) op3=tmfunc;
 
-					   else op3=findFrameDest(instr->res, GlobalFrame, LocalFrame);
+					   else op3=findFrameDest(instr->res, GlobalFrame, LocalFrame);		//funkcia vrati adresu premennej zo zoznamu
 
 	}
 	else op3=NULL;
 
 
-	/*************************************************SWITCH*****************************************************************/
+	
 
-		switch(instList->active->Instr->Iname)
+		switch(instList->active->Instr->Iname)		//rozdelenie instrukcii na zaklade ich typu
 		{
 
 			case I_ADD:
 			{
-				if((op1->inic==false) || (op2->inic==false))
-					Error(7);
-
+				
 
 				if((op1->type)==tINTEGER)
 				{
@@ -225,7 +228,7 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 					{
 		 				op3->data.i=op1->data.i + op2->data.i;
 		 				if((op3 == tmp1) || (op3 == tmp2) || (op3 == tmparam) || (op3 == tmfunc))
-						op3->type=tINTEGER;
+							op3->type=tINTEGER;
 
 					}
 
@@ -233,7 +236,7 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 					{
 						op3->data.r=op1->data.i + op2->data.r;
 						if((op3 == tmp1) || (op3 == tmp2) || (op3 == tmparam) || (op3 == tmfunc))
-						op3->type=tREAL;
+							op3->type=tREAL;
 					}
 					else
 						{
@@ -245,41 +248,56 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 				}
 
 				else if((op1->type)==tREAL)
-				{
-					if((op2->type)==tINTEGER)
 					{
-						op3->data.r=op1->data.r + op2->data.i;
-						if((op3 == tmp1) || (op3 == tmp2) || (op3 == tmparam) || (op3 == tmfunc))
-						op3->type=tREAL;
-					}
-
-					else if ((op2->type)==tREAL)
-					{
-						op3->data.r=op1->data.r + op2->data.r;
-						if((op3 == tmp1) || (op3 == tmp2) || (op3 == tmparam) || (op3 == tmfunc))
-						op3->type=tREAL;
-					}
-					else
+						if((op2->type)==tINTEGER)
 						{
-							Error(4);
-							break;
+							op3->data.r=op1->data.r + op2->data.i;
+							if((op3 == tmp1) || (op3 == tmp2) || (op3 == tmparam) || (op3 == tmfunc))
+								op3->type=tREAL;
 						}
 
-					break;
+						else if ((op2->type)==tREAL)
+						{
+							op3->data.r=op1->data.r + op2->data.r;
+							if((op3 == tmp1) || (op3 == tmp2) || (op3 == tmparam) || (op3 == tmfunc))
+								op3->type=tREAL;
+						}
+						else
+							{
+								Error(4);
+								break;
+							}
+
+						break;
+					}
+				else if((op1->type)==tSTRING)
+				{
+					if(op2->type==tSTRING)		
+					{
+						/*konkatenacia*/
+						op3->data.s=malloc(strlen(op1->data.s)+strlen(op2->data.s)+1);
+						InsertFirst(LGar,op3->data.s);
+						if((op3 == tmp1) || (op3 == tmp2) || (op3 == tmparam) || (op3 == tmfunc))
+							op3->type=tSTRING;
+						strcpy(op3->data.s,convert_my_string(op1->data.s));
+						strcat(op3->data.s,convert_my_string(op2->data.s));
+						
+					}
+					else Error(4);
 				}
+				
 				else {
 						Error(4);
 						break;
 					 }
 					 
-				op3->inic=true;
+				
 				break;
 			}
 
 			case I_SUB:
 			{
-				if((op1->inic==false) || (op2->inic==false))
-					Error(7);
+			
 
 				if((op1->type)==tINTEGER)
 				{
@@ -333,15 +351,14 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 						break;
 					 }
 
-				op3->inic=true;	
+			
 				break;
 			}
 
 			case I_MUL:
 			{
 				
-				if((op1->inic==false) || (op2->inic==false))
-					Error(7);
+				
 					
 				if((op1->type)==tINTEGER)
 				{
@@ -394,21 +411,18 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 						Error(4);
 						break;
 			     	 }
-				op3->inic=true;
+			
 				break;
 			}
 
 			case I_DIV:
 			{
-				if((op1->inic==false) || (op2->inic==false))
-					Error(7);
+				
 				if((op2->type)==tINTEGER)
 				{
-					if (op2->data.i == 0)
+					if (op2->data.i == 0)		//delenie nulou
 					{
-						div0=true;
-						run=false;
-						break;
+						Error(8);
 					}
 
 					if((op1->type)==tINTEGER)
@@ -436,7 +450,7 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 
 				else if((op2->type)==tREAL)
 				{
-					if (op2->data.r == 0.0)
+					if (op2->data.r == 0.0)		//delenie nulou
 					{
 						Error(8);
 						break;
@@ -465,15 +479,14 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 						break;
 					}
 
-				op3->inic=true;
+				
 				break;
 			}
 
 			case I_EQUAL_CMP:
 			{
 				
-				if((op1->inic==false) || (op2->inic==false))
-					Error(7);
+				
 				if(op1->type == op2->type )
 				{
 					switch (op1->type)
@@ -522,14 +535,13 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 							op3->type=tBOOLEAN;
  	   				}
 
-				op3->inic=true;
+				
 				break;
 			}
 
 			case I_NOT_EQUAL_CMP:
 			{
-				if((op1->inic==false) || (op2->inic==false))
-					Error(7);
+				
 				if(op1->type == op2->type )
 				{
 					switch (op1->type)
@@ -577,14 +589,13 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 							op3->type=tBOOLEAN;
 	   				}
 	
-				op3->inic=true;
+				
 				break;
 			}
 
 			case I_LESS_CMP:
 			{
-				if((op1->inic==false) || (op2->inic==false))
-					Error(7);
+				
 				if(op1->type == op2->type )
 				{
 					switch (op1->type)
@@ -631,15 +642,14 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 						Error(4);
 						break;
  	   				}
-				op3->inic=true;
+				
 				break;
 			}
 
 			case I_GR_CMP:
 			{
 				
-				if((op1->inic==false) || (op2->inic==false))
-					Error(7);
+				
 				if(op1->type == op2->type )
 				{
 					switch (op1->type)
@@ -687,15 +697,14 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 						Error(4);
 						break;
  	   				}
-				op3->inic=true;
+				
 				break;
 			}
 
 			case I_LESS_EQUAL_CMP:
 			{
 				
-				if((op1->inic==false) || (op2->inic==false))
-					Error(7);
+				
 				if(op1->type == op2->type )
 				{
 					switch (op1->type)
@@ -742,14 +751,13 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 						Error(4);
 						break;
  	   				}
-				op3->inic=true;
+				
 				break;
 			}
 
 			case I_GR_EQUAL_CMP:
 			{
-				if((op1->inic==false) || (op2->inic==false))
-					Error(7);
+				
 				if(op1->type == op2->type )
 				{
 					switch (op1->type)
@@ -797,14 +805,13 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 						break;
  	   				}
 				
-				op3->inic=true;
+				
 				break;
 			}
 
 			case I_ASSIGN:
 			{
-				if(op1->inic==false) 
-					Error(7);
+				
 
 				if((op1->type)==tINTEGER)
 				{
@@ -839,14 +846,13 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 					if((op3 == tmp1) || (op3 == tmp2) || (op3 == tmparam) || (op3 == tmfunc))
 					op3->type=tSTRING;
 				}
-				op3->inic=true;
+				
 				break;
 			}
 
 			case I_PRINT:
 			{
-				if(op1->inic==false)
-					Error(7);
+				
 				if((op1->type)==tINTEGER)
 				{
 					printf("%d",op1->data.i);
@@ -866,7 +872,7 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 				else if((op1->type)==tSTRING)
 				{
 
-				print_my_string(op1->data.s);
+				print_my_string(op1->data.s);	//upravi dany string pre spravny vypis
 					break;
 				}
 
@@ -895,7 +901,7 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 						if(i == current_size)
 						{
 							current_size = i+len_max;
-							pStr = realloc(pStr,current_size);
+							pStr = realloc(pStr,current_size);		//realokacia premennej ak je vstup rozsiahly
 						}
 					}
 					pStr[i]= '\0';
@@ -913,14 +919,13 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 							Error(6)
     						*/
 						op3->data.i=num;
-						op3->inic=true;
+						
 					}
 
 					else if (op3->type==tSTRING)
 					{
 						
 						op3->data.s=pStr;
-						op3->inic=true;
 					}
 
 					else if (op3->type==tREAL)
@@ -929,7 +934,7 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 						double num;
 						num = strtod(pStr,&ptr);
 						op3->data.r=num;
-						op3->inic=true;
+						
 						
 						
 						
@@ -954,7 +959,6 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 										    return 0;
 										}*/
 					}
-
 					else if (op3->type == tBOOLEAN)
 
 					{
@@ -985,14 +989,14 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 			}
 
 
-			case I_GOTO:
+			case I_GOTO:	//skokova instrukcia
 			{
 				
 				if(op2 != NULL)
 				{
 					if(op2->type==tBOOLEAN)
 					{
-						if(op2->data.b==true)
+						if(op2->data.b==true)		//podmienka skoku
 						{
 							break;
 						}
@@ -1002,6 +1006,7 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 				lablist->Active=lablist->First;
 				while(lablist->Active != NULL)
 				{
+					/*najde sa dane navestie, na ktore sa ma skocit*/
 					if(op1->data.i==lablist->Active->lab_ID)
 						instList->active=lablist->Active->ins_ptr;
 					lablist->Active=lablist->Active->next;
@@ -1011,13 +1016,15 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 
 			case I_CALL:
 			{
-
+				/*ulozi sa zoznam lokalnych premennych*/
 				if(LocalFrame != NULL)
 					push(&Fstack,&LocalFrame,-1);
 				LocalFrame=createFrame(op1->data.s, varList);
 
+				/*ulozi sa navratova adresa instrukcie*/
 				push(&Fstack,&instList->active,sizeof(tListItem*));
 
+				/*ulozi sa premenna pre navratovu hodnotu*/
 				push(&Fstack,&op3,sizeof(struct FrameVariable*));
 
 				LocalFrame->active=LocalFrame->first;
@@ -1026,24 +1033,25 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 
 				while((LocalFrame->active != NULL) && (LocalFrame->active->param==true))
 				{
+					/*priradenie honoty parametrom funkcie zo zasobnika*/
 					switch(LocalFrame->active->type)
 					{
 						case tINTEGER:
 						LocalFrame->active->data.i=*(int *)top(&stack);
 						pop(&stack);
-						LocalFrame->active->inic=true;
+						
 						break;
 
 						case tREAL:
 						LocalFrame->active->data.r=*(double *)top(&stack);
 						pop(&stack);
-						LocalFrame->active->inic=true;
+						
 						break;
 
 						case tBOOLEAN:
 						LocalFrame->active->data.b=*(bool *)top(&stack);
 						pop(&stack);
-						LocalFrame->active->inic=true;
+						
 						break;
 
 						case tSTRING:
@@ -1051,7 +1059,7 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 						strcpy(LocalFrame->active->data.s,*(char **)top(&stack));
 						InsertFirst(LGar,LocalFrame->active->data.s);
 						pop(&stack);
-						LocalFrame->active->inic=true;
+						
 						break;
 
 						default:
@@ -1061,6 +1069,7 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 					LocalFrame->active=LocalFrame->active->nextvar;
 				}
 
+				/*vyhladanie danej funkcie a skok na jej prvu instrukciu*/
 				lablist->Active=lablist->First;
 				while(lablist->Active != NULL)
 				{
@@ -1069,8 +1078,6 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 						if(strcmp(op1->data.s, lablist->Active->func_name)==0)
 						{
 							instList->active=lablist->Active->ins_ptr;
-
-
 							bcall=true;
 						}
 					}
@@ -1083,11 +1090,12 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 			case I_RETURN:
 			{
 
-				op3=*(tFrameVariable**)top(&Fstack);
+				op3=*(tFrameVariable**)top(&Fstack);	//nacitanie premennej, do ktorej sa ulozi navratova hodnota
 				pop(&Fstack);
 
 				op3->type=LocalFrame->first->type;
 
+				/*skopirovanie hodnoty z id funkcie do navratovej premennej*/
 				switch(LocalFrame->first->type)
 				{
 					case tINTEGER:
@@ -1117,14 +1125,14 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 						break;
 				}
 
-				instList->active=*(struct listItem**)top(&Fstack);
+				instList->active=*(struct listItem**)top(&Fstack);	//nacitanie navratovej adresy instrukcie
 				pop(&Fstack);
 
-				frameFree(LocalFrame);
+				frameFree(LocalFrame);		//odstranenie lokalnej tabulky danej funkcie
 
 				if(S_empty(&Fstack)==false)
 				{
-					LocalFrame=*(tListofVariables **)top(&Fstack);
+					LocalFrame=*(tListofVariables **)top(&Fstack);		//zo zasobniku sa nacita aktivna lokalna tabulka
 					pop(&Fstack);
 				}
 				else LocalFrame=NULL;
@@ -1135,9 +1143,8 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 
 			case I_PUSH:
 			{
-				if(op1->inic==false)
-					Error(7);
-					
+				
+				/*ulozenie hodnoty na zasobnik*/	
 				switch(op1->type)
 				{
 					case tINTEGER:
@@ -1166,7 +1173,7 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 
 			case I_LENGTH:
 			{
-
+				/*nacitanie argumentu*/
 				tmp1->type=tSTRING;
 				tmp1->data.s=malloc(strlen(*(char **)stack.Top->data)+1);
 				strcpy(tmp1->data.s,*(char **)top(&stack));
@@ -1174,17 +1181,15 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 
 			    InsertFirst(LGar,tmp1->data.s);
 
-				op3->data.i=length_func(convert_my_string(tmp1->data.s));
+				op3->data.i=length_func(convert_my_string(tmp1->data.s));	//vstavana funkcia
 				op3->type=tINTEGER;
-
-
 
 				break;
 			}
 
 			case I_SORT:
 			{
-
+				/*nacitanie argumentu*/
 				tmp1->type=tSTRING;
 				tmp1->data.s=malloc(strlen(*(char **)stack.Top->data)+1);
 				strcpy(tmp1->data.s,*(char **)top(&stack));
@@ -1192,7 +1197,7 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 				InsertFirst(LGar,tmp1->data.s);
 
 
-				op3->data.s=sort_func(convert_my_string(tmp1->data.s));
+				op3->data.s=sort_func(convert_my_string(tmp1->data.s));		//vstavana funkcia
 				op3->type=tSTRING;
 				
 
@@ -1202,7 +1207,7 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 
 			case I_FIND:
 			{
-
+				/*nacitanie argumentu*/
 				tmp2->type=tSTRING;
 				tmp2->data.s=malloc(strlen(*(char **)stack.Top->data)+1);
 				strcpy(tmp2->data.s,*(char **)top(&stack));
@@ -1215,7 +1220,7 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 				pop(&stack);
 				InsertFirst(LGar,tmp1->data.s);
 
-				op3->data.i=find_func(convert_my_string(tmp1->data.s), convert_my_string(tmp2->data.s));
+				op3->data.i=find_func(convert_my_string(tmp1->data.s), convert_my_string(tmp2->data.s));		//vstavana funkcia
 				op3->type=tINTEGER;
 
 
@@ -1225,6 +1230,7 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 
 			case I_COPY:
 			{
+				/*nacitanie argumentu*/
 				tmparam->type=tINTEGER;
 				tmparam->data.i=*(int *)top(&stack);
 				pop(&stack);
@@ -1245,7 +1251,7 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 				{
 					Error(99);
 				}
-				op3->data.s=copy_func(convert_my_string(tmp1->data.s), tmp2->data.i, tmparam->data.i);
+				op3->data.s=copy_func(convert_my_string(tmp1->data.s), tmp2->data.i, tmparam->data.i);		//vstavana funkcia
 				op3->type=tSTRING;
 
 				break;
@@ -1285,16 +1291,14 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 }	//KONIEC WHILE(RUN)
 
 if(GlobalFrame != NULL)
-	frameFree(GlobalFrame);
+	frameFree(GlobalFrame);		//uvolnenie globalnej tabulky 
 
-
+/*uvolnenie pomocnych premennych*/
 free(tmp1);
 free(tmp2);
 free(tmparam);
 free(tmfunc);
 
-if(div0==true)
-	Error(8);
 
 }  //KONIEC FUNKCIE INTERPRETATION LOOP
 
