@@ -18,6 +18,7 @@
 // funkcia vykonava syntakticku analyzu a vracia typ chyby alebo uspech
 ERROR_MSG top_down()
 {
+  // vzdy, ked nastane chyba, ulozi sa do premennej err jej typ, uvolni sa pamat pomocou funkcie free_all a funkcia top_down sa ukonci s navratovou hodnotou chyby
   ERROR_MSG err=EVERYTHINGSOKAY; // premenna pre chybove stavy
 
   T_ParserItem **PItems=NULL; // ukazovatel na ukazovatel terminalu alebo neterminalu, v podstate "pole" terminalov a neterminalov ulozenych v strukture
@@ -67,14 +68,13 @@ ERROR_MSG top_down()
   Act->ifbegcnt=0;
   Act->whbegcnt=0;
   Act->labIDcnt=1;
+  Act->flist=NULL;
 
   size_t tmem_size; // premenna pre aktualnu velkost token->mem
 
   // inicializacia zoznamov
   t_varfunc_list *vflist=malloc(sizeof(*vflist)); // zoznam premennych a funkcii
   varfuncL_init(vflist);
-  t_func_list *flist=malloc(sizeof(*flist)); // zoznam parametrov a lokalnych premennych jednotlivych funkcii
-  funcL_init(flist);
   t_lablist *lablist=malloc(sizeof(*lablist)); // zoznam navesti
   labL_init(lablist);
   tListOfInstr *inslist=malloc(sizeof(*inslist)); // zoznam instrukcii
@@ -86,23 +86,25 @@ ERROR_MSG top_down()
 
   if(err!=EVERYTHINGSOKAY) // lexikalna chyba
   {
-    free_all(PItems,p_stack,0,0,glob_sym_table,loc_sym_table,Act,vflist,lablist,inslist,flist);
+    free_all(PItems,p_stack,0,0,glob_sym_table,loc_sym_table,Act,vflist,lablist,inslist);
     return err;
   }
 
-  if(token->mem!=NULL) // konvertovanie na UPPERCASE
+  if(token->mem!=NULL) // konvertovanie token->mem na UPPERCASE
   {
     if(token->identity!=DtString)strtoupper(&token->mem);
     tmem_size=strlen(token->mem)+1;
   }
+
   if(token->identity==EndOfFile) // syntakticka chyba=prazdny subor
   {
-    free_all(PItems,p_stack,0,1,glob_sym_table,loc_sym_table,Act,vflist,lablist,inslist,flist);
+    free_all(PItems,p_stack,0,1,glob_sym_table,loc_sym_table,Act,vflist,lablist,inslist);
     return SYNTAX_ERR;
   }
+
   if(get_rule(START,PItems,&state,&is_func)) // podla pravidla vykona expanziu a pravu stranu pravidla ulozi do PItems
   {
-    free_all(PItems,p_stack,0,1,glob_sym_table,loc_sym_table,Act,vflist,lablist,inslist,flist); // ak je prvy token nespravny=syntakticka chyba
+    free_all(PItems,p_stack,0,1,glob_sym_table,loc_sym_table,Act,vflist,lablist,inslist); // ak je prvy token nespravny=syntakticka chyba
     return SYNTAX_ERR;
   }
 
@@ -112,16 +114,18 @@ ERROR_MSG top_down()
     PItems[i]->type=EMPTY;
     i++;
   }
-i=0;
+  i=0;
 
   while(!S_empty(&p_stack)) // ked bude zasobnik prazdny, syntakticka analyza konci
   {
     if(token->identity==EndOfFile) // zdrojovy subor je nekompletny=syntakticka chyba
     {
-      free_all(PItems,p_stack,1,1,glob_sym_table,loc_sym_table,Act,vflist,lablist,inslist,flist);
+      free_all(PItems,p_stack,1,1,glob_sym_table,loc_sym_table,Act,vflist,lablist,inslist);
       return SYNTAX_ERR;
     }
-    PItem_top=top(&p_stack);
+
+    PItem_top=top(&p_stack); // ulozi sa vrchol zasobnika
+
     if(PItem_top->type==NONTERMINAL) // na vrchole zasobnika je neterminal
     {
 
@@ -130,7 +134,7 @@ i=0;
         err=ExprParse(glob_sym_table,loc_sym_table,&expr_type,inslist);
         if(err) // chybny vyraz=syntakticka chyba
         {
-          free_all(PItems,p_stack,1,1,glob_sym_table,loc_sym_table,Act,vflist,lablist,inslist,flist);
+          free_all(PItems,p_stack,1,1,glob_sym_table,loc_sym_table,Act,vflist,lablist,inslist);
           return err;
         }
         pop(&p_stack); //  expandovany neterminal sa odstrani zo zasobnika
@@ -140,12 +144,12 @@ i=0;
       {
         if(get_rule(PItem_top->value.nonterm.type,PItems,&state,&is_func)) // neexistuje pravidlo=syntakticka chyba
         {
-          free_all(PItems,p_stack,1,1,glob_sym_table,loc_sym_table,Act,vflist,lablist,inslist,flist);
+          free_all(PItems,p_stack,1,1,glob_sym_table,loc_sym_table,Act,vflist,lablist,inslist);
           return SYNTAX_ERR;
         }
         pop(&p_stack); //  expandovany neterminal sa odstrani zo zasobnika
         PItem_top=NULL;
-        while(PItems[i]->type!=EMPTY)
+        while(PItems[i]->type!=EMPTY) // ulozi PItems na zasobnik
         {
           push(&p_stack,PItems[i],-1);
           PItems[i]->type=EMPTY;
@@ -162,97 +166,108 @@ i=0;
       {
         if(token->identity==DtInteger || token->identity==DtReal || token->identity==DtString || token->identity==ID)
         {
-          err=semantic(&state,glob_sym_table,loc_sym_table,Act,&expr_type,tmem_size,vflist,flist,lablist,inslist,TMPUV,&s_stack,&ifbeg_stack,&whbeg_stack);
+          // syntakticka analyza presla v aktualnom kroku uspesne, vola sa semanticka analyza
+          err=semantic(&state,glob_sym_table,loc_sym_table,Act,&expr_type,tmem_size,vflist,lablist,inslist,TMPUV,&s_stack,&ifbeg_stack,&whbeg_stack);
           if(err!=EVERYTHINGSOKAY)
           {
-            free_all(PItems,p_stack,1,1,glob_sym_table,loc_sym_table,Act,vflist,lablist,inslist,flist);
+            free_all(PItems,p_stack,1,1,glob_sym_table,loc_sym_table,Act,vflist,lablist,inslist);
             return err;
           }
           pop(&p_stack);
           PItem_top=NULL;
         }
-        else // terminal nie je literal=syntakticka chyba
+        else // token nie je literal=syntakticka chyba
         {
-          free_all(PItems,p_stack,1,1,glob_sym_table,loc_sym_table,Act,vflist,lablist,inslist,flist);
+          free_all(PItems,p_stack,1,1,glob_sym_table,loc_sym_table,Act,vflist,lablist,inslist);
           return SYNTAX_ERR;
         }
       }
       else
       {
-        if(token->identity==PItem_top->value.term.type) // ak sa typ terminalu zhoduje so vstupom, odstrani sa terminal zo zasobniku a pokracuje sa na dalsi vstup
+        if(token->identity==PItem_top->value.term.type) // ak sa typ terminalu zhoduje s tokenom, odstrani sa terminal zo zasobniku a pokracuje sa na dalsi token
         {
-          err=semantic(&state,glob_sym_table,loc_sym_table,Act,&expr_type,tmem_size,vflist,flist,lablist,inslist,TMPUV,&s_stack,&ifbeg_stack,&whbeg_stack);
+          // syntakticka analyza presla v aktualnom kroku uspesne, vola sa semanticka analyza
+          err=semantic(&state,glob_sym_table,loc_sym_table,Act,&expr_type,tmem_size,vflist,lablist,inslist,TMPUV,&s_stack,&ifbeg_stack,&whbeg_stack);
           if(err!=EVERYTHINGSOKAY)
           {
-            free_all(PItems,p_stack,1,1,glob_sym_table,loc_sym_table,Act,vflist,lablist,inslist,flist);
+            free_all(PItems,p_stack,1,1,glob_sym_table,loc_sym_table,Act,vflist,lablist,inslist);
             return err;
           }
           if(Act->begincnt==0 && state==FUNC_BODY)is_func=false;
           pop(&p_stack);
           PItem_top=NULL;
         }
-        else // terminaly sa nezhoduju=syntakticka chyba
+        else // terminal a token sa nezhoduju=syntakticka chyba
         {
-          free_all(PItems,p_stack,1,1,glob_sym_table,loc_sym_table,Act,vflist,lablist,inslist,flist);
+          free_all(PItems,p_stack,1,1,glob_sym_table,loc_sym_table,Act,vflist,lablist,inslist);
           if(token->identity==KwSort || token->identity==KwFind)return SEMANTIC_ERR;
           return SYNTAX_ERR;
         }
       }
     //fprintf(stderr,"debug..token: %s state: %d\n", token->mem,state);
-    free(token->mem);
-    token->mem=NULL;
-    expr_type=tERR;
-    err=get_token();
-    if(err!=EVERYTHINGSOKAY)
-    {
-      free_all(PItems,p_stack,1,0,glob_sym_table,loc_sym_table,Act,vflist,lablist,inslist,flist);
-      return err;
-    }
-    if(token->mem!=NULL)
-    {
-      if(token->identity!=DtString)strtoupper(&token->mem);
-      tmem_size=strlen(token->mem)+1;
-    }
+      free(token->mem);
+      token->mem=NULL;
+      expr_type=tERR; // typ vyrazu sa vzdy nastavi na tERR, podla toho sa zisti, ci prebehla precedencna analyza, ak ano, premenna nebude tERR
+
+      err=get_token(); // nacita dalsi token
+      if(err!=EVERYTHINGSOKAY)
+      {
+        free_all(PItems,p_stack,1,0,glob_sym_table,loc_sym_table,Act,vflist,lablist,inslist);
+        return err;
+      }
+
+      if(token->mem!=NULL) // konvertovanie token->mem na UPPERCASE
+      {
+        if(token->identity!=DtString)strtoupper(&token->mem);
+        tmem_size=strlen(token->mem)+1;
+      }
     }
   }
-  if(token->identity!=EndOfFile) // ak zdrojovy subor obsahuje nejake znaky po ukoncujucej bodke
+  if(token->identity!=EndOfFile) // zdrojovy subor obsahuje nejake znaky po ukoncujucej bodke=syntakticka chyba
   {
-   free_all(PItems,p_stack,0,1,glob_sym_table,loc_sym_table,Act,vflist,lablist,inslist,flist);
+   free_all(PItems,p_stack,0,1,glob_sym_table,loc_sym_table,Act,vflist,lablist,inslist);
    return SYNTAX_ERR;
   }
    //showList(inslist);
-  interpretLoop(inslist,vflist,lablist);
+  interpretLoop(inslist,vflist,lablist); // funkcia interpretu
 
-  free_all(PItems,p_stack,0,0,glob_sym_table,loc_sym_table,Act,vflist,lablist,inslist,flist);
+  free_all(PItems,p_stack,0,0,glob_sym_table,loc_sym_table,Act,vflist,lablist,inslist);
   return EVERYTHINGSOKAY;
 }
 
-ERROR_MSG semantic(T_State *st, htab_t *gsymtab, htab_t *lsymtab, T_Actual *Ac, T_vartype *expt, size_t tmems, t_varfunc_list *vflistp, t_func_list *flistp,
+// funkcia semantickej analyzy, vykonava aj generovanie instrukcii
+ERROR_MSG semantic(T_State *st, htab_t *gsymtab, htab_t *lsymtab, T_Actual *Ac, T_vartype *expt, size_t tmems, t_varfunc_list *vflistp,
 t_lablist *lablistp, tListOfInstr *inslistp, const char *TMPUV, Stack *s_stack, Stack *ib_stack, Stack *wb_stack)
 {
-T_VarData *vdattmp=NULL;
-T_FuncData *fdattmp=NULL;
-T_VarData *vcmpd=NULL;
-T_FuncData *fcmpd=NULL;
-tListItem *ins_adress=NULL;
-Hitem *cmp=NULL;
-ERROR_MSG err=EVERYTHINGSOKAY;
-char tmp[Ac->rpt_size];
-Variable *varA=NULL;
-Variable *varB=NULL;
-if(Ac->rpt_size==MAX_RPTYPES)
-{
+  // inicializacia pomocnych premennych
+  T_VarData *vdattmp=NULL;
+  T_FuncData *fdattmp=NULL;
+  T_VarData *vcmpd=NULL;
+  T_FuncData *fcmpd=NULL;
+  tListItem *ins_adress=NULL;
+  Hitem *cmp=NULL;
+  ERROR_MSG err=EVERYTHINGSOKAY;
+  char tmp[Ac->rpt_size];
+  Variable *varA=NULL;
+  Variable *varB=NULL;
+
+  if(Ac->rpt_size==MAX_RPTYPES) // ked velkost retazca typov parametrov dosiahne urcene maximum, alokuje sa viac pamate
+  {
   size_t s=sizeof(Ac->act_rptypes);
   Ac->act_rptypes=realloc(Ac->act_rptypes,s+10);
-}
-  switch(*st)
+  }
+
+  switch(*st) // podla stavu, v ktorom sa analyza nachadza, sa vyberie vhodna semanticka akcia
   {
+    // deklaracia glob. premennych, aktualny identifikator premennej sa vzdy ulozi do pomocnej struktury
+    // pri type sa premenna vklada do globalnej tabulky symbolov, ak uz tabulka obsahuje premennu s rovnakym ID=semanticka chyba
+    // premenne sa tiez vkladaju do zoznamu premennych a funkcii
     case GLOBVAR_DEK:
               vdattmp=calloc(1,sizeof(T_VarData));
-              switch(token->identity)
+              switch(token->identity) // podla identity aktualneho tokenu sa vyberie akcia
               {
                 case ID:
-                      if(strcmp(token->mem,"COPY")==0 || strcmp(token->mem,"LENGTH")==0)
+                      if(strcmp(token->mem,"COPY")==0 || strcmp(token->mem,"LENGTH")==0) // premenne sa nesmu volat ako vstavane funkcie
                       {
                         free(vdattmp);
                         return SEMANTIC_ERR;
@@ -309,7 +324,7 @@ if(Ac->rpt_size==MAX_RPTYPES)
                       }
                       if(varfuncL_insertlast(vflistp,NULL,IDENTIFIER,Ac->act_varID,tBOOLEAN)!=0)return INTERN_INTERPRETATION_ERR;
                       break;
-                case KwFind:
+                case KwFind: // premenne sa nesmu volat ako vstavane funkcie
                   case KwSort:
                       free(vdattmp);
                       return SEMANTIC_ERR;
@@ -318,10 +333,12 @@ if(Ac->rpt_size==MAX_RPTYPES)
               free(vdattmp);
               break;
 
+    // identifikator funkcie sa ulozi do pomocnej struktury
     case FUNC_ID:
-              if(token->identity==OpLZat || token->identity==KwFunction)break;
-              if(strcmp(token->mem,"COPY")==0 || strcmp(token->mem,"LENGTH")==0)return SEMANTIC_ERR;
-              if(Ac->was_func==true)
+              if(token->identity==OpLZat || token->identity==KwFunction)break; // tieto tokeny sa preskocia
+              if(strcmp(token->mem,"COPY")==0 || strcmp(token->mem,"LENGTH")==0 ||
+              token->identity==KwFind || token->identity==KwSort)return SEMANTIC_ERR; // funkcia sa nesmie volat ako vstavane funkcie
+              if(Ac->was_func==true) // ak sa uz analyzovala ina funkcia, vyprazdni sa lokalna tabulka symbolov
               {
                 Ac->is_ret_err=true;
                 htab_clear(lsymtab);
@@ -335,8 +352,13 @@ if(Ac->rpt_size==MAX_RPTYPES)
                 Ac->rpt_size=2;
                 Ac->was_func=true;
               }
+              Ac->flist=malloc(sizeof(*(Ac->flist))); // zoznam parametrov a lokalnych premennych jednotlivych funkcii
+              funcL_init(Ac->flist);
               break;
 
+    // parametre funkcie sa ukladaju do lokalnej tabulky symbolov aj do zoznamu parametrov a lokalnych premennych aktualnej funkcie
+    // zaciatocne pismeno typu parametru sa konkatenuje do retazca act_rptypes
+    // princip je totozny ako pri glob. premennych
     case FUNC_PARAMS:
               vdattmp=malloc(sizeof(*vdattmp));
               if(vdattmp==NULL)return INTERN_INTERPRETATION_ERR;
@@ -366,7 +388,7 @@ if(Ac->rpt_size==MAX_RPTYPES)
                         free(vdattmp);
                         return err;
                       }
-                      if(funcL_insertfirst(flistp,Ac->act_varID,tINTEGER,true)!=0)return INTERN_INTERPRETATION_ERR;
+                      if(funcL_insertfirst(Ac->flist,Ac->act_varID,tINTEGER,true)!=0)return INTERN_INTERPRETATION_ERR;
                       Ac->rpt_size++;
                       strcat(Ac->act_rptypes,"i");
                       break;
@@ -379,7 +401,7 @@ if(Ac->rpt_size==MAX_RPTYPES)
                         free(vdattmp);
                         return err;
                       }
-                      if(funcL_insertfirst(flistp,Ac->act_varID,tSTRING,true)!=0)return INTERN_INTERPRETATION_ERR;
+                      if(funcL_insertfirst(Ac->flist,Ac->act_varID,tSTRING,true)!=0)return INTERN_INTERPRETATION_ERR;
                       Ac->rpt_size++;
                       strcat(Ac->act_rptypes,"s");
                       break;
@@ -392,7 +414,7 @@ if(Ac->rpt_size==MAX_RPTYPES)
                         free(vdattmp);
                         return err;
                       }
-                      if(funcL_insertfirst(flistp,Ac->act_varID,tREAL,true)!=0)return INTERN_INTERPRETATION_ERR;
+                      if(funcL_insertfirst(Ac->flist,Ac->act_varID,tREAL,true)!=0)return INTERN_INTERPRETATION_ERR;
                       Ac->rpt_size++;
                       strcat(Ac->act_rptypes,"r");
                       break;
@@ -405,7 +427,7 @@ if(Ac->rpt_size==MAX_RPTYPES)
                         free(vdattmp);
                         return err;
                       }
-                      if(funcL_insertfirst(flistp,Ac->act_varID,tBOOLEAN,true)!=0)return INTERN_INTERPRETATION_ERR;
+                      if(funcL_insertfirst(Ac->flist,Ac->act_varID,tBOOLEAN,true)!=0)return INTERN_INTERPRETATION_ERR;
                       Ac->rpt_size++;
                       strcat(Ac->act_rptypes,"b");
                       break;
@@ -418,8 +440,11 @@ if(Ac->rpt_size==MAX_RPTYPES)
               free(vdattmp);
               break;
 
+    // zisti sa navratovy typ funkcie, na zaciatok retazca act_rptypes sa ulozi prve pismeno tohto typu
+    // udaje o funkcii sa ulozia do globalnej tabulky symbolov, ak sa najde rovnake ID=semanticka chyba
+    // ID a typ sa tiez ulozi do zoznamu premennych a funkcii
     case FUNC_TYPE:
-              if(token->identity==OpDek || token->identity==OpPZat || token->identity==OpKonec)return EVERYTHINGSOKAY;
+              if(token->identity==OpDek || token->identity==OpPZat || token->identity==OpKonec)return EVERYTHINGSOKAY; // tieto tokeny sa preskocia
               fdattmp=malloc(sizeof(*fdattmp));
               if(fdattmp==NULL)return INTERN_INTERPRETATION_ERR;
               fdattmp->ret_par_types=malloc(strlen(Ac->act_rptypes)+2);
@@ -455,7 +480,7 @@ if(Ac->rpt_size==MAX_RPTYPES)
                       strcpy(Ac->act_rptypes,tmp);
                       ftype=tBOOLEAN;
                       break;
-                case KwForward:
+                case KwForward: // vyhlada sa aktualna funkcia v globalnej tab. sym., nastavi sa priznak, ze nebola definovana
                       cmp=htab_search(gsymtab,Ac->act_funcID);
                       fcmpd=cmp->data;
                       fcmpd->is_def=false;
@@ -510,11 +535,13 @@ if(Ac->rpt_size==MAX_RPTYPES)
                   free(fdattmp);
                   return err;
                 }
-                if(varfuncL_insertlast(vflistp,flistp,FUNCTION,Ac->act_funcID,ftype)!=0)return INTERN_INTERPRETATION_ERR;
+                if(varfuncL_insertlast(vflistp,Ac->flist,FUNCTION,Ac->act_funcID,ftype)!=0)return INTERN_INTERPRETATION_ERR;
                 free(fdattmp);
               }
               break;
 
+    // deklaracia lokalnych premennych je analogicka s deklaraciou globalnych, ale lokalne premenne sa ukladaju do lokalnej tabulky symbolov
+    // lokalne premenne sa ukladaju aj do zoznamu parametrov a lokalnych premennych aktualnej funkcie
     case LOCVAR_DEK:
               vdattmp=malloc(sizeof(*vdattmp));
               switch(token->identity)
@@ -547,7 +574,7 @@ if(Ac->rpt_size==MAX_RPTYPES)
                         free(vdattmp);
                         return err;
                       }
-                      if(funcL_insertfirst(flistp,Ac->act_varID,tINTEGER,false)!=0)return INTERN_INTERPRETATION_ERR;
+                      if(funcL_insertfirst(Ac->flist,Ac->act_varID,tINTEGER,false)!=0)return INTERN_INTERPRETATION_ERR;
                       break;
                 case KwString:
                       vdattmp->is_def=false;
@@ -558,7 +585,7 @@ if(Ac->rpt_size==MAX_RPTYPES)
                         free(vdattmp);
                         return err;
                       }
-                      if(funcL_insertfirst(flistp,Ac->act_varID,tSTRING,false)!=0)return INTERN_INTERPRETATION_ERR;
+                      if(funcL_insertfirst(Ac->flist,Ac->act_varID,tSTRING,false)!=0)return INTERN_INTERPRETATION_ERR;
                       break;
                 case KwReal:
                       vdattmp->is_def=false;
@@ -569,7 +596,7 @@ if(Ac->rpt_size==MAX_RPTYPES)
                         free(vdattmp);
                         return err;
                       }
-                      if(funcL_insertfirst(flistp,Ac->act_varID,tREAL,false)!=0)return INTERN_INTERPRETATION_ERR;
+                      if(funcL_insertfirst(Ac->flist,Ac->act_varID,tREAL,false)!=0)return INTERN_INTERPRETATION_ERR;
                       break;
                 case KwBoolean:
                       vdattmp->is_def=false;
@@ -580,7 +607,7 @@ if(Ac->rpt_size==MAX_RPTYPES)
                         free(vdattmp);
                         return err;
                       }
-                      if(funcL_insertfirst(flistp,Ac->act_varID,tBOOLEAN,false)!=0)return INTERN_INTERPRETATION_ERR;
+                      if(funcL_insertfirst(Ac->flist,Ac->act_varID,tBOOLEAN,false)!=0)return INTERN_INTERPRETATION_ERR;
                       break;
                 case KwFind:
                   case KwSort:
@@ -591,6 +618,7 @@ if(Ac->rpt_size==MAX_RPTYPES)
               free(vdattmp);
               break;
 
+    // v tele funkcie sa kontroluje, ci boli deklarovane vsetky premenne, kontroluje sa spravny typ vyrazu pri priradeni a generuju sa potrebne instrukcie
     case FUNC_BODY: ;
               int lab;
               int lab2;
@@ -631,7 +659,7 @@ if(Ac->rpt_size==MAX_RPTYPES)
                               if(get_type(fcmpd->ret_par_types,0)==tBOOLEAN)return EXPRESSION_ERR;
                               fcmpd->is_ret=true;
                               Ac->is_ret_err=false;
-                              generator(inslistp,I_READ,NULL,NULL,Ac->act_varID); // instrukcia pre readln ******
+                              generator(inslistp,I_READ,NULL,NULL,Ac->act_varID);
                             }
                           }
                           else
@@ -656,7 +684,7 @@ if(Ac->rpt_size==MAX_RPTYPES)
                             {
                               if(vcmpd->type==tBOOLEAN)return EXPRESSION_ERR;
                               vcmpd->is_def=true;
-                              generator(inslistp,I_READ,NULL,NULL,Ac->act_varID); // instrukcia pre readln ******
+                              generator(inslistp,I_READ,NULL,NULL,Ac->act_varID);
                             }
                           }
                         }
@@ -1007,6 +1035,8 @@ if(Ac->rpt_size==MAX_RPTYPES)
                 default: break;
               }
               break;
+
+     // v hlavnom tele sa kontroluje, ci boli deklarovane vsetky premenne a funkcie, kontroluje sa spravny typ vyrazu pri priradeni a generuju sa potrebne instrukcie
     case MAIN_BODY:
               if(Ac->was_func==true)
               {
@@ -1352,7 +1382,7 @@ void PItems_free(T_ParserItem ***Ptr)
 }
 
 // uvolni alokovanu pamat, daju sa nastavit priznaky pre vymazanie zasobnika a uvolnenie token->mem
-void free_all(T_ParserItem **p, Stack st, int stack_erase, int token_mem_free, htab_t *gsymtab, htab_t *lsymtab, T_Actual *Ac, t_varfunc_list *vflistp, t_lablist *lablistp, tListOfInstr *inslistp, t_func_list *flistp)
+void free_all(T_ParserItem **p, Stack st, int stack_erase, int token_mem_free, htab_t *gsymtab, htab_t *lsymtab, T_Actual *Ac, t_varfunc_list *vflistp, t_lablist *lablistp, tListOfInstr *inslistp)
 {
   Hitem *cmp=NULL;
   T_FuncData *fcmpd=NULL;
