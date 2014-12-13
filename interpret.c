@@ -868,8 +868,8 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 							pStr = realloc(pStr,current_size);
 						}
 					}
-					pStr[i]= '\n';
-
+					//pStr[i]= '\n';
+					printf ("\n");
 
 					if((op3->type)==tINTEGER)
 					{
