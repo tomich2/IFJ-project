@@ -1,9 +1,9 @@
 // IFJ14, projekt do predmetu IFJ pre 2BIT 2014/2015 //
 /////// Autor: Jan Profant
-///////        Filip Badan
-///////        Michal Chomo
-///////        Tomas Chomo
-///////        Findo
+///////         Filip Badan
+///////         Michal Chomo
+///////         Tomas Chomo
+///////         Filip Listiak
 
 #ifndef PARSER_H_
 #define PARSER_H_
@@ -79,15 +79,16 @@ typedef struct{
         int ifbegcnt; // urcuje, kedy konci prikaz if
         int whbegcnt; // urcuje, kedy konci prikaz while
         int labIDcnt; // pocitadlo, podla ktoreho sa pomenovavaju navestia
+        t_func_list *flist;
         }T_Actual;
 
 
 ERROR_MSG top_down();
-ERROR_MSG semantic(T_State *st, htab_t *gsymtab, htab_t *lsymtab, T_Actual *Ac, T_vartype *expt, size_t tmems, t_varfunc_list *vflistp, t_func_list *flistp,
+ERROR_MSG semantic(T_State *st, htab_t *gsymtab, htab_t *lsymtab, T_Actual *Ac, T_vartype *expt, size_t tmems, t_varfunc_list *vflistp,
 t_lablist *lablistp, tListOfInstr *inslistp, const char *TMPUV, Stack *s_stack, Stack *ib_stack, Stack *wb_stack);
 ERROR_MSG PItems_alloc(T_ParserItem ***Ptr);
 void PItems_free(T_ParserItem ***Ptr);
-void free_all(T_ParserItem **p, Stack st, int stack_erase, int token_mem_free, htab_t *gsymtab, htab_t *lsymtab, T_Actual *Ac, t_varfunc_list *vflistp, t_lablist *lablistp, tListOfInstr *inslistp, t_func_list *flistp);
+void free_all(T_ParserItem **p, Stack st, int stack_erase, int token_mem_free, htab_t *gsymtab, htab_t *lsymtab, T_Actual *Ac, t_varfunc_list *vflistp, t_lablist *lablistp, tListOfInstr *inslistp);
 int get_type(char *str,int pos);
 void strtoupper(char **string);
 
