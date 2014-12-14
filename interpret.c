@@ -27,7 +27,7 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 {
 	bool run =true;
 	
-	int len;
+	
 
 	struct FrameVariable *op1,*op2,*op3;		//operandy instrukcie
 	tInstruction *instr;						//instrukcia
@@ -1169,10 +1169,10 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 				str_len_sort=strlen(converted_string);                      // spocitam si jeho dlzku kvoli parametru funkcie sort
 				if (str_len_sort>0)
 				{
-                    			sort_func(converted_string,1,str_len_sort);		            // vstavana funkcia
-                		}
+                    sort_func(converted_string,1,str_len_sort);		            // vstavana funkcia
+               	}
 
-                		op3->data.s=converted_string;
+                op3->data.s=converted_string;
 				op3->type=tSTRING;
 
 
@@ -1221,12 +1221,10 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 
 				InsertFirst(LGar,tmp1->data.s);
 
-				len=strlen(convert_my_string(tmp1->data.s));
-				if(tmparam->data.i > len)
-				{
-					Error(99);
-				}
+				
 				op3->data.s=copy_func(convert_my_string(tmp1->data.s), tmp2->data.i, tmparam->data.i);		//vstavana funkcia
+				if(op3->data.s == NULL)
+					Error(9);
 				op3->type=tSTRING;
 
 				break;
