@@ -1046,7 +1046,7 @@ t_lablist *lablistp, tListOfInstr *inslistp, const char *TMPUV, Stack *s_stack, 
               if(Ac->was_func==true)
               {
                 htab_clear(lsymtab);
-                if(Ac->is_ret_err==true)return OTHER_SEM_ERR; // niektora funkcia nema priradenu navratovu hodnotu
+                if(Ac->is_ret_err==true)return UNINICIALIZED_ERR; // niektora funkcia nema priradenu navratovu hodnotu
                 t_list_item *item=vflistp->First;
                 while(item!=NULL) // kontrola, ci su vsetky deklarovane funkcie aj definovane
                 {
