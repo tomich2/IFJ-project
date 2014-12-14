@@ -45,6 +45,33 @@ int varfuncL_insertlast(t_varfunc_list *l, t_func_list *flistp, types typep, cha
   return 0;
 }
 
+void varfuncL_deletelast(t_varfunc_list *l)
+{
+  if(l->First==NULL)return;
+  t_list_item *tmp;
+  tmp=l->First;
+  if(tmp==l->Last)
+  {
+    funcL_dispose(tmp->flist);
+    free(tmp->item_ID);
+    free(tmp);
+    l->First=NULL;
+    l->Last=NULL;
+    l->Active=NULL;
+  }
+  else
+  {
+    while(tmp->next!=l->Last)
+    {
+      tmp=tmp->next;
+    }
+    l->Last=tmp;
+    tmp=tmp->next;
+    funcL_dispose(tmp->flist);
+    free(tmp->item_ID);
+    free(tmp);
+  }
+}
 void varfuncL_dispose(t_varfunc_list *l)
 {
   if(l==NULL)return;
