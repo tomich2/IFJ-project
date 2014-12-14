@@ -1191,15 +1191,16 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 			{
 				/*nacitanie argumentu*/
 				tmp1->type=tSTRING;
-				tmp1->data.s=malloc(strlen(*(char **)stack.Top->data)+1);
+				int str_len_sort=strlen(*(char **)stack.Top->data);
+				tmp1->data.s=malloc(str_len_sort+1);
 				strcpy(tmp1->data.s,*(char **)top(&stack));
 				pop(&stack);
 				InsertFirst(LGar,tmp1->data.s);
 
 
-				op3->data.s=sort_func(convert_my_string(tmp1->data.s));		//vstavana funkcia
+				sort_func(convert_my_string(tmp1->data.s),1,str_len_sort);		//vstavana funkcia
 				op3->type=tSTRING;
-				
+
 
 
 				break;
