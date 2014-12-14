@@ -412,15 +412,11 @@ ERROR_MSG ExprParse( htab_t *glob, htab_t *loc, T_vartype *dt, tListOfInstr *Ins
   S_erase(&stack);
   if(is_exp)
   {
-	if((tmp=htab_search(STab.loc,(char *) in.value.nonterm.index))==NULL) tmp=htab_search(STab.glob,(char *) in.value.nonterm.index);
-	if(tmp==NULL)
-	{
-		MakeVariable(&a,in.value.nonterm.d_type,in.value.nonterm.index);
-		generator(STab.InstL,I_ASSIGN,a,NULL,TMPU);
-	}
 	if((strcmp(in.value.nonterm.index,TMPU)!=0) && (strcmp(in.value.nonterm.index,TMPU2)!=0) && (strcmp(in.value.nonterm.index,TMFunc)!=0) && (strcmp(in.value.nonterm.index,TMParam)!=0)) 
 	{
-		MakeVariable(&a,tVAR,in.value.nonterm.index);
+		if((tmp=htab_search(STab.loc,(char *) in.value.nonterm.index))==NULL) tmp=htab_search(STab.glob,(char *) in.value.nonterm.index);
+		if(tmp==NULL) MakeVariable(&a,in.value.nonterm.d_type,in.value.nonterm.index);
+		else MakeVariable(&a,tVAR,in.value.nonterm.index);
 		generator(STab.InstL,I_ASSIGN,a,NULL,TMPU);
 		free(in.value.nonterm.index);
 	}
