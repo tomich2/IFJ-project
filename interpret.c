@@ -1189,16 +1189,17 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 
 			case I_SORT:
 			{
-				/*nacitanie argumentu*/
+			/*nacitanie argumentu*/
 				tmp1->type=tSTRING;
-				int str_len_sort=strlen(*(char **)stack.Top->data);
-				tmp1->data.s=malloc(str_len_sort+1);
-				strcpy(tmp1->data.s,*(char **)top(&stack));
+				int str_len_sort=strlen(*(char **)stack.Top->data);         // spravim si kopiu, potrebujem dlzku
+				tmp1->data.s=malloc(str_len_sort+1);                        // naalokujem meisto
+				strcpy(tmp1->data.s,*(char **)top(&stack));                 // skopirujem si
 				pop(&stack);
-				InsertFirst(LGar,tmp1->data.s);
+				InsertFirst(LGar,tmp1->data.s);                             // ulozim do GC
 
-
-				sort_func(convert_my_string(tmp1->data.s),1,str_len_sort);		//vstavana funkcia
+        			 char * converted_string = convert_my_string(tmp1->data.s);  // spravim si pomocny ukazovatel so skonvertovanym stringom
+                		str_len_sort=strlen(converted_string);                      // spocitam si jeho dlzku kvoli parametru funkcie sort
+				sort_func(converted_string,1,str_len_sort);		            //vstavana funkcia
 				op3->type=tSTRING;
 
 
