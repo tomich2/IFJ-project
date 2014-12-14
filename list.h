@@ -57,11 +57,12 @@ typedef struct{
 
 void varfuncL_init(t_varfunc_list *l);
 int varfuncL_insertlast(t_varfunc_list *l, t_func_list *flistp, types typep, char *idp, T_vartype dtypep);
+t_func_list* varfuncL_getflist(t_varfunc_list *l, char *func);
 void varfuncL_dispose(t_varfunc_list *l);
 
 void funcL_init(t_func_list *l);
 int funcL_insertfirst(t_func_list *l, char *idp, T_vartype dtypep, bool is_parp);
-void varfuncL_deletelast(t_varfunc_list *l);
+int funcL_compare(t_func_list *l1, t_func_list *l2);
 void funcL_dispose(t_func_list *l);
 
 void labL_init(t_lablist *l);
