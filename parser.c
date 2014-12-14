@@ -247,6 +247,7 @@ t_lablist *lablistp, tListOfInstr *inslistp, const char *TMPUV, Stack *s_stack, 
   char tmp[Ac->rpt_size];
   Variable *varA=NULL;
   Variable *varB=NULL;
+  t_func_list *flist_tmp=NULL;
 
   if(Ac->rpt_size==MAX_RPTYPES) // ked velkost retazca typov parametrov dosiahne urcene maximum, alokuje sa viac pamate
   {
@@ -516,6 +517,13 @@ t_lablist *lablistp, tListOfInstr *inslistp, const char *TMPUV, Stack *s_stack, 
                       free(fdattmp->ret_par_types);
                       free(fdattmp);
                       return SEMANTIC_ERR;
+                    }
+                    flist_tmp=varfuncL_getflist(vflistp,Ac->act_funcID);
+                    if(flist_tmp!=Ac->flist)
+                    {
+                      funcL_dispose(Ac->flist);
+                      free(Ac->flist);
+                      Ac->flist=flist_tmp;
                     }
                     fcmpd->is_def=true;
                     free(fdattmp->ret_par_types);
