@@ -31,9 +31,13 @@ int length_func (char *str)
 // kopiruje sa od pozicie i - n znakov
 // Funkcia pridava naalokovany retazec do Garbage Collectora (dalej len GC)
 
+
 char * copy_func (char *str,unsigned int i, unsigned int n)
 {
-    if (i+n-1>(strlen(str))) return NULL;                       // neda sa kopirovat
+    unsigned int string_len=strlen(str);
+    if (i>(string_len)) return NULL;                       // neda sa kopirovat
+
+    if (string_len<n) n=string_len;
     char * x=malloc(sizeof(char)*n+1*(sizeof(char)));           // naalokuj n znakov
     x[n]='\0';                                                  // ukonci ho koncovou nulou
     InsertFirst(LGar,x);                                        // vloz do GC
@@ -45,7 +49,8 @@ char * copy_func (char *str,unsigned int i, unsigned int n)
         p++;
     }
     return x;                                                   // vrat ukazovatel
-}
+}                                                // vrat ukazovatel
+
 
 
 // Funkcia find_func () vyhlada a vrati prvy vyskyt podretazca zadaneho parametrom
