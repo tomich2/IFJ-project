@@ -104,68 +104,43 @@ unsigned int find_func (char *str,char *search_str)
 
 // Implementacia radiacej funkcie pre predmet IAL
 // Funkcia ma za ulohu zoradit pole znakov zadane parametrom str
-// Pre implementaciu bol pouzity algoritmus Heap Sort
-// Vo funkcii je volana funkcia Sift_Down pre znovuustanovanie hromady
+// Pre implementaciu bol pouzity algoritmus Quick Sort
 
-char * sort_func (char * str1)
+void sort_func (char *str , int left, int right)
 {
-    int N=strlen(str1);                                         // spocitaj dlzku
-    char * str;
-    str=malloc(sizeof(char)*N+1*(sizeof(char)));                // naalokuj potrebnu dlzku retazca
-    str[N]='\0';
-    InsertFirst(LGar,str);                                      // vloz do GC
-    memcpy(str,str1,N);
-    int i, Left, Right,p;
-    Left=N/2;                                                   // index najpravejsieho uzlu na najnizsej urovni
-    Right=N;
-    for (i=Left;i>0;i--)
+    int i = left;
+    int j = right;
+    char pseudo_median = str [ ((i+j) / 2) - 1 ];
+    do
     {
-        Sift_Down(str,i,Right);                                 // vlastny cyklus Heap Sortu
-    }
-    for (Right=N;Right>1;Right--)
-    {
-        p=str[0];                                               // vymen koren s aktivnym poslednym prvkom
-        str[0]=str[Right-1];
-        str[Right-1]=p;
-        Sift_Down(str,1,Right-1);                               // prehadz hromadu
-    }
-    return str;
-}
-
-void Sift_Down(char * str, int Left, int Right)
-{
-    int i,j;
-    char p;                                                     // pomocna premenna
-    bool Cont;                                                  // riadiaca premenna cyklu
-    i=Left;
-    j=2*i;                                                      // index laveho syna
-    p=str[i-1];
-    Cont=(j<Right) ? 1 : 0;
-    while (Cont)
-    {
-        if (j<Right)                                            // uzol ma oba synovske uzly
+        while (str[i-1]<pseudo_median)
         {
-            if (str[j-1]<str[j])                                // pravy syn je vacsi
-            {
-                j++;                                            // nastav ho ako vacsieho z dvojice
-            }
-
+            i++;
         }
-        if (p>=str[j-1])                                        // prvok je na svojom mieste
+        while (str[j-1]>pseudo_median)
         {
-            Cont=false;                                         // tak teda skonci
+            j--;
         }
 
-        else
-        {                                                       // p prepada nizsie, str[j] sa presuva vyssie
-            str[i-1]=str[j-1];
-            i=j;                                                // syn sa stane otcom pre dalsi cyklus
-            j=2*i;                                              // dalsi lavy syn
-            Cont=(j<Right) ? 1 : 0;                             // a pokracujeme
+        if (i<=j)
+        {
+            char pom = str[i-1];
+            str[i-1] = str [j-1];
+            str[j-1] = pom;
+            i++;
+            j--;
         }
-
     }
-    str[i-1]=p;                                                 // konecne umiestnenie uzlu
+    while (i<j);
+
+    if (left<j)
+    {
+        sort_func(str,left,j);
+    }
+    if (i<right)
+    {
+        sort_func(str,i,right);
+    }
 }
 
 
