@@ -3,10 +3,10 @@ var
 
 begin
 	a := sort('bcda');
-	write (a,'#10');
+	write (a,''#10'');
 	a := sort('ahojky');
-	write (a,'#10');
+	write (a,''#10'');
 	a := sort('');
-	write (a,'#10')
+	write (a,''#10'')
 
 end.
