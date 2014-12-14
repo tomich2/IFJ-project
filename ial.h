@@ -56,7 +56,6 @@ void htab_clear(htab_t *t); //uvolnenie vsetkych prvkov tabulky
 int length_func(char *str);
 char * copy_func (char *str,unsigned int i, unsigned int n);
 unsigned int find_func (char *str,char *search_str);
-char * sort_func (char * str);
-void Sift_Down(char * str,int Left,int Right);
+void sort_func (char *str , int left, int right);
 #endif
 
