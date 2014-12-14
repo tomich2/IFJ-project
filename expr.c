@@ -95,182 +95,157 @@ int Reduction(Stack *stack, T_ParserItem *in, Tabs *STab)
 	tmp=*(T_ParserItem*) (top(stack));
 	pop(stack);
 	if (tmp.type==0) //mame neterminal
+	{
+		if(tmp.value.nonterm.type!=Exp) return -1; //ak to nie je E -chyba
+		op1.type=tmp.value.nonterm.type;
+		op1.index=tmp.value.nonterm.index; // semantika - prvy operand E
+		op1.d_type=tmp.value.nonterm.d_type;
+		tmp= *(T_ParserItem *) top(stack); //novy pop
+		pop(stack);
+		if(tmp.type==0) return -1; //ak to je neterminal chyba (ocakavame ciarku alebo operator)
+		if(converttooprs(tmp.value.term.type,false)==EComma) //ak je to ciarka - mame E,
 		{
-		 if(tmp.value.nonterm.type!=Exp) return -1; //ak to nie je E -chyba
-
-		 op1.type=tmp.value.nonterm.type;
-		 op1.index=tmp.value.nonterm.index; // semantika - prvy operand E
-		 op1.d_type=tmp.value.nonterm.d_type;
-
-		 tmp= *(T_ParserItem *) top(stack); //novy pop
-		 pop(stack);
-		 if(tmp.type==0) return -1; //ak to je neterminal chyba (ocakavame ciarku alebo operator)
-		 if(converttooprs(tmp.value.term.type,false)==EComma) //ak je to ciarka - mame E,
+			tmp= *(T_ParserItem *) top(stack); // novy pop
+			pop(stack);
+			if(tmp.type==0) //ak to je neterminal co ocakavame
 			{
-			 tmp= *(T_ParserItem *) top(stack); // novy pop
-			 pop(stack);
-			 if(tmp.type==0) //ak to je neterminal co ocakavame
+				if(tmp.value.nonterm.type==handle) return -1; //ak je to handle -chyba
+				op2.type=tmp.value.nonterm.type;
+				op2.index=tmp.value.nonterm.index; // semantika - druhy operand E alebo L
+				op2.d_type=tmp.value.nonterm.d_type;
+				if(op2.type==Exp) rule=16; else rule=15; // semantika - priradenie pravidla
+				tmp= *(T_ParserItem *) top(stack); //novy pop
+				pop(stack);
+				if(tmp.type==1) return -1; //ak je to terminal -chyba
+				if(tmp.value.nonterm.type==handle)
 				{
-				 if(tmp.value.nonterm.type==handle) return -1; //ak je to handle -chyba
-
-				  op2.type=tmp.value.nonterm.type;
-				  op2.index=tmp.value.nonterm.index; // semantika - druhy operand E alebo L
-				  op2.d_type=tmp.value.nonterm.d_type;
-
-				  if(op2.type==Exp) rule=16; else rule=15; // semantika - priradenie pravidla
-
-				 tmp= *(T_ParserItem *) top(stack); //novy pop
-			 	 pop(stack);
-				 if(tmp.type==1) return -1; //ak je to terminal -chyba
-				 if(tmp.value.nonterm.type==handle)	{
-									// ExprSem(rule,&op1,&op2); //semanticke akcie
-									 if((err=ExprSem(rule,&op1,&op2,STab))==EXPRESSION_ERR) return -3;
-							 		 else if(err==SEMANTIC_ERR) return -2;
-									 in->value.nonterm.index=op1.index;
-									 in->value.nonterm.d_type=op1.d_type;
-									 return 2; // ak sme dostali handle co ocakavame redukujeme na LExp -> Exp, (L)Exp
-									}
-				 else return -1;			  // ak to nie je handle -chyba
+					if((err=ExprSem(rule,&op1,&op2,STab))==EXPRESSION_ERR) return -3;
+					else if(err==SEMANTIC_ERR) return -2;
+					in->value.nonterm.index=op1.index;
+					in->value.nonterm.d_type=op1.d_type;
+					return 2; // ak sme dostali handle co ocakavame redukujeme na LExp -> Exp, (L)Exp
 				}
-			 else return -1;
+				else return -1;			  // ak to nie je handle -chyba
 			}
-		 if(converttooprs(tmp.value.term.type,false)<=9) //ak je to operator - mame E op
-			{
-
-			 rule=converttooprs(tmp.value.term.type,false)+1; // semantika - priradenie pravidla
-
-			 tmp=*(T_ParserItem *) top(stack); // novy pop
-                         pop(stack);
-                         if(tmp.type==0) //ak to je neterminal co ocakavame
-                                {
-                                 if(tmp.value.nonterm.type!=1) return -1; //ak to nie je E -chyba
-
-				 op2.type=tmp.value.nonterm.type;
-				 op2.index=tmp.value.nonterm.index; // semantika - druhy operand E
-				 op2.d_type=tmp.value.nonterm.d_type;
-
-                                 tmp= *(T_ParserItem *) top(stack); //novy pop
-                                 pop(stack);
-                                 if(tmp.type==1) return -1; //ak je to terminal -chyba
-                                 if(tmp.value.nonterm.type==handle)
-								{
-								 //ExprSem(rule,&op1,&op2); //semanticke akcie
-								 if((err=ExprSem(rule,&op1,&op2,STab))==EXPRESSION_ERR) return -3;
-							 	 else if(err==SEMANTIC_ERR) return -2;
-								 in->value.nonterm.index=op1.index;
-								 in->value.nonterm.d_type=op1.d_type;
-								 return 1; // ak sme dostali handle co ocakavame redukujeme na Exp -> Exp op Exp
-								}
-                                 else return -1;                          // ak to nie je handle -chyba
-                                }
-                         else return -1;
-
-			}
-		 return -1;
+			else return -1;
 		}
-	else
+		if(converttooprs(tmp.value.term.type,false)<=9) //ak je to operator - mame E op
 		{
-		 if((converttooprs(tmp.value.term.type,false)==10) || (converttooprs(tmp.value.term.type,true)==11))
-			{
-
-			 op1.type=converttooprs(tmp.value.term.type,false);
-			 op1.index=(char *)malloc(strlen(tmp.value.term.index)+1); //alokacia daneho retazca
-	  		 if (op1.index==NULL)
-	  		 { //kontrola navratovej hodnoty malloc
-				return -1;
-			 }
-	  		 strcpy(op1.index,tmp.value.term.index); //zkopirovanie retazca do naalokovanej pameti
-			 free(tmp.value.term.index);
-
-			 op1.d_type=converttooprs(tmp.value.term.type,true);
-			 //free( op1.index);
-		 	 tmp=*(T_ParserItem *) top(stack); //novy pop
-		 	 pop(stack);
-		 	 if(tmp.type==1) return -1; //ak je to terminal -chyba
-
-			 rule=17; //semantika - priradenie pravidla
-
-		 	 if(tmp.value.nonterm.type==handle)
-							{
-							 //ExprSem(rule,&op1,NULL); //semanticke akcie
-							 if((err=ExprSem(rule,&op1,&op2,STab))==EXPRESSION_ERR) return -3;
-							 else if(err==SEMANTIC_ERR) return -2;
-							 in->value.nonterm.index=op1.index;
-							 in->value.nonterm.d_type=op1.d_type;
-							 return 1; // ak sme dostali handle co ocakavame redukujeme na Exp -> term
-							}
-		 	 else return -1;			  // ak to nie je handle -chyba
-			}
-		 if(converttooprs(tmp.value.term.type,false)==ERpar) // mame pravu zatvorku
-			{
-		 	 tmp= *(T_ParserItem *) top(stack); //novy pop
-		 	 pop(stack);
-		 	 if(tmp.type==1) // mame terminal
+			rule=converttooprs(tmp.value.term.type,false)+1; // semantika - priradenie pravidla
+			tmp=*(T_ParserItem *) top(stack); // novy pop
+                        pop(stack);
+                        if(tmp.type==0) //ak to je neterminal co ocakavame
+                        {
+                        	if(tmp.value.nonterm.type!=1) return -1; //ak to nie je E -chyba
+				op2.type=tmp.value.nonterm.type;
+				op2.index=tmp.value.nonterm.index; // semantika - druhy operand E
+				op2.d_type=tmp.value.nonterm.d_type;
+				tmp= *(T_ParserItem *) top(stack); //novy pop
+				pop(stack);
+				if(tmp.type==1) return -1; //ak je to terminal -chyba
+				if(tmp.value.nonterm.type==handle)
 				{
-				 if(converttooprs(tmp.value.term.type,false)!=ELpar) return -1; // ak to nie je lava zatvorka -chyba
-				 else
-				 	{
-					 tmp= *(T_ParserItem *) top(stack); //novy pop
-			 	 	 pop(stack);
-		 	 		 if(tmp.type==0) return -1; //ak je to neterminal -chyba
-				 	 if(converttooprs(tmp.value.term.type,false)!=EId)	return -1; // ak sme nedostali identifikator funkcie -chyba
-
-		 			 op1.type=converttooprs(tmp.value.term.type,false);
-					 op1.index=tmp.value.term.index; // semantika - prvy operand E
-					 //op1.d_type=tmp.value.term.d_type;
-
-					 tmp= *(T_ParserItem *) top(stack); //novy pop
-				 	 pop(stack);
-				 	 if(tmp.type==1) return -1; //ak je to terminal -chyba
-				 	 if(tmp.value.nonterm.type==handle)
-							{
-							 rule=12; //semantika - priradenie pravidla
-							 //ExprSem(rule,&op1,NULL); //semanticke akcie
-							 if((err=ExprSem(rule,&op1,&op2,STab))==EXPRESSION_ERR) return -3;
-							 else if(err==SEMANTIC_ERR) return -2;
-							 in->value.nonterm.index=op1.index;
-							 in->value.nonterm.d_type=op1.d_type;
-						 	 return 1; // ak sme dostali handle co ocakavame redukujeme na Exp->f()
-							}
-				 	 else return -1;			  // ak to nie je handle -chyba
-					}
+					if((err=ExprSem(rule,&op1,&op2,STab))==EXPRESSION_ERR) return -3;
+					else if(err==SEMANTIC_ERR) return -2;
+					in->value.nonterm.index=op1.index;
+					in->value.nonterm.d_type=op1.d_type;
+					return 1; // ak sme dostali handle co ocakavame redukujeme na Exp -> Exp op Exp
 				}
-			 else // mame neterminal - E)
+                                else return -1;                          // ak to nie je handle -chyba
+			}
+                        else return -1;
+		}
+		 return -1;
+	}
+	else
+	{
+		if((converttooprs(tmp.value.term.type,false)==10) || (converttooprs(tmp.value.term.type,true)==11))
+		{
+			op1.type=converttooprs(tmp.value.term.type,false);
+			op1.index=(char *)malloc(strlen(tmp.value.term.index)+1); //alokacia daneho retazca
+	  		if (op1.index==NULL)
+	  		{ //kontrola navratovej hodnoty malloc
+				return -1;
+			}
+	  		strcpy(op1.index,tmp.value.term.index); //zkopirovanie retazca do naalokovanej pameti
+			free(tmp.value.term.index);
+			op1.d_type=converttooprs(tmp.value.term.type,true);
+			tmp=*(T_ParserItem *) top(stack); //novy pop
+		 	pop(stack);
+		 	if(tmp.type==1) return -1; //ak je to terminal -chyba
+			rule=17; //semantika - priradenie pravidla
+			if(tmp.value.nonterm.type==handle)
+			{
+				//semanticke akcie
+				if((err=ExprSem(rule,&op1,&op2,STab))==EXPRESSION_ERR) return -3;
+				else if(err==SEMANTIC_ERR) return -2;
+				in->value.nonterm.index=op1.index;
+				in->value.nonterm.d_type=op1.d_type;
+				return 1; // ak sme dostali handle co ocakavame redukujeme na Exp -> term
+			}
+		 	else return -1;			  // ak to nie je handle -chyba
+		}
+		if(converttooprs(tmp.value.term.type,false)==ERpar) // mame pravu zatvorku
+		{
+			tmp= *(T_ParserItem *) top(stack); //novy pop
+			pop(stack);
+		 	if(tmp.type==1) // mame terminal
+			{
+				if(converttooprs(tmp.value.term.type,false)!=ELpar) return -1; // ak to nie je lava zatvorka -chyba
+				else
 				{
-				  op1.type=tmp.value.nonterm.type;
-		 		  op1.index=tmp.value.nonterm.index; // semantika - prvy operand E alebo L
-				  op1.d_type=tmp.value.nonterm.d_type;
-
-				  tmp= *(T_ParserItem *) top(stack); //novy pop
-                                  pop(stack);
-				  if(converttooprs(tmp.value.term.type,false)!=ELpar) return -1; // ak to nie je lava zatvorka -chyba
-                                  else
-                                        {
-                                         tmp= *(T_ParserItem *) top(stack); //novy pop
-                                         pop(stack);
-                                         if(tmp.type==0) //ak je to neterminal
+					tmp= *(T_ParserItem *) top(stack); //novy pop
+			 		pop(stack);
+		 	 		if(tmp.type==0) return -1; //ak je to neterminal -chyba
+				 	if(converttooprs(tmp.value.term.type,false)!=EId) return -1; // ak sme nedostali identifikator funkcie -chyba
+		 			op1.type=converttooprs(tmp.value.term.type,false);
+					op1.index=tmp.value.term.index; // semantika - prvy operand E
+					tmp= *(T_ParserItem *) top(stack); //novy pop
+				 	pop(stack);
+				 	if(tmp.type==1) return -1; //ak je to terminal -chyba
+				 	if(tmp.value.nonterm.type==handle)
+					{
+						rule=12; //semantika - priradenie pravidla
+						if((err=ExprSem(rule,&op1,&op2,STab))==EXPRESSION_ERR) return -3;
+						else if(err==SEMANTIC_ERR) return -2;
+						in->value.nonterm.index=op1.index;
+						in->value.nonterm.d_type=op1.d_type;
+						 return 1; // ak sme dostali handle co ocakavame redukujeme na Exp->f()
+					}
+				 	else return -1;			  // ak to nie je handle -chyba
+				}
+			}
+			else // mame neterminal - E)
+			{
+				op1.type=tmp.value.nonterm.type;
+		 		op1.index=tmp.value.nonterm.index; // semantika - prvy operand E alebo L
+				op1.d_type=tmp.value.nonterm.d_type;
+				tmp= *(T_ParserItem *) top(stack); //novy pop
+                                pop(stack);
+				if(converttooprs(tmp.value.term.type,false)!=ELpar) return -1; // ak to nie je lava zatvorka -chyba
+                                else
+                                {
+                                	tmp= *(T_ParserItem *) top(stack); //novy pop
+                                	pop(stack);
+                                        if(tmp.type==0) //ak je to neterminal
+					{
+						if (tmp.value.nonterm.type==handle)
 						{
-						 if (tmp.value.nonterm.type==handle)
-							{
-							 if(op1.type==Exp) rule=11; else return -1; // semantika - priradenie pravidla
-							 //ExprSem(rule,&op1,NULL); //semanticke akcie
-							 if((err=ExprSem(rule,&op1,&op2,STab))==EXPRESSION_ERR) return -3;
-							 else if(err==SEMANTIC_ERR) return -2;
-							 in->value.nonterm.index=op1.index;
-							 in->value.nonterm.d_type=op1.d_type;
-							 return 1; // a je to handle tak redukujeme E->(E)
-							}
-					 	 else return -1;
+							if(op1.type==Exp) rule=11; else return -1; // semantika - priradenie pravidla
+							if((err=ExprSem(rule,&op1,&op2,STab))==EXPRESSION_ERR) return -3;
+							else if(err==SEMANTIC_ERR) return -2;
+							in->value.nonterm.index=op1.index;
+							in->value.nonterm.d_type=op1.d_type;
+							return 1; // a je to handle tak redukujeme E->(E)
 						}
-					 else //ak to je terminal
-						{
-
-                                         	 if(converttooprs(tmp.value.term.type,false)!=EId)    return -1; // ak sme nedostali identifikator funkcie -chyba
-						 op2.type=converttooprs(tmp.value.term.type,false);
-						 op2.index=tmp.value.term.index; // semantika - druhy operand Eid
-						// op2.d_type=tmp.value.nonterm.d_type;
-
-                                         	 tmp= *(T_ParserItem *) top(stack); //novy pop
+						else return -1;
+					}
+					else //ak to je terminal
+					{
+						if(converttooprs(tmp.value.term.type,false)!=EId)    return -1; // ak sme nedostali identifikator funkcie -chyba
+						op2.type=converttooprs(tmp.value.term.type,false);
+						op2.index=tmp.value.term.index; // semantika - druhy operand Eid
+						tmp= *(T_ParserItem *) top(stack); //novy pop
                                          	 pop(stack);
                                          	 if(tmp.type==1) return -1; //ak je to terminal -chyba
                                          	 if(tmp.value.nonterm.type==handle)
@@ -283,20 +258,17 @@ int Reduction(Stack *stack, T_ParserItem *in, Tabs *STab)
 							 in->value.nonterm.d_type=op1.d_type;
 							 return 1; // ak sme dostali handle co ocakavame redukujeme na Exp->f(E) alebo Exp->f(L)
 							}
-						 else return -1;  // ak to nie je handle -chyba
-						}
-                                        }
-
-
+						else return -1;  // ak to nie je handle -chyba
+					}
 				}
 			}
-
 		}
+	}
 
   return -1;
 }
 
-T_ParserItem *GetTerm(Stack *stack, bool handle)
+T_ParserItem *GetTerm(Stack *stack, bool handle) //funkcia vezme zo zasobnika prvy term
 {
   T_ParserItem tmp;
   T_ParserItem *tmp2;
@@ -305,19 +277,19 @@ T_ParserItem *GetTerm(Stack *stack, bool handle)
   hdl.value.nonterm.type=0;
   tmp= *(T_ParserItem *) top(stack); //novy pop
   if (tmp.type==0)
-	{
-	  pop(stack);
-	  tmp2=(T_ParserItem *) top(stack);
-	  if (handle) push(stack,&hdl,-1);
-	  push(stack,&tmp,-1);
-	  return tmp2;
-	}
+  {
+	pop(stack);
+	tmp2=(T_ParserItem *) top(stack);
+	if (handle) push(stack,&hdl,-1);
+	push(stack,&tmp,-1);
+	return tmp2;
+  }
   else
-	{
-	  tmp2=(T_ParserItem *) top(stack);
-	  if (handle) push(stack,&hdl,-1);
-	  return tmp2;
-	}
+  {
+	tmp2=(T_ParserItem *) top(stack);
+	if (handle) push(stack,&hdl,-1);
+	return tmp2;
+  }
 }
 
 ERROR_MSG ExprParse( htab_t *glob, htab_t *loc, T_vartype *dt, tListOfInstr *InstL)
@@ -346,7 +318,7 @@ ERROR_MSG ExprParse( htab_t *glob, htab_t *loc, T_vartype *dt, tListOfInstr *Ins
   in.value.term.type=EndOfFile;
   push(&stack, &in, -1);
 
-  if((converttooprs(token->identity,true)==EId) || (converttooprs(token->identity,true)==ETerm))
+  if((converttooprs(token->identity,true)==EId) || (converttooprs(token->identity,true)==ETerm)) //ulozenie token->mem ak je to term alebo id
   {
 	  in.value.term.index=(char *)malloc(strlen(token->mem)+1); //alokacia daneho retazca
 	  if ( in.value.term.index==NULL)
@@ -357,102 +329,89 @@ ERROR_MSG ExprParse( htab_t *glob, htab_t *loc, T_vartype *dt, tListOfInstr *Ins
 	  strcpy( in.value.term.index,token->mem); //zkopirovanie retazca do naalokovanej pameti
   }
   else  in.value.term.index=NULL;
-
   free (token->mem);
   token->mem=NULL;
   top=GetTerm(&stack, 0);
   while ((converttooprs(top->value.term.type,false)!=EEnd) || (converttooprs(token->identity,false)!=EEnd))
+  {
+	top=GetTerm(&stack, 0);
+	switch (GetRule(converttooprs(top->value.term.type,true),converttooprs(token->identity,true)))
 	{
-
-	 top=GetTerm(&stack, 0);
-	 switch (GetRule(converttooprs(top->value.term.type,true),converttooprs(token->identity,true)))
-		{
-		 case E:
-			 in.type=TERMINAL;
-			 in.value.term.type=token->identity;
-			 push(&stack, &in , -1);
-			 if ((err=get_token())!=0) return err;
-	 		 if(token->identity!=DtString) strtoupper(&token->mem);
-			 tmp_top=GetTerm(&stack, 0);
-		if((converttooprs(token->identity,true)>=4) && (converttooprs(token->identity,true)<=9)) STab.is_cmp=true;
-		if((converttooprs(token->identity,true)==ELpar) && (converttooprs(tmp_top->value.term.type,true)==EId)) STab.is_func=true;
-
-			 if((converttooprs(token->identity,true)==EId) || (converttooprs(token->identity,true)==ETerm))
-  			 {
-				  in.value.term.index=(char *)malloc(strlen(token->mem)+1); //alokacia daneho retazca
-				  if ( in.value.term.index==NULL)
-				  { //kontrola navratovej hodnoty malloc
-
-					return -1;
-				  }
-			 	  strcpy( in.value.term.index,token->mem); //zkopirovanie retazca do naalokovanej pameti
-  			 }
-			 else  in.value.term.index=NULL;
-
-			 free (token->mem);
-			 token->mem=NULL;
-			 top=GetTerm(&stack, 0);
-			 break;
-		 case L:
-			 top=GetTerm(&stack, 1);
-			 in.type=TERMINAL;
-			 in.value.term.type=token->identity;
-			 push(&stack, &in , -1);
+		case E:
+			in.type=TERMINAL;
+			in.value.term.type=token->identity;
+			push(&stack, &in , -1);
+			if ((err=get_token())!=0) return err;
+	 		if(token->identity!=DtString) strtoupper(&token->mem);
+			tmp_top=GetTerm(&stack, 0);
 			if((converttooprs(token->identity,true)>=4) && (converttooprs(token->identity,true)<=9)) STab.is_cmp=true;
-			if((converttooprs(token->identity,true)==EComma) && (converttooprs(top->value.term.type,true)==ELpar)) STab.is_comm=true;
-			 if ((err=get_token())!=0) return err;
-			 if(token->identity!=DtString) strtoupper(&token->mem);
-			 tmp_top=GetTerm(&stack, 0);
-
-
 			if((converttooprs(token->identity,true)==ELpar) && (converttooprs(tmp_top->value.term.type,true)==EId)) STab.is_func=true;
 
-			 if((converttooprs(token->identity,true)==EId) || (converttooprs(token->identity,true)==ETerm))
-  			 {
-				  in.value.term.index=(char *)malloc(strlen(token->mem)+1); //alokacia daneho retazca
-				  if ( in.value.term.index==NULL)
-				  { //kontrola navratovej hodnoty malloc
-
+			if((converttooprs(token->identity,true)==EId) || (converttooprs(token->identity,true)==ETerm))
+  			{
+				in.value.term.index=(char *)malloc(strlen(token->mem)+1); //alokacia daneho retazca
+				if ( in.value.term.index==NULL)
+				{ //kontrola navratovej hodnoty malloc
 					return -1;
-				  }
-			 	  strcpy( in.value.term.index,token->mem); //zkopirovanie retazca do naalokovanej pameti
+				}
+			 	strcpy( in.value.term.index,token->mem); //zkopirovanie retazca do naalokovanej pameti
   			 }
 			 else  in.value.term.index=NULL;
-
 			 free (token->mem);
 			 token->mem=NULL;
-
 			 top=GetTerm(&stack, 0);
 			 break;
-		 case R:
+		case L:
+			top=GetTerm(&stack, 1);
+			in.type=TERMINAL;
+			in.value.term.type=token->identity;
+			push(&stack, &in , -1);
+			if((converttooprs(token->identity,true)>=4) && (converttooprs(token->identity,true)<=9)) STab.is_cmp=true;
+			if((converttooprs(token->identity,true)==EComma) && (converttooprs(top->value.term.type,true)==ELpar)) STab.is_comm=true;
+			if ((err=get_token())!=0) return err;
+			if(token->identity!=DtString) strtoupper(&token->mem);
+			tmp_top=GetTerm(&stack, 0);
+			if((converttooprs(token->identity,true)==ELpar) && (converttooprs(tmp_top->value.term.type,true)==EId)) STab.is_func=true;
+			if((converttooprs(token->identity,true)==EId) || (converttooprs(token->identity,true)==ETerm))
+  			{
+				in.value.term.index=(char *)malloc(strlen(token->mem)+1); //alokacia daneho retazca
+				if ( in.value.term.index==NULL)
+				{ //kontrola navratovej hodnoty malloc
+					return -1;
+				}
+				strcpy( in.value.term.index,token->mem); //zkopirovanie retazca do naalokovanej pameti
+  			}
+			else  in.value.term.index=NULL;
+			free (token->mem);
+			token->mem=NULL;
+			top=GetTerm(&stack, 0);
+			break;
+		case R:
 			is_exp=true;
-			 if ((reduct=Reduction(&stack,&in,&STab))>0)
-				{
-
-				  in.type=NONTERMINAL;
-			 	  in.value.nonterm.type=reduct;
-				  push(&stack, &in , -1);
-				  top=GetTerm(&stack, 0);
-				}
-			 else
-				{
-
-				  S_erase(&stack);
-  			 	  if(reduct==-1) return SYNTAX_ERR;
-				  if(reduct==-2) return SEMANTIC_ERR;
-				  if(reduct==-3) return EXPRESSION_ERR;
-				}
-			 break;
-		 case Q:
-
-			 S_erase(&stack);
-  			 return SYNTAX_ERR;
-		}
-
+			if ((reduct=Reduction(&stack,&in,&STab))>0)
+			{
+				in.type=NONTERMINAL;
+			 	in.value.nonterm.type=reduct;
+				push(&stack, &in , -1);
+				top=GetTerm(&stack, 0);
+			}
+			else
+			{
+				S_erase(&stack);
+  			 	if(reduct==-1) return SYNTAX_ERR;
+				if(reduct==-2) return SEMANTIC_ERR;
+				if(reduct==-3) return EXPRESSION_ERR;
+			}
+			break;
+		case Q:
+			S_erase(&stack);
+  			return SYNTAX_ERR;
 	}
-S_erase(&stack);
-if(is_exp)
-{
+
+  }
+  S_erase(&stack);
+  if(is_exp)
+  {
 	if((tmp=htab_search(STab.loc,(char *) in.value.nonterm.index))==NULL) tmp=htab_search(STab.glob,(char *) in.value.nonterm.index);
 	if(tmp==NULL)
 	{
@@ -464,15 +423,15 @@ if(is_exp)
 	*dt=in.value.nonterm.d_type;
 	S_erase(&stack);
 	return EVERYTHINGSOKAY;
-}
-else
-{
+  }
+  else
+  {
 	S_erase(&stack);
 	return SYNTAX_ERR;
-}
+  } 
 }
 
-
+//funkcia pre vytvorenie operandu pre poslanie do instrukcie
 ERROR_MSG MakeVariable(Variable **a, T_vartype type, void *data)
 {
 
@@ -480,7 +439,7 @@ ERROR_MSG MakeVariable(Variable **a, T_vartype type, void *data)
 	if(a==NULL) return INTERN_INTERPRETATION_ERR;
 	(*a)->type=type;
 	char *str=(char *) data;
-
+	//funkcia priradi data podla typu posielanych dat
 	switch((*a)->type)
 	{
 		case tBOOLEAN:  if(strcmp(str,"TRUE")==0) (*a)->data.b=1;
@@ -509,6 +468,7 @@ ERROR_MSG MakeVariable(Variable **a, T_vartype type, void *data)
 	return EVERYTHINGSOKAY;
 }
 
+//semanticka analyze - kontroluje spravne datove typy pri operaciach
 ERROR_MSG ExprSem(int rule, nont *op1, nont *op2, Tabs *STab)
 {
 	//rule=rule+1;
@@ -522,7 +482,7 @@ ERROR_MSG ExprSem(int rule, nont *op1, nont *op2, Tabs *STab)
 	if(STab->is_cmp) res=TMPU2;
 	else res=TMPU;
 	
-	if(STab->is_func && !STab->is_comm)/* printf("prvy parameter %s \n", op1->index);*/res=TMParam;
+	if(STab->is_func && !STab->is_comm) res=TMParam;
 	if(STab->is_func && STab->is_comm)
 	{
 		STab->is_func=false;
@@ -760,7 +720,7 @@ ERROR_MSG ExprSem(int rule, nont *op1, nont *op2, Tabs *STab)
 			{
 				if((strcmp(op1->index,TMPU)!=0) && (strcmp(op1->index,TMPU2)!=0) && (strcmp(op1->index,TMFunc)!=0)) free(op1->index);
 
-				fprintf(stderr,"typy parametrov funkcie sa nezhodujuuuuu\n");
+				fprintf(stderr,"typy parametrov funkcie sa nezhoduju\n");
 				return EXPRESSION_ERR;
 			}
 			op1->d_type=get_type(((T_FuncData *) ((Hitem *) tmp)->data)->ret_par_types,0);
@@ -794,12 +754,6 @@ ERROR_MSG ExprSem(int rule, nont *op1, nont *op2, Tabs *STab)
 				if((strcmp(op2->index,TMPU)!=0) && (strcmp(op2->index,TMPU2)!=0) && (strcmp(op2->index,TMFunc)!=0)) free(op2->index);
 				op1->index=res;
 
-			//	if((tmp=htab_search(STab->loc,(char *) op1->index))==NULL) tmp=htab_search(STab->glob,(char *) op1->index);
-			//	if(tmp==NULL) MakeVariable(&a,op1->d_type,op1->index);
-			//	else MakeVariable(&a,tVAR,op1->index); //doriesit chybove stavy
-
-			//	generator(STab->InstL,I_PUSH,a,NULL,NULL);
-
 				generator(STab->InstL,I_LENGTH,NULL,NULL,res);
 				return vst ? EVERYTHINGSOKAY:EXPRESSION_ERR;
 			}
@@ -811,12 +765,6 @@ ERROR_MSG ExprSem(int rule, nont *op1, nont *op2, Tabs *STab)
 				if((strcmp(op1->index,TMPU)!=0) && (strcmp(op1->index,TMPU2)!=0) && (strcmp(op1->index,TMFunc)!=0)) free(op1->index);
 				if((strcmp(op2->index,TMPU)!=0) && (strcmp(op2->index,TMPU2)!=0) && (strcmp(op2->index,TMFunc)!=0)) free(op2->index);
 				op1->index=res;
-
-			//	if((tmp=htab_search(STab->loc,(char *) op1->index))==NULL) tmp=htab_search(STab->glob,(char *) op1->index);
-			//	if(tmp==NULL) MakeVariable(&a,op1->d_type,op1->index);
-			//	else MakeVariable(&a,tVAR,op1->index); //doriesit chybove stavy
-
-			//	generator(STab->InstL,I_PUSH,a,NULL,NULL);
 
 				generator(STab->InstL,I_SORT,NULL,NULL,res);
 				return vst ? EVERYTHINGSOKAY:EXPRESSION_ERR;
@@ -1006,9 +954,7 @@ ERROR_MSG ExprSem(int rule, nont *op1, nont *op2, Tabs *STab)
 					fprintf(stderr,"neznama chyba\n");
 					return SEMANTIC_ERR;
 			}
-			//printf("%s\n",(char *)op1->index);
-
-		
+			
 
 			return EVERYTHINGSOKAY;
 
@@ -1030,7 +976,7 @@ ERROR_MSG ExprSem(int rule, nont *op1, nont *op2, Tabs *STab)
 						{
 							fprintf(stderr,"premenna %s nebola definovana\n",(char *) op1->index);
 							if((strcmp(op1->index,TMPU)!=0) && (strcmp(op1->index,TMPU2)!=0) && (strcmp(op1->index,TMFunc)!=0)) free(op1->index);
-							return SEMANTIC_ERR;
+							return UNINICIALIZED_ERR;
 						}
 
 				op1->d_type=((T_VarData *) ((Hitem *) tmp)->data)->type;
