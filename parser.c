@@ -534,6 +534,7 @@ t_lablist *lablistp, tListOfInstr *inslistp, const char *TMPUV, Stack *s_stack, 
                   return err;
                 }
                 if(varfuncL_insertlast(vflistp,Ac->flist,FUNCTION,Ac->act_funcID,ftype)!=0)return INTERN_INTERPRETATION_ERR;
+                free(fdattmp->ret_par_types);
                 free(fdattmp);
               }
               break;
