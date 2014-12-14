@@ -153,7 +153,7 @@ struct FrameVariable* findFrameVar(struct Variable *a, tListofVariables* globalF
 			globalFrame->active=globalFrame->active->nextvar;
 		}
 	}
-	printf("premenna vo frame sa nenasla\n");
+	
 	return NULL;
 }
 
@@ -185,6 +185,6 @@ struct FrameVariable* findFrameDest(char *s, tListofVariables* globalFrame, tLis
 			globalFrame->active=globalFrame->active->nextvar;
 		}
 	}
-	printf("premenna dest = %s sa nenasla vo frame\n",s);
+	
 	return NULL;
 }
