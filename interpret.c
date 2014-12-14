@@ -905,19 +905,12 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 						}
 					}
 					pStr[i]= '\0';
-					//printf ("\n");
-
+				
 
 					if((op3->type)==tINTEGER)
 					{
 						long num;
-						
 						num = strtol(pStr,&ptr,10);
-					//	if (ptr == pStr) 
-					//		 Error(6);
-						/*if (*ptr != '\0') 
-							Error(6)
-    						*/
 						op3->data.i=num;
 						
 					}
