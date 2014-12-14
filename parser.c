@@ -482,6 +482,7 @@ t_lablist *lablistp, tListOfInstr *inslistp, const char *TMPUV, Stack *s_stack, 
                       fcmpd=cmp->data;
                       fcmpd->is_def=false;
                       Ac->is_ret_err=false;
+                      varfuncL_deletelast(vflistp);
                       free(fdattmp->ret_par_types);
                       free(fdattmp);
                       return EVERYTHINGSOKAY;
