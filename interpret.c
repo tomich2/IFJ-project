@@ -913,8 +913,8 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 						long num;
 						
 						num = strtol(pStr,&ptr,10);
-						if (ptr == pStr) 
-							 Error(6);
+					//	if (ptr == pStr) 
+					//		 Error(6);
 						/*if (*ptr != '\0') 
 							Error(6)
     						*/
@@ -934,30 +934,6 @@ void interpretLoop(tListOfInstr *instList,t_varfunc_list *varList,t_lablist *lab
 						double num;
 						num = strtod(pStr,&ptr);
 						op3->data.r=num;
-						
-						
-						
-						
-							/*    int	what_kind_of_number (char *s)
-										{
-										    char *endp;
-										    double d;
-										    long l;
-										
-										
-										    d = strtod(s, &endp);
-										    if (s != endp && *endp == `\0')
-										        printf("It's a float with value %g\n", d);
-										    else
-										    {
-										        l = strtol(s, &endp, 0);
-										        if (s != endp && *endp == `\0')
-										            printf("It's an integer with value %ld\n", 1);
-										        else
-										            return 1;
-										    }
-										    return 0;
-										}*/
 					}
 					else if (op3->type == tBOOLEAN)
 
