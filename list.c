@@ -45,32 +45,17 @@ int varfuncL_insertlast(t_varfunc_list *l, t_func_list *flistp, types typep, cha
   return 0;
 }
 
-void varfuncL_deletelast(t_varfunc_list *l)
+t_func_list* varfuncL_getflist(t_varfunc_list *l, char *func)
 {
-  if(l->First==NULL)return;
+  if(l->First==NULL)return NULL;
   t_list_item *tmp;
   tmp=l->First;
-  if(tmp==l->Last)
+  while(tmp!=NULL)
   {
-    funcL_dispose(tmp->flist);
-    free(tmp->item_ID);
-    free(tmp);
-    l->First=NULL;
-    l->Last=NULL;
-    l->Active=NULL;
+    if(strcmp(tmp->item_ID,func)==0)return tmp->flist;
+    else tmp=tmp->next;
   }
-  else
-  {
-    while(tmp->next!=l->Last)
-    {
-      tmp=tmp->next;
-    }
-    l->Last=tmp;
-    tmp=tmp->next;
-    funcL_dispose(tmp->flist);
-    free(tmp->item_ID);
-    free(tmp);
-  }
+  return NULL;
 }
 void varfuncL_dispose(t_varfunc_list *l)
 {
@@ -121,6 +106,26 @@ int funcL_insertfirst(t_func_list *l, char *idp, T_vartype dtypep, bool is_parp)
     l->First=new;
   }
   return 0;
+}
+
+int funcL_compare(t_func_list *l1, t_func_list *l2)
+{
+  if(l1==NULL || l2==NULL)return 1;
+  if(l1->First==NULL && l2->First==NULL)return 0;
+  t_flist_item *tmp1, *tmp2;
+  tmp1=l1->First;
+  tmp2=l2->First;
+  while(tmp1!=NULL && tmp2!=NULL)
+  {
+    if(strcmp(tmp1->item_ID,tmp2->item_ID)!=0)return 1;
+    else
+    {
+      tmp1=tmp1->next;
+      tmp2=tmp2->next;
+    }
+  }
+  if(tmp1!=NULL || tmp2!=NULL)return 1;
+  else return 0;
 }
 
 void funcL_dispose(t_func_list *l)
