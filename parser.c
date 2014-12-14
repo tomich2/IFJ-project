@@ -511,6 +511,8 @@ t_lablist *lablistp, tListOfInstr *inslistp, const char *TMPUV, Stack *s_stack, 
                   {
                     if(funcL_compare(Ac->flist,varfuncL_getflist(vflistp,Ac->act_funcID))!=0)
                     {
+                      funcL_dispose(Ac->flist);
+                      free(Ac->flist);
                       free(fdattmp->ret_par_types);
                       free(fdattmp);
                       return SEMANTIC_ERR;
