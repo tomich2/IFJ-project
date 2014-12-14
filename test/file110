@@ -4,5 +4,5 @@ begin
 	a:=50;
 	b:=10;
 	a:=a-b-10+5-1;
-	write (a,'#10')
+	write (a,''#10'')
 end.
