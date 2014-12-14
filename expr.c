@@ -578,7 +578,7 @@ ERROR_MSG ExprSem(int rule, nont *op1, nont *op2, Tabs *STab)
 			if(tmp==NULL) MakeVariable(&b,op2->d_type,op2->index);
 			else MakeVariable(&b,tVAR,op2->index); //doriesit chybove stavy
 
-			generator(STab->InstL,inst,a,b,res);
+			generator(STab->InstL,inst,b,a,res);
 
 
 			op1->d_type=tp;
