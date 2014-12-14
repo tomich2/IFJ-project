@@ -418,8 +418,14 @@ ERROR_MSG ExprParse( htab_t *glob, htab_t *loc, T_vartype *dt, tListOfInstr *Ins
 		MakeVariable(&a,in.value.nonterm.d_type,in.value.nonterm.index);
 		generator(STab.InstL,I_ASSIGN,a,NULL,TMPU);
 	}
-	if((strcmp(in.value.nonterm.index,TMPU)!=0) && (strcmp(in.value.nonterm.index,TMPU2)!=0) && (strcmp(in.value.nonterm.index,TMFunc)!=0) && (strcmp(in.value.nonterm.index,TMParam)!=0)) free(in.value.nonterm.index);
-	//if(in.value.nonterm.index!=NULL) free(in.value.nonterm.index);
+	if((strcmp(in.value.nonterm.index,TMPU)!=0) && (strcmp(in.value.nonterm.index,TMPU2)!=0) && (strcmp(in.value.nonterm.index,TMFunc)!=0) && (strcmp(in.value.nonterm.index,TMParam)!=0)) 
+	{
+		MakeVariable(&a,tVAR,in.value.nonterm.index);
+		generator(STab.InstL,I_ASSIGN,a,NULL,TMPU);
+		free(in.value.nonterm.index);
+	}
+
+
 	*dt=in.value.nonterm.d_type;
 	S_erase(&stack);
 	return EVERYTHINGSOKAY;
