@@ -4,5 +4,5 @@ begin
 	a:=5e2;
 	b:=10.0;
 	a:=a+b+10+5+1;
-	write (a,'#10')
+	write (a,''#10'')
 end.
