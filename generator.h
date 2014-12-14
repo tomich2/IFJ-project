@@ -25,7 +25,7 @@ typedef struct tListOfInstr
   tListItem *active;	//ukazatel na aktivny prvek
 } tListOfInstr;
 
-void showList(tListOfInstr *L);
+
 void listInit(tListOfInstr *L);
 void listFree(tListOfInstr *L);
 tListItem* generator(tListOfInstr *L, InstName name, Variable *a, Variable *b, char *s);
