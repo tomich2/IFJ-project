@@ -61,6 +61,7 @@ void varfuncL_dispose(t_varfunc_list *l);
 
 void funcL_init(t_func_list *l);
 int funcL_insertfirst(t_func_list *l, char *idp, T_vartype dtypep, bool is_parp);
+void varfuncL_deletelast(t_varfunc_list *l);
 void funcL_dispose(t_func_list *l);
 
 void labL_init(t_lablist *l);
